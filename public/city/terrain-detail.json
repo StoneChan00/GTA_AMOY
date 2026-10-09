@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "id": "flat-m1",
+  "grid": {"x0": 0, "z0": 0, "dx": 10, "dz": 10, "columns": 2, "rows": 2, "heights": [0, 0, 0, 0]}
+}

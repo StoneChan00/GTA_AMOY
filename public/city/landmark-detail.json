@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "asset": "/city/landmark-detail.glb",
+  "replacedMeshPrefixes": [],
+  "baseBuildingIds": [],
+  "landmarks": [],
+  "collisionFootprints": [],
+  "terrain": {"url": "/city/terrain-detail.json"}
+}

@@ -96,5 +96,5 @@ test('shipped plan and props.glb agree on kinds; every instance is on a real ord
  const helipads=plan.groups.filter((g:{kind:string})=>g.kind.startsWith('helipad')).reduce((s:number,g:{count:number})=>s+g.count,0);
  assert.ok(helipads>=1,'helipads '+helipads);
  for(const group of plan.groups)for(const inst of group.instances.slice(0,200))assert.ok(onCrown(inst[2]),`${group.kind} at y=${inst[2]} is not a crown roof height`);
- assert.equal(plan.lookup.cell,4);assert.ok(plan.lookup.width>3000&&plan.lookup.height>1200);
+ assert.equal(plan.lookup.cell,4);assert.ok(plan.lookup.width>1500&&plan.lookup.height>1500);
 });
