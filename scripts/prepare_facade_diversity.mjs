@@ -82,7 +82,7 @@ function join(parent,a,b) {a=find(parent,a);b=find(parent,b);if(a!==b)parent[Mat
 export async function run(input='artifacts/materials/buildings-tinted.glb',output='artifacts/materials/facade-diversity/buildings-varied.glb'){
  if(path.resolve(input)===path.resolve(output)||path.resolve(output).includes('/public/'))throw Error('只允许独立artifacts候选输出');
  await Promise.all([MeshoptDecoder.ready,MeshoptEncoder.ready]);const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder,'meshopt.encoder':MeshoptEncoder});
- const source=await fs.readFile(input),city=JSON.parse(await fs.readFile('public/city/city.json','utf8')),raw=JSON.parse(await fs.readFile('data/processed/shenzhen_study/buildings.geojson','utf8'));
+ const source=await fs.readFile(input),city=JSON.parse(await fs.readFile('public/city/city.json','utf8')),raw=JSON.parse(await fs.readFile('data/processed/xiamen_study/buildings.geojson','utf8'));
  const tags=new Map(raw.features.map(f=>[f.id,f.properties.tags]));const excluded=new Set(JSON.parse(await fs.readFile('public/city/building-exclusions.json','utf8')).excludedIds);
  const doc=await io.readBinary(source),before=snapshot(doc),index=prepareBuildings(city,excluded,64),parent=Int32Array.from(index.buildings.map((_,i)=>i)),ids=new Map(),jobs=[];
  for(let i=0;i<index.buildings.length;i++){const id=index.buildings[i].id;if(ids.has(id))join(parent,i,ids.get(id));else ids.set(id,i);}
@@ -118,4 +118,4 @@ export async function run(input='artifacts/materials/buildings-tinted.glb',outpu
  const report={schemaVersion:1,input,output,inputSha256:sha(source),outputSha256:sha(await fs.readFile(output)),outputBytes:(await fs.stat(output)).size,beforeSha256:before,afterSha256:snapshot(verified),preserved:['POSITION','NORMAL','TEXCOORD_0','COLOR_0','indices','mesh names','node transforms','materials'],newAttribute:'TEXCOORD_1',additionalVertexBytes:total*8,totalTexturedVertices:total,unmatchedVertices:unmatched,triangles,sharedVertexAssignments:shared,weldedGroups:[...used].filter(r=>members.get(r)?.size>1).length,familyCounts:counts,classificationBasis:basis,assignments};
  await fs.writeFile(output.replace('.glb','.report.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report,assignments:undefined}));return report;
 }
-if(process.argv[1]?.endsWith('/prepare_facade_diversity.mjs'))await run(process.argv[2],process.argv[3]);
+if(process.argv[1]&&path.basename(process.argv[1])==='prepare_facade_diversity.mjs')await run(process.argv[2],process.argv[3]);

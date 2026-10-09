@@ -78,7 +78,7 @@ export function createCityCockpit(scene:Scene,car:TransformNode,carMeshes:readon
   lastPaint=now;lastDisplay=key;
   const ctx=displayTexture.getContext() as CanvasRenderingContext2D;ctx.fillStyle='#080f15';ctx.fillRect(0,0,1024,384);
   ctx.strokeStyle='#17363f';ctx.lineWidth=2;ctx.strokeRect(14,14,996,356);
-  ctx.font='500 27px "PingFang SC", sans-serif';ctx.fillStyle='#9fafb4';ctx.textAlign='left';ctx.fillText('深城纪  /  海湾 GT',44,58);
+  ctx.font='500 27px "PingFang SC", sans-serif';ctx.fillStyle='#9fafb4';ctx.textAlign='left';ctx.fillText('鹭岛纪  /  海湾 GT',44,58);
   ctx.textAlign='center';ctx.fillStyle='#ecf4f1';ctx.font='500 148px ui-monospace, Menlo, monospace';ctx.fillText(String(kmh).padStart(3,'0'),512,215);
   ctx.font='26px ui-monospace, Menlo, monospace';ctx.fillStyle='#819ca4';ctx.fillText('KM/H',512,255);
   ctx.font='600 60px ui-monospace, Menlo, monospace';ctx.fillStyle=gear==='R'?'#e5b174':'#74d0bf';ctx.fillText(gear,134,196);

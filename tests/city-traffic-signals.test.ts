@@ -40,7 +40,7 @@ test('signalHold stops approaching traffic at a red stop line and releases it pa
 
 test('placements: every junction has both phase groups, arms sit off every at-grade carriageway and inside the map',()=>{
  const [minX,minZ,maxX,maxZ]=city.meta.extent;
- assert.ok(data.junctions.length>=300,`junctions ${data.junctions.length}`);
+ assert.ok(data.junctions.length>=150,`junctions ${data.junctions.length}`);
  const roads=city.roads.filter(r=>r.grade==='0');
  const cells=new Map<string,typeof roads>();
  for(const r of roads)for(const p of r.points){const k=Math.floor(p[0]/200)+','+Math.floor(p[1]/200);let c=cells.get(k);if(!c){c=[];cells.set(k,c);}if(!c.includes(r))c.push(r);}

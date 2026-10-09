@@ -81,7 +81,7 @@ export function applyCinematicVehicleFinish(scene:Scene,carRoot:TransformNode,ca
     context.strokeStyle='#65717c';context.lineWidth=3;context.strokeRect(10,10,492,108);
     context.fillStyle='#e3e7df';context.font='600 60px "PingFang SC", "Microsoft YaHei", sans-serif';
     context.textAlign='center';context.textBaseline='middle';
-    [...'深城纪'].forEach((character,i)=>context.fillText(character,256+(i-1)*84,66));
+    [...'鹭岛纪'].forEach((character,i)=>context.fillText(character,256+(i-1)*84,66));
     texture.update(true);
     material=new PBRMaterial('vehicle-finish:plate',scene);
     material.albedoTexture=texture;material.albedoColor=Color3.White();

@@ -29,7 +29,7 @@ def prepare():
  rng=random.Random(20260918)
  c=json.loads((ROOT/'public/city/city.json').read_text());meta=c['meta']
  ox,oz=meta['originWGS84'];scale=meta['horizontalScale']
- def project(lon,lat):return ((lon-ox)*102850*scale,(lat-oz)*111320*scale)
+ def project(lon,lat):return ((lon-ox)*101310*scale,(lat-oz)*111320*scale)
  ext=meta['extent']
  def poly(rings):return shapely.make_valid(Polygon(rings[0],rings[1:]))
  land=shapely.union_all([poly(r) for r in c['land']]);water=shapely.union_all([poly(p['rings']) for p in c['water']])
@@ -103,7 +103,7 @@ def prepare():
     if best is None or d<best[0]:best=(d,r,a,b,t)
   return best
  # 1. Metro entrances and bus platforms from the study POIs.
- pois=json.loads((ROOT/'data/processed/shenzhen_study/pois.geojson').read_text())['features']
+ pois=json.loads((ROOT/'data/processed/xiamen_study/pois.geojson').read_text())['features']
  transit=[]
  for f in pois:
   tags=f['properties'].get('tags') or {}
