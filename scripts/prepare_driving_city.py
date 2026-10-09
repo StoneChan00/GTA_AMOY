@@ -60,16 +60,18 @@ for f in load('roads'):
 roadlines=[LineString(r['points']) for r in roads];tree=STRtree(roadlines)
 landmarks=[
  # Coordinates are game-design estimates for M1 map marks (basis: estimated),
- # to be replaced by the landmark-reconstruction evidence workflow.
+ # to be replaced by the landmark-reconstruction evidence workflow. Only shimao
+ # carries a model in M1, so it alone keeps an exclusion radius; the others set
+ # 0 so their real OSM buildings stay visible and collidable.
  ('shimao','世茂海峡大厦 · 双子塔',118.1187,24.4296,300,'思明 · 演武大桥',70),
- ('xmu','厦门大学',118.0897,24.4366,30,'思明 · 厦大',150),
+ ('xmu','厦门大学',118.0897,24.4366,30,'思明 · 厦大',0),
  ('gulangyu','鼓浪屿',118.0683,24.4446,0,'思明 · 鼓浪屿',0),
- ('xiamenzhan','厦门站',118.1075,24.4775,25,'思明 · 厦门站',60),
+ ('xiamenzhan','厦门站',118.1075,24.4775,25,'思明 · 厦门站',0),
  ('yundang','筼筜湖',118.0946,24.4832,0,'思明 · 筼筜湖',0),
  ('bailu','白鹭洲公园',118.0930,24.4800,0,'思明 · 白鹭洲',0),
- ('gaoqi','高崎机场 T4',118.1250,24.5075,30,'湖里 · 高崎',120),
+ ('gaoqi','高崎机场 T4',118.1250,24.5075,30,'湖里 · 高崎',0),
  ('wuyuan','五缘湾',118.1530,24.5330,0,'湖里 · 五缘湾',0),
- ('huizhan','厦门国际会展中心',118.1630,24.4570,40,'思明 · 会展',100),
+ ('huizhan','厦门国际会展中心',118.1630,24.4570,40,'思明 · 会展',0),
  ('shapowei','沙坡尾',118.0838,24.4340,0,'思明 · 沙坡尾',0)]
 marks=[]
 for id,name,lon,lat,h,area,radius in landmarks:

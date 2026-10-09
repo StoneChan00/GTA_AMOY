@@ -2,14 +2,14 @@
   "assets": [
     {
       "file": "buildings.glb",
-      "bytes": 47665720,
-      "triangles": 599162,
+      "bytes": 47662108,
+      "triangles": 599185,
       "meshes": 716
     },
     {
       "file": "roads.glb",
-      "bytes": 54282160,
-      "triangles": 851292,
+      "bytes": 59380464,
+      "triangles": 924066,
       "meshes": 723
     },
     {
@@ -45,5 +45,5 @@
   ],
   "treeInstances": 12609,
   "chunkSize": 640,
-  "totalBytes": 106646604
+  "totalBytes": 111741296
 }

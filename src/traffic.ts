@@ -23,7 +23,13 @@ export class CityTraffic{
   for(const c of this.cars)buffers[c.group].push(...Matrix.Compose(Vector3.One(),Quaternion.RotationAxis(Vector3.Up(),c.yaw),new Vector3(c.x,this.heightAt(c.x,c.z)+.14,c.z)).asArray());
   for(let i=0;i<3;i++)for(const m of this.meshes[i])this.instances.update(m,buffers[i]);
  }
- update(dt:number,px:number,pz:number){if(Math.hypot(px-this.origin[0],pz-this.origin[1])>450){this.place(px,pz);return;}const buffers:number[][]=[[],[],[]];for(const c of this.cars){let a=this.graph.nodes[c.from],b=this.graph.nodes[c.to],len=Math.hypot(a[0]-b[0],a[1]-b[1]);const hold=this.signalHold(c.x,c.z,c.yaw);const blocked=(hold!==null&&hold<6)||this.cars.some(o=>o!==c&&Math.hypot(o.x-c.x,o.z-c.z)<8&&(o.x-c.x)*Math.sin(c.yaw)+(o.z-c.z)*Math.cos(c.yaw)>0);c.t+=dt*(blocked?0:c.speed)/Math.max(.1,len);let limit=0;
+ update(dt:number,px:number,pz:number){if(Math.hypot(px-this.origin[0],pz-this.origin[1])>450){this.place(px,pz);return;}const buffers:number[][]=[[],[],[]];for(const c of this.cars){let a=this.graph.nodes[c.from],b=this.graph.nodes[c.to],len=Math.hypot(a[0]-b[0],a[1]-b[1]);const hold=this.signalHold(c.x,c.z,c.yaw);
+   // Brake for red lights, for other cars ahead, and for the player's actor
+   // (car, tank or walker) so traffic yields instead of driving through it.
+   // The player gets a wider radius and a small rear tolerance: on curved
+   // edges the discrete yaw flickers around the strict forward half-plane.
+   const ahead=(ox:number,oz:number,isPlayer:boolean)=>Math.hypot(ox-c.x,oz-c.z)<(isPlayer?11:8)&&(ox-c.x)*Math.sin(c.yaw)+(oz-c.z)*Math.cos(c.yaw)>(isPlayer?-3:0);
+   const blocked=(hold!==null&&hold<6)||this.cars.some(o=>o!==c&&ahead(o.x,o.z,false))||ahead(px,pz,true);c.t+=dt*(blocked?0:c.speed)/Math.max(.1,len);let limit=0;
    while(c.t>=1&&limit++<12){c.t=(c.t-1)*len;const old=c.from;c.from=c.to;a=this.graph.nodes[c.from];const options=[...this.graph.edges[c.from].keys()].filter(i=>i!==old&&this.directionAllowed(c.from,i));const dx=a[0]-this.graph.nodes[old][0],dz=a[1]-this.graph.nodes[old][1];let best=-Infinity,next=old;for(const i of options){const p=this.graph.nodes[i],l=Math.hypot(p[0]-a[0],p[1]-a[1]);const score=(dx*(p[0]-a[0])+dz*(p[1]-a[1]))/(Math.max(.1,len*l))+this.random()*.7;if(score>best){best=score;next=i;}}c.to=next;b=this.graph.nodes[next];len=Math.hypot(a[0]-b[0],a[1]-b[1]);c.t/=Math.max(.1,len);}
    const yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);c.x=a[0]+(b[0]-a[0])*c.t+Math.cos(yaw)*1.15;c.z=a[1]+(b[1]-a[1])*c.t-Math.sin(yaw)*1.15;c.yaw=yaw;
    if(Math.hypot(c.x-px,c.z-pz)>950)continue;buffers[c.group].push(...Matrix.Compose(Vector3.One(),Quaternion.RotationAxis(Vector3.Up(),yaw),new Vector3(c.x,this.heightAt(c.x,c.z)+.14,c.z)).asArray());}

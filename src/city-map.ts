@@ -69,7 +69,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
   panel.innerHTML = `
     <div class="atlas-shell">
       <header class="atlas-heading">
-        <div class="atlas-brand"><small>SHENZHEN / OPEN ROADS</small><h2 id="city-map-title">城市地图</h2></div>
+        <div class="atlas-brand"><small>AMOY / OPEN ROADS</small><h2 id="city-map-title">城市地图</h2></div>
         <form class="atlas-search" role="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="map-search" type="search" autocomplete="off" spellcheck="false" placeholder="搜索地标、片区或道路" aria-label="搜索地图地点"><kbd>↵</kbd></form>
         <button id="close-map" class="atlas-close" type="button">返回驾驶 <kbd>M</kbd></button>
       </header>

@@ -30,7 +30,7 @@ export class CityCollision{
  blocked(x:number,z:number){
   const near=this.nearest(x,z);if(near&&near.d<near.road.width/2-.65)return false;
   for(const r of this.bCells.get(Math.floor(x/this.size)+','+Math.floor(z/this.size))??[]){if(inRing(x,z,r))return true;for(let i=1;i<r.length;i++)if(closest(x,z,r[i-1],r[i]).d<1.15)return true;}
-  for(const m of this.data.landmarks)if(!m.detailCollision&&m.height>0&&Math.hypot(x-m.x,z-m.z)<(m.id==='civic'?65:m.id==='tencent'?46:24))return true;
+   for(const m of this.data.landmarks)if(!m.detailCollision&&m.height>0&&Math.hypot(x-m.x,z-m.z)<(m.id==='civic'?65:m.id==='tencent'?46:m.id==='shimao'?45:24))return true;
   return !this.data.land.some(p=>inRing(x,z,p[0])&&!p.slice(1).some(r=>inRing(x,z,r)))||this.data.water.some(p=>inRing(x,z,p.rings[0])&&!p.rings.slice(1).some(r=>inRing(x,z,r)));
  }
 }

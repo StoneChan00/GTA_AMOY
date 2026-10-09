@@ -17,13 +17,13 @@
   "coordinateSystem": "local east/north; equirectangular at Xiamen latitude (111320*cos(24.485°)≈101310), metres scaled 0.60",
   "roadTreatment": "prototype roads flattened; one-way tags kept but arcade driving unrestricted",
   "heightStatus": {
-    "typology_estimate": 3957,
+    "typology_estimate": 3959,
     "osm_levels_estimated": 75,
     "osm_height": 15
   },
   "counts": {
     "roads": 5023,
-    "buildings": 4068,
+    "buildings": 4070,
     "green": 455,
     "water": 75,
     "landmarks": 10
