@@ -1,0 +1,8 @@
+{
+  "inputTrees": 3721,
+  "treesOutsideAllVehicleLanes": 3606,
+  "removedTrees": 115,
+  "pedestrianPaths": 24783,
+  "lamps": 14079,
+  "roadSurfaceMethod": "planar polygon union; constrained triangulation; no duplicate faces"
+}

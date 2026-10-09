@@ -1,0 +1,7 @@
+{
+ "schemaVersion": 1,
+ "models": [],
+ "eligibleIndices": {"islandTree": []},
+ "plantingSHA256": "disabled-gta-amoy-m1",
+ "source": "OpenGameArt island-tree derivatives pending (M2); M1 runs the procedural landscape layer only, so this manifest intentionally fails the planting qualification hash."
+}

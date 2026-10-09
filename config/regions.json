@@ -1,0 +1,9 @@
+{
+  "crs": "EPSG:4326",
+  "bbox_order": "west,south,east,north",
+  "note": "研究裁切框，不是行政边界，不代表全部可玩范围。GTA_AMOY 以厦门岛（思明+湖里）与鼓浪屿为核心；对岸集美/海沧仅作研究背景。",
+  "regions": {
+    "xiamen_study": {"name": "厦门研究范围", "bbox": [117.95, 24.35, 118.30, 24.65]},
+    "xiamen_island": {"name": "厦门岛与鼓浪屿", "bbox": [118.03, 24.40, 118.21, 24.57]}
+  }
+}

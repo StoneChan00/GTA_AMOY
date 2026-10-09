@@ -1,0 +1,29 @@
+{
+  "assets": [
+    {
+      "file": "car.glb",
+      "bytes": 701976,
+      "triangles": 34286,
+      "meshes": 23
+    },
+    {
+      "file": "pedestrian.glb",
+      "bytes": 47820,
+      "triangles": 1180,
+      "meshes": 12
+    },
+    {
+      "file": "roads.glb",
+      "bytes": 103356584,
+      "triangles": 1388094,
+      "meshes": 734
+    },
+    {
+      "file": "landmarks.glb",
+      "bytes": 14929228,
+      "triangles": 200964,
+      "meshes": 6
+    }
+  ],
+  "source": "artifacts/city/xiamen-detail-art.blend"
+}
