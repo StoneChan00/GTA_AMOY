@@ -5,6 +5,7 @@ import {grassBaseline} from './city-grass-material.ts';
 import {applyLandscapeNightLight} from './city-landscape-lighting.ts';
 import {planRoadsidePlanting,ROADSIDE_PLANTING_BUDGET,ROADSIDE_TREE_RADII,type RoadsidePlantingOptions,type RoadsidePlantingPlan} from './city-roadside-planting.ts';
 import type {CityData} from './city-types.ts';
+import {sha256Hex} from './sha256.ts';
 
 type Plant=[number,number,number,number,number];
 type Planting={trees:Plant[];details:Plant[];roadDetails?:Plant[]};
@@ -37,8 +38,10 @@ export class CityLandscape {
  constructor(private scene:Scene,private heightAt:(x:number,z:number)=>number=()=>0,private occupied:(x:number,z:number,radius:number)=>boolean=()=>false){}
  async init(){
   const [manifest,plantingText,openManifest]=await Promise.all([fetch(BASE+'manifest.json').then(r=>{if(!r.ok)throw Error('Landscape manifest unavailable');return r.json();}),fetch(BASE+'planting.json').then(r=>{if(!r.ok)throw Error('Landscape planting unavailable');return r.text();}),fetch('/city/open-vegetation/manifest.json').then(r=>{if(!r.ok)throw Error('Open vegetation manifest unavailable');return r.json();})]);
-  this.planting=JSON.parse(plantingText);
-  const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(plantingText)))).map(v=>v.toString(16).padStart(2,'0')).join('');
+   this.planting=JSON.parse(plantingText);
+   // Plain-HTTP deployments (e.g. the http:// ECS mirror) have no crypto.subtle;
+   // the wrapper falls back to a synchronous implementation there.
+   const hash=await sha256Hex(plantingText);
   this.qualificationMatched=hash===openManifest.plantingSHA256;
   if(this.qualificationMatched){for(const index of openManifest.eligibleIndices.islandTree as number[]){const p=this.planting.trees[index];if(p){this.openKinds.set(p,'open-island-tree');this.openEligible++;}}for(const index of openManifest.eligibleIndices.palm as number[]){const p=this.planting.trees[index];if(p){this.openKinds.set(p,'open-palm');this.openEligible++;}}}
   const models:Model[]=[...manifest.models,...(this.qualificationMatched?openManifest.models.map((m:Model)=>({...m,id:'open-'+m.id,file:'/city/open-vegetation/'+m.file,openAsset:true})):[])];
