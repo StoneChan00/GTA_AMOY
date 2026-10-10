@@ -51,7 +51,7 @@ import {loadCoastalInfrastructure} from './city-coastal-infrastructure.ts';
 import {createBayWater} from './city-bay-water.ts';
 import {createCoastalHorizon} from './city-coastal-horizon.ts';
 import {createPublicLighting} from './city-public-lighting.ts';
-import type {createBambooCorridor} from './city-bamboo-corridor.ts';
+import {createBambooCorridor} from './city-bamboo-corridor.ts';
 import {setLandscapeLightingMode} from './city-landscape-lighting.ts';
 import type {RoadGraph} from './navigation.ts';
 import type {CityData,Landmark,V2} from './city-types.ts';
@@ -268,9 +268,14 @@ export class DrivingWorld{
   this.vehicleFinish=applyCinematicVehicleFinish(this.scene,this.car,this.carMeshes);this.carMeshes.push(...this.vehicleFinish.meshes);this.cockpit=createCityCockpit(this.scene,this.car,this.carMeshes);this.carMeshes.push(...this.cockpit.meshes);
   progress('正在种植榕树、棕榈与花境');this.landscape=new CityLandscape(this.scene,this.groundHeight,(x,z,r)=>!!this.bambooCafe?.layout.reserved(x,z,r));await this.landscape.init();progress('正在栽种榕树、木棉与樟树林冠');try{this.canopy=new CityCanopy(this.scene,this.groundHeight,(x,z,r)=>!!this.bambooCafe?.layout.reserved(x,z,r));await this.canopy.init();}catch(error){console.warn('Canopy layer unavailable for this city',error);this.canopy=null;}
   progress('正在布置屋顶设备、水箱与停机坪');await ambientLoading;this.ambient.setMode(this.lightMode);try{const rooftops=new CityRooftops(this.scene);await rooftops.init();this.rooftops=rooftops;rooftops.setMode(this.lightMode);if(rooftops.plan)void this.roofSurface.load(rooftops.plan.lookup);}catch(error){console.warn('Rooftop layer unavailable; base roofs kept',error);}this.landscape.configureRoadside(this.data,{collisionFootprints:this.detailManifest?.collisionFootprints,bridgeCrossings:this.coastal?.manifest.crossings,blocked:(x,z)=>this.collision.blocked(x,z)||this.propBlocked(x,z)||!!this.canopy?.trunkNear(x,z)});progress('正在布置城市座椅');try{this.streetFurniture=new CityStreetFurniture(this.scene,this.groundHeight);await this.streetFurniture.init();}catch(error){console.warn('Street furniture layer unavailable for this city',error);this.streetFurniture=null;}progress('正在安装路口红绿灯');try{this.signals=new CityTrafficSignals(this.scene,this.groundHeight);await this.signals.init();this.signals.setNight(this.night);}catch(error){console.warn('Traffic signals layer unavailable for this city',error);this.signals=null;}progress('正在停放电动车');try{this.ebikes=new CityEbikes(this.scene,this.groundHeight);await this.ebikes.init();}catch(error){console.warn('E-bike layer unavailable for this city',error);this.ebikes=null;}
-   // GTA_AMOY M1: the bamboo corridor is Shenzhen-authored street staging around
-   // the Spring Bamboo tower (hardcoded Shenzhen world coordinates); Xiamen street
-   // staging lands in M2. Every later use is null-safe (bambooCorridor?.…).
+  progress('正在铺设厦门站街面');this.bambooCorridor=createBambooCorridor(this.scene,this.data,(x,z)=>{
+   const terrain=this.groundHeight(x,z),n=this.collision.nearest(x,z);
+   if(!n)return terrain+.08;
+   const edge=n.d-n.road.width/2;
+   return terrain+(edge<=10?.26:.08);
+  },{reserved:(x,z,r)=>!!this.bambooCafe?.layout.reserved(x,z,r)});this.bambooCorridor.setMode(this.lightMode);
+  this.bambooCorridor.adoptStreetTrees(this.landscape.borrowPrototype('orchid-tree'),this.landscape.borrowPrototype('orchid-tree-lod'));
+  this.bambooCorridor.adoptParkedCars(this.trafficSources);
   this.setupReflections();applyLandscapeSurfaces(this.scene);this.mountains?.attachVisuals(this.scene);this.groundRelief?.attachVisuals(this.scene);this.roadSurface=applyCinematicRoad(this.scene,this.mirror);this.setupSigns();this.pedestrians=new CityPedestrians(this.scene,this.groundHeight,(x,z)=>this.collision.blocked(x,z)||this.propBlocked(x,z));await this.pedestrians.init();this.pedestrians.place(this.state.x,this.state.z);this.lampData=await(await fetch('/city/lamps.json')).json();for(let i=0;i<2;i++){const l=new PointLight('street-light-pool-'+i,Vector3.Zero(),this.scene);l.diffuse=new Color3(1,.67,.36);l.range=26;l.intensity=70;this.streetLights.push(l);}for(let i=0;i<2;i++){const l=new PointLight('window-spill-'+i,Vector3.Zero(),this.scene);l.diffuse=new Color3(1,.42,.14);l.range=17;l.intensity=0;l.setEnabled(false);this.windowLights.push(l);}
   const parkPoles=await this.load('park-floodlight');this.publicLighting=createPublicLighting(this.scene,this.lampData,this.coastal!.manifest.parkLights,parkPoles.meshes,this.groundHeight);this.publicLighting.update(this.state.x,this.state.z,true);
   progress('正在调试海湾的光与倒影');this.cinematic=await createCinematicLook(this);this.vehicleMaterials=refineHeroVehicleMaterials(this.scene,this.carMeshes);

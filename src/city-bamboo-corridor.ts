@@ -32,15 +32,15 @@ export type BambooCorridorPlan={
  rolling:CorridorPose[];
 };
 
-/** Locked 春笋–人才公园 street. Spine is 科苑南路, 1.2 km, one building row each side. */
+/** Locked 厦门站–筼筜湖 street. Spine is 湖滨东路, ~1.27 km, one building row each side. */
 export const BAMBOO_CORRIDOR={
- id:'bamboo-talent',
- name:'春笋–人才公园',
- origin:{x:-5146,z:-1216.62},
- talent:{x:-4988.02,z:-1492.13},
- spine:[[-5180,-700],[-5160,-1900]] as const,
+ id:'xiamenzhan-yundang',
+ name:'厦门站–筼筜湖',
+ origin:{x:-759.83,z:-500.94},
+ talent:{x:-1543.96,z:-120.23},
+ spine:[[-819,-536],[-1355,610]] as const,
  halfWidth:88,
- length:1200,
+ length:1265,
  kinds:['primary','trunk','secondary','tertiary'] as const,
  junctionRadius:11,
  junctionClearance:7,
@@ -66,7 +66,7 @@ export const BAMBOO_CORRIDOR={
  budgets:{curb:420,walk:1200,edge:420,pit:180,lamp:120,signal:16,cross:80,stop:24,parked:130,plinth:140,awning:140,door:140,pane:280,sign:280,deck:220,dash:160,roll:36},
 } as const;
 
-/** Day-lit street kit. The driven 科苑 carriageway uses a corridor deck so day stills are not cinematic charcoal. */
+/** Day-lit street kit. The driven 湖滨东路 carriageway uses a corridor deck so day stills are not cinematic charcoal. */
 export const CORRIDOR_DAYLIGHT={
  curb:[.16,.14,.12] as const,
   curbTop:[.78,.62,.42] as const,
@@ -92,17 +92,17 @@ export const CORRIDOR_DAYLIGHT={
 
 /** Ground-floor lettering is game art, not surveyed shop signs. */
 export const CORRIDOR_SHOPS=[
- {title:'科苑便利',blade:'便利'},
- {title:'南风面馆',blade:'面馆'},
- {title:'青叶茶',blade:'茶'},
- {title:'海风洗衣',blade:'洗衣'},
+ {title:'湖滨便利',blade:'便利'},
+ {title:'鹭江面馆',blade:'面馆'},
+ {title:'白鹭茶',blade:'茶'},
+ {title:'筼筜洗衣',blade:'洗衣'},
 ] as const;
 
 export const BAMBOO_CORRIDOR_CAMERAS=[
- {id:'drive-day',title:'日间驾驶',place:'bamboo',height:1.38,back:7.2,look:22},
- {id:'walk-eye',title:'步行眼高',place:'talent',height:1.62,back:0.4,look:9,side:3.4},
- {id:'junction',title:'路口',place:'bamboo',height:1.55,back:14,look:18},
- {id:'low-air',title:'低空',place:'talent',height:38,back:46,look:8},
+ {id:'drive-day',title:'日间驾驶',place:'xiamenzhan',height:1.38,back:7.2,look:22},
+ {id:'walk-eye',title:'步行眼高',place:'yundang',height:1.62,back:0.4,look:9,side:3.4},
+ {id:'junction',title:'路口',place:'xiamenzhan',height:1.55,back:14,look:18},
+ {id:'low-air',title:'低空',place:'yundang',height:38,back:46,look:8},
 ] as const;
 
 const KINDS=new Set<string>(BAMBOO_CORRIDOR.kinds);
@@ -118,6 +118,22 @@ export function corridorProject(x:number,z:number){
  return {t,x:px,z:pz,d:Math.hypot(x-px,z-pz),length:len};
 }
 export function inBambooCorridor(x:number,z:number,pad=0){return corridorProject(x,z).d<=BAMBOO_CORRIDOR.halfWidth+pad;}
+/** Along-spine fraction (0 = spine[0] = 厦门站/south end, 1 = spine[1] = 筼筜湖/north end). */
+const alongT=(x:number,z:number)=>corridorProject(x,z).t;
+/**
+ * Along-spine bands re-expressed from the Shenzhen 科苑南路 z-bands. The
+ * original spine ran z −700→−1900 (t 0 = 春笋 side, t 1 = 人才公园 side);
+ * here t 0 = 厦门站 side, t 1 = 筼筜湖 side. Same fractions, same intent.
+ */
+const BAND={
+ driveA:0.15,driveB:0.65,      // driven main-street stretch (fictional wall + parking priority)
+ b0A:0.167,b0B:0.333,           // shopfront band 0 (origin side)
+ b1A:0.367,b1B:0.517,           // shopfront band 1 (mid)
+ b2A:0.517,b2B:0.65,            // shopfront band 2 (talent side)
+ parkA:0.221,parkB:0.26,        // extra curb parking beside the origin landmark
+ park2A:0.333,park2B:0.483,     // mid-street curb parking
+ eastA:0.167,eastB:0.333,       // origin-side wall parking cone
+} as const;
 
 function onLand(data:CityData,x:number,z:number){
  return data.land.some(p=>inRing(x,z,p[0])&&!p.slice(1).some(r=>inRing(x,z,r)));
@@ -155,15 +171,15 @@ function roadSegments(data:CityData,kinds?:Set<string>){
 function corridorSegments(data:CityData){return roadSegments(data,KINDS);}
 
 function spineAligned(yaw:number){return Math.abs(Math.cos(yaw))>BAMBOO_CORRIDOR.spineAlign;}
-function isKeyuanSeg(seg:StreetSeg){
- return /科苑|keyuan/i.test(seg.road.name??'')&&inBambooCorridor(seg.mid[0],seg.mid[1]);
+function isHubinSeg(seg:StreetSeg){
+ return /湖滨东路|hubin east/i.test(seg.road.name??'')&&inBambooCorridor(seg.mid[0],seg.mid[1]);
 }
 function isSpineSeg(seg:StreetSeg){
- if(isKeyuanSeg(seg))return true;
+ if(isHubinSeg(seg))return true;
  const d=corridorProject(seg.mid[0],seg.mid[1]).d;
  if(d>32)return false;
  const name=seg.road.name??'';
- if(name.includes('登良')||name.includes('海德一道'))return true;
+ if(name.includes('湖滨南路')||name.includes('禾祥东路')||name.includes('厦禾路'))return true;
  return spineAligned(seg.yaw);
 }
 function nearestSeg(segs:StreetSeg[],x:number,z:number){
@@ -172,10 +188,10 @@ function nearestSeg(segs:StreetSeg[],x:number,z:number){
  return hit;
 }
 function isDriveName(name:string){
- return /科苑|登良|海德|keyuan/.test(name);
+ return /湖滨东路|湖滨南路|禾祥东路|厦禾路|湖滨北路|hubin/i.test(name);
 }
-function nearestKeyuanHit(roads:StreetSeg[],x:number,z:number){
- return nearestNamedHit(roads,x,z,isKeyuanSeg);
+function nearestHubinHit(roads:StreetSeg[],x:number,z:number){
+ return nearestNamedHit(roads,x,z,isHubinSeg);
 }
 function nearestNamedHit(roads:StreetSeg[],x:number,z:number,test:(s:StreetSeg)=>boolean){
  let hit:{seg:StreetSeg;x:number;z:number;d:number}|null=null;
@@ -205,7 +221,7 @@ function parallelSpan(x:number,z:number,yaw:number,roads:StreetSeg[],fallback:nu
 }
 function spineRibbon(segs:StreetSeg[],fillHoles:boolean):StreetSeg[]{
  const [a,b]=BAMBOO_CORRIDOR.spine,dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz),yaw=Math.atan2(dx,dz);
- const road:Road={id:'corridor-spine',name:'科苑南路',points:BAMBOO_CORRIDOR.spine.map(q=>[q[0],q[1]] as V2),width:6,kind:'primary',oneway:false,grade:'0'};
+ const road:Road={id:'corridor-spine',name:'湖滨东路',points:BAMBOO_CORRIDOR.spine.map(q=>[q[0],q[1]] as V2),width:6,kind:'primary',oneway:false,grade:'0'};
  const step=28,n=Math.max(1,Math.floor(len/step)),out:StreetSeg[]=[];
  for(let i=0;i<n;i++){
   const t0=i/n,t1=(i+1)/n,pa:V2=[a[0]+dx*t0,a[1]+dz*t0],pb:V2=[a[0]+dx*t1,a[1]+dz*t1],mid:V2=[(pa[0]+pb[0])/2,(pa[1]+pb[1])/2];
@@ -250,7 +266,7 @@ function onTravelLane(segs:StreetSeg[],x:number,z:number,clear=1.65){
  return segs.some(s=>closest(x,z,s.a,s.b).d<s.width/2-clear);
 }
 function curbParkPoint(x:number,z:number,yaw:number,side:number,roads:StreetSeg[]){
- const outer=namedOffset(x,z,yaw,side,roads,['科苑']);
+ const outer=namedOffset(x,z,yaw,side,roads,['湖滨东路']);
  return sidePoint(x,z,yaw,side,Math.max(2.4,outer-1.28));
 }
 function inCurbLane(hit:{seg:StreetSeg;d:number}|null){
@@ -427,15 +443,16 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
    }
   });
   sample(seg,BAMBOO_CORRIDOR.parkStep,(x,z,yaw)=>{
-   if(!isKeyuanSeg(seg)&&z<-1100&&z>-1280){
-    const k=nearestKeyuanHit(roads,x,z);
+   const parkT=alongT(x,z);
+   if(!isHubinSeg(seg)&&(parkT<BAND.park2A||parkT>BAND.park2B)){
+    const k=nearestHubinHit(roads,x,z);
     if(!k||k.d>16)return;
    }
    for(const side of [-1,1] as const){
     const p=curbParkPoint(x,z,yaw,side,roads);
     if(!inBambooCorridor(p.x,p.z)||!onLand(data,p.x,p.z)||inWater(data,p.x,p.z))continue;
     if(inBuilding(buildings,p.x,p.z,1.6)||reserved(p.x,p.z,.8)||nearJunction(p.x,p.z,junctions))continue;
-    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestKeyuanHit(roads,p.x,p.z)))continue;
+    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestHubinHit(roads,p.x,p.z)))continue;
     if(pits.some(t=>Math.hypot(t.x-p.x,t.z-p.z)<2.8))continue;
     if(data.landmarks.some(m=>m.arrival&&Math.hypot(p.x-m.arrival[0],p.z-m.arrival[1])<10))continue;
     parked.push(pose(p.x,p.z,yaw));
@@ -445,7 +462,7 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
 
  const shopSegs=[...spineRibbon(segs,false)];
  for(const seg of segs){
-  if(!isKeyuanSeg(seg))continue;
+  if(!isHubinSeg(seg))continue;
   if(shopSegs.some(s=>Math.hypot(s.mid[0]-seg.mid[0],s.mid[1]-seg.mid[1])<10))continue;
   shopSegs.push(seg);
  }
@@ -458,7 +475,8 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   });
   sample(seg,BAMBOO_CORRIDOR.shopfrontBay,(x,z,yaw,along)=>{
    if(!spineAligned(yaw))return;
-   const drive=z<-880&&z>-1480;
+   const t=alongT(x,z);
+   const drive=t>BAND.driveA&&t<BAND.driveB;
    const west=sidePoint(x,z,yaw,1,8).x<sidePoint(x,z,yaw,-1,8).x?1:-1;
    const prefer=drive?west:builtSide(x,z,yaw);
    for(const side of [-1,1] as const){
@@ -516,8 +534,8 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
  for(const j of junctions){
   const proj=corridorProject(j.x,j.z);
   if(proj.t<0.08||proj.t>0.92)continue;
-  addAxis(nearestKeyuanHit(segs,j.x,j.z),34);
-  addAxis(nearestNamedHit(segs,j.x,j.z,s=>/海德|登良/.test(s.road.name??'')),18);
+  addAxis(nearestHubinHit(segs,j.x,j.z),34);
+  addAxis(nearestNamedHit(segs,j.x,j.z,s=>/湖滨南路|禾祥东路|厦禾路/.test(s.road.name??'')),18);
   addAxis(nearestNamedHit(segs,proj.x,proj.z,s=>isDriveName(s.road.name??'')||isSpineSeg(s)),10);
   const fallback=nearestSeg(segs.filter(s=>isSpineSeg(s)),j.x,j.z);
   if(fallback){
@@ -549,7 +567,7 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   const proj=corridorProject(j.x,j.z);
   if(proj.t<0.08||proj.t>0.92)continue;
   if(crossings.some(p=>corridorProject(p.x,p.z).d<12&&Math.abs(corridorProject(p.x,p.z).t-proj.t)<0.05))continue;
-  const stripe=Math.max(4.2,(nearestKeyuanHit(segs,proj.x,proj.z)?.seg.width??6.4)-1.5);
+  const stripe=Math.max(4.2,(nearestHubinHit(segs,proj.x,proj.z)?.seg.width??6.4)-1.5);
   for(let i=0;i<9;i++){
    const along=(i-4)*1.85;
    crossings.push(pose(proj.x+Math.sin(spineYaw)*along,proj.z+Math.cos(spineYaw)*along,spineYaw,stripe/7.2,1,1));
@@ -569,8 +587,8 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   panes.push(pose(px+Math.sin(roadYaw)*winLat+outX*(face+.04),pz+Math.cos(roadYaw)*winLat+outZ*(face+.04),along));
   signs.push(pose(px+Math.sin(roadYaw)*doorLat+outX*(face+.7),pz+Math.cos(roadYaw)*doorLat+outZ*(face+.7),roadYaw,1,1,1));
  };
- const bandOf=(p:{z:number})=>p.z<-900&&p.z>-1100?0:p.z<-1140&&p.z>-1320?1:p.z<-1320&&p.z>-1480?2:3;
- const takeBands=<T extends {z:number}>(list:T[],limit:number)=>{
+ const bandOf=(p:{x:number;z:number})=>{const t=alongT(p.x,p.z);return t>BAND.b0A&&t<BAND.b0B?0:t>BAND.b1A&&t<BAND.b1B?1:t>BAND.b2A&&t<BAND.b2B?2:3;};
+ const takeBands=<T extends {x:number;z:number}>(list:T[],limit:number)=>{
   const bins:T[][]=[[],[],[],[]];
   for(const p of list)bins[bandOf(p)].push(p);
   const out:T[]=[],share=Math.max(8,Math.floor(limit/3));
@@ -626,16 +644,16 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
  }
 
  const B=BAMBOO_CORRIDOR.budgets;
- const driveBand=(p:{z:number})=>p.z<-880&&p.z>-1480?0:1;
- const shopIdx=takeBands(plinths.map((p,i)=>({i,z:p.z})),B.plinth).map(o=>o.i);
+ const driveBand=(p:{x:number;z:number})=>{const t=alongT(p.x,p.z);return t>BAND.driveA&&t<BAND.driveB?0:1;};
+ const shopIdx=takeBands(plinths.map((p,i)=>({i,x:p.x,z:p.z})),B.plinth).map(o=>o.i);
  const keptPlinths=shopIdx.map(i=>plinths[i]);
  const keptPanes=shopIdx.map(i=>panes[i]).filter((p):p is CorridorPose=>!!p);
  const keptInteriors=shopIdx.map(i=>interiors[i]).filter((p):p is CorridorPose=>!!p);
  const keptSigns=shopIdx.map(i=>signs[i]).filter((p):p is CorridorPose=>!!p);
  const [sa,sb]=BAMBOO_CORRIDOR.spine,sdx=sb[0]-sa[0],sdz=sb[1]-sa[1],slen=Math.hypot(sdx,sdz)||1;
- for(let t=0;t<1;t+=5.4/slen){
-  const sx=sa[0]+sdx*t,sz=sa[1]+sdz*t;
-  if(sz>-965||sz<-1012)continue;
+for(let t=0;t<1;t+=5.4/slen){
+   const sx=sa[0]+sdx*t,sz=sa[1]+sdz*t;
+   if(t<BAND.parkA||t>BAND.parkB)continue;
   const east=sidePoint(sx,sz,spineYaw,1,8).x>=sidePoint(sx,sz,spineYaw,-1,8).x?1:-1;
   const p=curbParkPoint(sx,sz,spineYaw,east,roads);
   if(onTravelLane(roads,p.x,p.z)||nearJunction(p.x,p.z,junctions)||inBuilding(buildings,p.x,p.z,1.4))continue;
@@ -645,11 +663,11 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   if(keptPlinths.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<3.9))continue;
   const cd=corridorProject(p.x,p.z).d;
   if(cd<3.6||cd>12)continue;
-  if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestKeyuanHit(roads,p.x,p.z)))continue;
+  if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestHubinHit(roads,p.x,p.z)))continue;
   parked.push(pose(p.x,p.z,spineYaw));
  }
  for(const p of keptPlinths){
-  const drive=nearestKeyuanHit(roads,p.x,p.z);
+  const drive=nearestHubinHit(roads,p.x,p.z);
   if(!drive||drive.d>14)continue;
   const vx=drive.x-p.x,vz=drive.z-p.z,vd=Math.hypot(vx,vz)||1;
   const start=Math.max(2.6,vd-drive.seg.width/2-1.28);
@@ -666,13 +684,13 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   }
  }
  for(const seg of shopSegs){
-  if(!isKeyuanSeg(seg))continue;
+  if(!isHubinSeg(seg))continue;
   sample(seg,5.4,(x,z,yaw)=>{
    for(const side of [-1,1] as const){
     const p=curbParkPoint(x,z,yaw,side,roads);
     if(!inBambooCorridor(p.x,p.z)||!onLand(data,p.x,p.z)||inWater(data,p.x,p.z))continue;
     if(inBuilding(buildings,p.x,p.z,1.6)||reserved(p.x,p.z,.8)||nearJunction(p.x,p.z,junctions))continue;
-    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestKeyuanHit(roads,p.x,p.z)))continue;
+    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestHubinHit(roads,p.x,p.z)))continue;
     if(pits.some(t=>Math.hypot(t.x-p.x,t.z-p.z)<2.8))continue;
     if(parked.some(c=>Math.hypot(c.x-p.x,c.z-p.z)<4.2))continue;
     const shop=keptPlinths.some(s=>{
@@ -685,8 +703,9 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
   });
  }
  for(const seg of spineRibbon(segs,false)){
-  if(seg.mid[1]<-1100&&seg.mid[1]>-1280){
-   const k=nearestKeyuanHit(roads,seg.mid[0],seg.mid[1]);
+  const segT=alongT(seg.mid[0],seg.mid[1]);
+  if(segT<BAND.park2A||segT>BAND.park2B){
+   const k=nearestHubinHit(roads,seg.mid[0],seg.mid[1]);
    if(!k||k.d>16)continue;
   }
   sample(seg,6.4,(x,z,yaw)=>{
@@ -695,7 +714,7 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
     const p=curbParkPoint(x,z,yaw,side,roads);
     if(!inBambooCorridor(p.x,p.z)||!onLand(data,p.x,p.z)||inWater(data,p.x,p.z))continue;
     if(inBuilding(buildings,p.x,p.z,1.6)||reserved(p.x,p.z,.8)||nearJunction(p.x,p.z,junctions))continue;
-    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestKeyuanHit(roads,p.x,p.z)))continue;
+    if(onTravelLane(roads,p.x,p.z)||!inCurbLane(nearestHubinHit(roads,p.x,p.z)))continue;
     if(pits.some(t=>Math.hypot(t.x-p.x,t.z-p.z)<2.8))continue;
     if(parked.some(c=>Math.hypot(c.x-p.x,c.z-p.z)<5.4))continue;
     if(data.landmarks.some(m=>m.arrival&&Math.hypot(p.x-m.arrival[0],p.z-m.arrival[1])<10))continue;
@@ -708,20 +727,20 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
  };
  const pickedParked=(()=>{
   const rank=(p:{x:number;z:number})=>{
-   const k=nearestKeyuanHit(roads,p.x,p.z),shop=shopNear(p),proj=corridorProject(p.x,p.z),band=driveBand(p);
+   const k=nearestHubinHit(roads,p.x,p.z),shop=shopNear(p),proj=corridorProject(p.x,p.z),band=driveBand(p);
    const curb=inCurbLane(k);
    const front=curb&&shop>3.6&&shop<14;
    const east=p.x>=proj.x&&proj.d>=3.2&&proj.d<=10;
-   const bambooEast=east&&p.z<-900&&p.z>-1100;
+   const bambooEast=east&&alongT(p.x,p.z)>BAND.eastA&&alongT(p.x,p.z)<BAND.eastB;
    return (front?0:curb?1:5)+(bambooEast?0:1)+band*4+(k?k.d:40)*.04;
   };
   const ranked=parked.slice().sort((a,b)=>rank(a)-rank(b)||a.z-b.z);
   const bambooEast=ranked.filter(p=>{
    const proj=corridorProject(p.x,p.z);
-   return p.x>=proj.x&&proj.d>=3.2&&proj.d<=10&&p.z<-900&&p.z>-1100;
+   return p.x>=proj.x&&proj.d>=3.2&&proj.d<=10&&alongT(p.x,p.z)>BAND.eastA&&alongT(p.x,p.z)<BAND.eastB;
   });
-  const keyuanFront=ranked.filter(p=>{
-   const k=nearestKeyuanHit(roads,p.x,p.z),shop=shopNear(p);
+  const hubinFront=ranked.filter(p=>{
+   const k=nearestHubinHit(roads,p.x,p.z),shop=shopNear(p);
    return inCurbLane(k)&&shop>3.6&&shop<14;
   });
   const out:CorridorPose[]=[],seen=new Set<string>();
@@ -734,7 +753,7 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
     seen.add(key);out.push(p);n++;
    }
   };
-  add(takeBands(keyuanFront,78));
+  add(takeBands(hubinFront,78));
   add(bambooEast,12);
   add(ranked);
   return out.slice(0,B.parked);
@@ -742,22 +761,22 @@ export function planBambooCorridor(data:CityData,options:BambooCorridorOptions={
  const decks:CorridorPose[]=[];
  const dashes:CorridorPose[]=[];
  const rolling:CorridorPose[]=[];
- for(const seg of segs.filter(isKeyuanSeg)){
+ for(const seg of segs.filter(isHubinSeg)){
   sample(seg,6.2,(x,z,yaw)=>{
    if(!inBambooCorridor(x,z,2))return;
-   const k=nearestKeyuanHit(roads,x,z);
+   const k=nearestHubinHit(roads,x,z);
    if(!k||k.d>3.2)return;
    decks.push(pose(k.x,k.z,k.seg.yaw,Math.max(.72,k.seg.width/8.2),1,1));
   });
   sample(seg,7.6,(x,z,yaw)=>{
    if(!inBambooCorridor(x,z,2)||nearJunction(x,z,junctions,10))return;
-   const k=nearestKeyuanHit(roads,x,z);
+   const k=nearestHubinHit(roads,x,z);
    if(!k||k.d>2.4)return;
    dashes.push(pose(k.x,k.z,k.seg.yaw));
   });
   sample(seg,22,(x,z,yaw)=>{
    if(!inBambooCorridor(x,z,2)||nearJunction(x,z,junctions,22))return;
-   const k=nearestKeyuanHit(roads,x,z);
+   const k=nearestHubinHit(roads,x,z);
    if(!k||k.d>3)return;
    const lane=sidePoint(k.x,k.z,k.seg.yaw,-1,Math.min(1.7,k.seg.width/5));
    if(parked.some(c=>Math.hypot(c.x-lane.x,c.z-lane.z)<2.8))return;
@@ -816,7 +835,7 @@ function lettering(scene:Scene,name:string,text:string,w:number,h:number,vertica
   ctx.font='700 '+Math.min(64,w/Math.max(2,[...text].length)*1.15)+'px "PingFang SC","Heiti SC","Microsoft YaHei",sans-serif';
   ctx.fillText(text,w/2,h/2-6);
   ctx.fillStyle='#8a7a4a';ctx.font='12px "PingFang SC","Heiti SC",sans-serif';
-  ctx.fillText('深城纪·虚构品牌',w/2,h-12);
+  ctx.fillText('鹭岛纪·虚构品牌',w/2,h-12);
  }
  tex.update();
  if(!vertical){tex.uScale=-1;tex.uOffset=1;}
@@ -1201,6 +1220,6 @@ export function createBambooCorridor(scene:Scene,data:CityData,heightAt:(x:numbe
  const counts={curbs:plan.curbs.length,walks:plan.walks.length,edges:plan.edges.length,pits:plan.pits.length,lamps:plan.lamps.length,signals:plan.signals.length,crossings:plan.crossings.length,stops:plan.stops.length,parked:plan.parked.length,shopfronts:plan.plinths.length,decks:plan.decks.length,dashes:plan.dashes.length,rolling:plan.rolling.length};
  return {
   plan,root,setMode,setEnabled,setStreetCarsEnabled,update,dispose,adoptStreetTrees,adoptParkedCars,
-  get stats(){return {id:BAMBOO_CORRIDOR.id,name:BAMBOO_CORRIDOR.name,length:BAMBOO_CORRIDOR.length,halfWidth:BAMBOO_CORRIDOR.halfWidth,roadMetres:+plan.roadMetres.toFixed(1),roads:plan.roads,junctions:plan.junctions.length,enabled:root.isEnabled(),mode,phase,drawCalls:root.isEnabled()?meshes.length+extras.filter(m=>m.isEnabled()).length+streetTrees.length+streetCars.length:0,photoscrape:false,extraLights:0,...counts,streetTrees:streetTrees.length,streetCars:streetCars.length,shopLettering:CORRIDOR_SHOPS.map(s=>s.title),fictionalDisclosure:'深城纪·虚构品牌'};},
+  get stats(){return {id:BAMBOO_CORRIDOR.id,name:BAMBOO_CORRIDOR.name,length:BAMBOO_CORRIDOR.length,halfWidth:BAMBOO_CORRIDOR.halfWidth,roadMetres:+plan.roadMetres.toFixed(1),roads:plan.roads,junctions:plan.junctions.length,enabled:root.isEnabled(),mode,phase,drawCalls:root.isEnabled()?meshes.length+extras.filter(m=>m.isEnabled()).length+streetTrees.length+streetCars.length:0,photoscrape:false,extraLights:0,...counts,streetTrees:streetTrees.length,streetCars:streetCars.length,shopLettering:CORRIDOR_SHOPS.map(s=>s.title),fictionalDisclosure:'鹭岛纪·虚构品牌'};},
  };
 }
