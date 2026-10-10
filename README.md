@@ -27,6 +27,14 @@ npm run build     # 生产构建
 npm run preview   # 本地预览构建产物
 ```
 
+### 更新在线版
+
+```sh
+npm run deploy:pages
+```
+
+一键构建并发布 GitHub Pages：自动从 `origin` 推导子路径并传入 `--base`、重写产物内的根绝对资源路径（有遗漏会直接构建失败而非上线 404）、以普通文件（非 LFS 指针）推送到 `gh-pages` 分支。非默认子路径（自定义域名等）可用 `DEPLOY_PAGES_BASE=/` 覆盖。
+
 ## 操作一览
 
 | 模式 / 按键 | 动作 |
