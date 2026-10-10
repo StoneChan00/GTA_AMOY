@@ -62,10 +62,37 @@ rgba=np.zeros((h,w,3),np.uint8);rgba[:,:,0]=np.minimum(255,distance/120*255);rgb
 Image.fromarray(rgba).save(OUT/'shore-distance.png')
 manifest['shoreDistance']={'url':'/city/coastal/shore-distance.png','extent':extent,'maxDistance':120}
 (OUT/'infrastructure.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')))
-print(json.dumps({'crossings':len(crossings),'bridgeNames':sorted(set(b['name'] for b in crossings if '后海' in b['name'])),'parkLights':len(lights),'parks':len(set(l['name'] for l in lights))},ensure_ascii=False),flush=True)
-# GTA_AMOY M1: the far shore (Jimei/Haicang skyline across the strait) lands
-# in M2 with the pinned Copernicus DSM tiles; publish an empty manifest so the
-# builder degrades cleanly instead of crashing on a missing file.
-far={'schemaVersion':1,'positions':[],'indices':[],'samplingGameMetres':70,'verticalScale':.6,'originWGS84':[118.12,24.485],'sourceType':'pending Copernicus 30m DSM (M2)','sources':[]}
+print(json.dumps({'crossings':len(crossings),'bridgeNames':sorted(set(b['name'] for b in crossings if '桥' in b['name'])),'parkLights':len(lights),'parks':len(set(l['name'] for l in lights))},ensure_ascii=False),flush=True)
+# Distant mainland skyline ring from the two pinned 30m Copernicus tiles: 海沧
+# west, 集美/杏林 north, 翔安 northeast, seen across the strait from the island.
+# The mountain-relief layer already renders the north backdrop inside its grid,
+# so exclude that box to avoid stacking two height meshes over the same ground.
+import rasterio
+datasets=[];sources=[]
+for lon in [117,118]:
+ p=ROOT/f'data/raw/Copernicus_DSM_COG_10_N24_00_E{lon}_00_DEM.tif'
+ if not p.exists():raise FileNotFoundError(p)
+ datasets.append(rasterio.open(p));mfile=p.with_suffix('.manifest.json')
+ if mfile.exists():
+  meta=json.loads(mfile.read_text());assert hashlib.sha256(p.read_bytes()).hexdigest()==meta['sha256']
+ else:
+  meta={'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'file':str(p.relative_to(ROOT)),'note':'pinned Copernicus DSM tile downloaded ahead of the pipeline; manifest recorded inline'}
+ sources.append(meta)
+xs=np.arange(-9500,9501,70);zs=np.arange(-9500,11501,70);xx,zz=np.meshgrid(xs,zs);lons=xx.ravel()/60786+118.12;lats=zz.ravel()/66792+24.485;heights=np.zeros(lons.shape)
+for lon,ds in zip([117,118],datasets):
+ inds=np.flatnonzero((lons>=lon)&(lons<lon+1));coords=list(zip(lons[inds],lats[inds]));heights[inds]=np.array([v[0] for v in ds.sample(coords)])*.6
+# Drop sea, overlap with the modelled island, and the north backdrop the
+# mountain-relief layer renders (grid x -3276..4752, z 5014..10800; see
+# prepare_city_mountains.py north box and mountain-relief/manifest.json grid).
+pts=shapely.points(xx.ravel(),zz.ravel());valid=(heights>1.5)&(heights<1200);valid&=~shapely.contains(land,pts);valid&=~shapely.contains(box(-3276,5014,4752,10800),pts)
+positions=np.column_stack((xx.ravel(),heights,zz.ravel())).round(3);indices=[];cols=len(xs)
+for j in range(len(zs)-1):
+ for i in range(cols-1):
+  a=j*cols+i;b=a+1;d=a+cols;e=d+1
+  for tri in [(a,d,b),(b,d,e)]:
+   if valid[list(tri)].all():indices.extend(tri)
+unique=np.unique(indices);mapping={int(v):i for i,v in enumerate(unique)};indices=[mapping[i] for i in indices]
+far={'schemaVersion':1,'positions':positions[unique].ravel().tolist(),'indices':indices,'samplingGameMetres':70,'verticalScale':.6,'originWGS84':[118.12,24.485],'sourceType':'Copernicus 30m DSM, distant context only','sources':sources}
+for ds in datasets:ds.close()
 (OUT/'far-shore.json').write_text(json.dumps(far,separators=(',',':')))
-print('far shore deferred to M2',flush=True)
+print('far shore vertices',len(unique),'triangles',len(indices)//3,flush=True)

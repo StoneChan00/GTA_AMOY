@@ -48,7 +48,7 @@ test('welding crosses quantization cell boundaries without moving the top edge',
  assert.equal(g.stats.boundaryEdges,4);assert.equal(g.stats.weldedVertices,4);assert.equal(g.stats.triangles,8);checkWinding(g);
 });
 
-test('actual meshopt shore closes its 1812 open edges after normalized positions and runtime root transform',async()=>{
+test('actual meshopt shore closes its 3476 open edges after normalized positions and runtime root transform',async()=>{
  await MeshoptDecoder.ready;
  const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder});
  const document=await io.read(fileURLToPath(new URL('../public/city/opposite-shore.glb',import.meta.url)));
@@ -56,5 +56,5 @@ test('actual meshopt shore closes its 1812 open edges after normalized positions
  const positions:number[]=[],element:number[]=[];for(let i=0;i<accessor.getCount();i++)positions.push(...accessor.getElement(i,element));
  const world=Matrix.FromArray(node.getWorldMatrix()).multiply(Matrix.Scaling(1,1,-1));
  const g=buildCoastalHorizonGeometry(positions,primitive.getIndices()!.getArray()!,world,-.25);
- assert.equal(g.stats.sourceTriangles,48868);assert.equal(g.stats.boundaryEdges,1812);assert.equal(g.stats.triangles,3624);assert.equal(g.stats.skippedTriangles,0);assert.equal(g.stats.nonManifoldEdges,0);assert.equal(g.stats.bottomHeight,-1.25);checkWinding(g);
+ assert.equal(g.stats.sourceTriangles,54804);assert.equal(g.stats.boundaryEdges,3476);assert.equal(g.stats.triangles,6952);assert.equal(g.stats.skippedTriangles,0);assert.equal(g.stats.nonManifoldEdges,0);assert.equal(g.stats.bottomHeight,-1.25);checkWinding(g);
 });
