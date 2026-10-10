@@ -8,6 +8,9 @@ USER REQUESTS (AS-IS)
 - "先做首次commit后验证一下，现在好像后轮有点问题，并且车没有碰撞体积，其他车遇到了后也不会避让会穿过去"
 - "继续M2"
 - "记录handooff交接，并且记录worklog，然后我现在进入网页后title还是深城纪"
+- "帮我推到 GitHub（StoneChan00/GTA_AMOY），加上 MIT LICENSE 和 GTA_SZ 原始链接"
+- "部署到阿里云 ECS，路径统一成 /GTA_AMOY/ 子路径（多项目规范）"
+- "看下 issue：用户通过 GitHub Pages 访问遇到问题，是否已修复"
 
 GOAL
 ----
@@ -21,15 +24,26 @@ WORK COMPLETED
 - 我完成了 M2：信号灯（213 路口）、林冠（45,088 树/6 树种/3 街道档）、电动车（2,584 辆，修了 102850→101310 系数与 shenzhen_study→xiamen_study 路径）、立面链（build_city_facades→optimize→split 126 瓦片→colorize→diversity 8 家族 UV2→atlas）、屋顶（14 原型/23,961 布点）、剧情文案厦门化（会展/五缘湾/白鹭洲/环岛路）、车牌与座舱"鹭岛纪"
 - 我完成了 M2 收尾：landmark-detail/terrain-detail/landmark-candidates 最小有效 manifest + Blender 占位 GLB（scripts/build_placeholder_landmark_glbs.py，注意 gltf-transform 单行写法会产出坏 GLB，必须用 Blender）；屋顶测试阈值厦门化（路口≥150、车辆≥1500、屋顶总数 15000-60000、helipads≥1、lookup>1500×1500）
 - 我修复了页面标题：index.html/trailer.html/combat-lab.html 的 title/description/wordmark/aria-label 全部"深城纪"→"鹭岛纪"，Playwright 验证 TITLE: 鹭岛纪 · 一路向海
+- 我完成了公开发布（2026-10-10）：GitHub 仓库 StoneChan00/GTA_AMOY（MIT LICENSE 双版权行 linranff+StoneChan00；README 英文主版 + README.zh-CN.md）+ GitHub Pages + 阿里云 ECS 镜像，三入口均验证可用
+- 我修复了 issue #1（外部用户反馈）：加载屏粘土动画 bamboo-clay-loop.mp4 在 M1 迁移时损坏为 0 字节（poster.jpg 静态图兜底所以一直没被发现）导致 416 Range 错误，从 GTA_SZ 源仓库取回 6.77MB 真视频并重部署（62c90ed），已在 issue 用英文回复闭环
+- 我修复了 ECS（纯 HTTP）启动崩溃：crypto.subtle 在非安全上下文为 undefined，landscape 资格门禁的 SHA-256 调用炸掉 boot 链；新增 src/sha256.ts 纯 JS 回退（优先 crypto.subtle，HTTP 下回退同步实现，校验语义一致）（ea9cd1b，含 4 个 FIPS 标准向量测试）
 
 CURRENT STATE
 -------------
-- 5 个 commit（e1cc500 M1 → 9570a7f 标题修复），工作树干净
-- npm test：约 263 通过/19 失败（landmark-detail、candidate-slabs、rooftop-plan、signals、ebikes、canopy、facade-relief、sunset 等均已通过）
-- 浏览器验证：12-14 秒启动，环岛干道 126km/h 行驶正常，NPC 在玩家 2.8m 处驻停避让，61 FPS（日落场景）
+- 12 个 commit（6def972 M1 → ea9cd1b SHA-256 回退），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 历史已邮箱净化：全部 commit 作者/提交者重写为 chensitongsndn@163.com（工作邮箱零暴露，repo-local git config 已设，**勿再用 huawei 邮箱提交**）；早期交接文档引用的 e1cc500/9570a7f 等旧 hash 已失效
+- npm test：266 通过/20 失败（+4 个 sha256.test.ts；失败均为已知深圳内容/待产内容，见失败速查）
+- 浏览器验证：12-14 秒启动（本地 dev，真机 GPU），环岛干道 126km/h 行驶正常，NPC 在玩家 2.8m 处驻停避让，61 FPS（日落场景）
 - dev server 已重启（M1 期间启动的老 Vite 进程不会拾取 public/ 新文件，遇到"Unexpected magic: 1868833084"=Vite SPA 回退 index.html 时先重启 dev server）
 - 环境：Windows + Blender 5.2.2（winget 安装，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium/shapely/pyproj/rasterio/numpy/PIL 已装，scipy 未装）+ npm ci 完成
 - DSM 瓦片已下载并验证：data/raw/Copernicus_DSM_COG_10_N24_00_E117_00_DEM.tif（46.29MB）+ E118（18.72MB，3600×3600 完整）
+
+RELEASE & DEPLOYMENT
+--------------------
+- 三入口（均验证可用）：源码 https://github.com/StoneChan00/GTA_AMOY · Pages https://stonechan00.github.io/GTA_AMOY/ · 国内镜像 http://39.96.117.179/GTA_AMOY/（根路径 302 跳转）
+- 一键部署：npm run deploy:pages（推 gh-pages 分支，普通 blob 非 LFS 指针）；npm run deploy:ecs（scp+解压到 /var/www/<repo>/）。两条命令共享 scripts/rewrite-dist-paths.mjs：源码 57+ 处 JS 与 4 处 JSON manifest 的根绝对路径（'/city/...'、'/characters' 等）Vite 不会重写，必须后处理加 /GTA_AMOY/ 前缀，**残留即构建失败**（新增硬编码路径需先加进重写清单）
+- ECS：Ubuntu 24.04（2C/1.6G，磁盘 27G 可用），Nginx 多项目根 /var/www（正则 location 适配任意 /<repo>/ 子目录），gzip+缓存+Range 已配；SSH 免密 root@39.96.117.179（ssh config 别名 ali-cloud-ecs 带括号，**scp 用它会传参失败，一律 IP 直连**）；安全组 80 已放行；带宽 3Mbps 固定（完整加载 5-6 分钟，与 MC 服 frp 共享，详见 worklog）
+- **M3 编码注意**：ECS 是纯 HTTP（无域名无法签证书），crypto.subtle/clipboard/ServiceWorker 等安全上下文 API 不可用——新代码要么不用，要么按 src/sha256.ts 的模式做回退（city-observer-beacons.ts 的 globalThis.crypto?.randomUUID?.() ?? fallback 是范本）
 
 PENDING TASKS
 -------------
@@ -39,7 +53,7 @@ PENDING TASKS
 - 深圳内容禁用项（M3 内容生产）：bamboo-cafe×3/corridor/baypark-look/character-gaits（咖啡馆 jk/maid 角色）需厦门版内容重写或永久移除
 - banyan-lod 包络 0.086m 偏差（city-roadside-planting.test.ts:107）：Blender 5.2 导出量化差异，build_landscape_assets.py 的 radii 常量 +0.1 可消除
 - make_facade_relief_atlas.py 需 scipy（当前用 LFS 预生成 PNG，管线不完全可复现）
-- README.md 与 AGENTS.md 仍是深圳内容，需厦门化重写
+- README.md 已完成双语化（英文主版 + README.zh-CN.md，含三入口/部署/操作/许可），本仓库无 AGENTS.md（EXPLICIT CONSTRAINTS 引用的是上游 GTA_SZ 的 AGENTS.md）
 
 KEY FILES
 ---------
@@ -53,6 +67,8 @@ KEY FILES
 - docs/landmarks/agent-workflow.md - 地标精修并行契约（M3 内容生产入口）
 - output/amoy/ - Playwright 截图证据（boot/drive/night/day/aerial/wheels）
 - config/regions.json - xiamen_study [117.95,24.35,118.30,24.65] / xiamen_island bbox
+- scripts/deploy-pages.mjs + scripts/deploy-ecs.mjs + scripts/rewrite-dist-paths.mjs - 双入口一键部署与子路径重写（见 RELEASE & DEPLOYMENT）
+- src/sha256.ts - SHA-256 纯 JS 回退（安全上下文优先 crypto.subtle，HTTP 部署依赖它）
 
 IMPORTANT DECISIONS
 -------------------
@@ -76,3 +92,4 @@ CONTEXT FOR CONTINUATION
 - 失败测试速查：mountains×2=需地形；coastal-horizon=需 far-shore；autopilot×3=深圳现场断言；cafe×3+corridor+baypark+character-gaits=深圳内容；roadside-planting=banyan-lod 包络
 - 遇到 "Unexpected magic: 1868833084" = Vite 返回了 index.html（文件不存在或 dev server 太老）→ 先 curl 确认、必要时重启 dev server
 - GTA_SZ（D:\2_Projects\github\GTA_SZ）是参照仓库，其 git 工作树处于异常状态（大量文件标记删除但实际存在，git lfs pull 静默失败），LFS 取物一律走 GitHub media URL
+- 今日排障/部署三篇 worklog（~/worklogs，检索关键词：ECS 部署 / 子路径化 / crypto.subtle）：「GTA_AMOY 部署阿里云 ECS 全程」「ECS 部署子路径化 /GTA_AMOY/」「纯 HTTP 部署下 crypto.subtle 缺失」——含 SSH 锁死恢复、PowerShell 传参坑、nginx reload 瞬态 404、安全上下文教训等完整链路
