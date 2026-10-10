@@ -17,6 +17,7 @@ import {spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {rewriteDistPaths, verifyNoLeftovers} from './rewrite-dist-paths.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -42,37 +43,11 @@ fs.rmSync(dist, {recursive: true, force: true});
 run('npm', ['run', 'build', '--', `--base=${base}`], {stdio: 'inherit', ...(process.platform === 'win32' ? {shell: true} : {})});
 
 // 4. Rewrite root-absolute runtime asset paths in built JS/CSS/HTML/JSON.
-//    Quote + /(city|characters|assets|licenses) followed by a quote or slash:
-//    covers '/city/x', `'/city/'`, '/characters'; never touches '/GTA_AMOY/...'
-//    (there the quote is followed by /G, not by /c).
-const re = /(["'`])\/(city|characters|assets|licenses)(?=["'`\/])/g;
-let files = 0, subs = 0;
-const rewrite = dir => {
-  for (const e of fs.readdirSync(dir, {withFileTypes: true})) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) { rewrite(p); continue; }
-    if (!/\.(js|css|html|json)$/.test(e.name)) continue;
-    const src = fs.readFileSync(p, 'utf8');
-    let n = 0;
-    const out = src.replace(re, (m, q, seg) => { n++; return q + prefix + '/' + seg; });
-    if (n) { fs.writeFileSync(p, out); files++; subs += n; }
-  }
-};
-rewrite(dist);
+const {files, subs} = rewriteDistPaths(dist, prefix);
 console.log(`路径重写：${subs} 处（${files} 个文件）`);
 
 // 5. A newly hard-coded path pattern must fail loudly instead of shipping 404s.
-const leftovers = [];
-const verify = dir => {
-  for (const e of fs.readdirSync(dir, {withFileTypes: true})) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) { verify(p); continue; }
-    if (!/\.(js|css|html|json)$/.test(e.name)) continue;
-    if (fs.readFileSync(p, 'utf8').match(re)) leftovers.push(path.relative(dist, p));
-  }
-};
-verify(dist);
-if (leftovers.length) throw Error('产物中仍有未重写的根绝对路径（新增硬编码路径需先加入重写清单）：' + leftovers.join(', '));
+verifyNoLeftovers(dist);
 
 // 6. Ship dist as the gh-pages branch: plain blobs, no .gitattributes, no LFS.
 fs.writeFileSync(path.join(dist, '.nojekyll'), '');

@@ -11,6 +11,7 @@
     "build:characters": "npm run build",
     "preview": "vite preview --host 127.0.0.1",
     "deploy:pages": "node scripts/deploy-pages.mjs",
+    "deploy:ecs": "node scripts/deploy-ecs.mjs",
     "test": "node --experimental-transform-types --test tests/*.test.ts",
     "assets": "node scripts/rebuild_city_assets.mjs",
     "test:city": "node scripts/city-tour.mjs",

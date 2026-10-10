@@ -9,7 +9,7 @@
 **在线体验**（桌面浏览器 + WebGL2）：
 
 - <https://stonechan00.github.io/GTA_AMOY/> — 主入口
-- <http://39.96.117.179/> — 国内镜像（自托管，带宽有限，完整加载需数分钟）
+- <http://39.96.117.179/GTA_AMOY/> — 国内镜像（自托管，带宽有限，完整加载需数分钟）
 
 ## 快速开始
 
@@ -35,10 +35,11 @@ npm run preview   # 本地预览构建产物
 ### 更新在线版
 
 ```sh
-npm run deploy:pages
+npm run deploy:ecs     # 阿里云 ECS 镜像
+npm run deploy:pages   # GitHub Pages
 ```
 
-一键构建并发布 GitHub Pages：自动从 `origin` 推导子路径并传入 `--base`、重写产物内的根绝对资源路径（有遗漏会直接构建失败而非上线 404）、以普通文件（非 LFS 指针）推送到 `gh-pages` 分支。非默认子路径（自定义域名等）可用 `DEPLOY_PAGES_BASE=/` 覆盖。
+两条命令都会自动从 `origin` 推导子路径并传入 `--base`，重写产物内的根绝对资源路径（有遗漏会直接构建失败而非上线 404）。ECS 由一个 Nginx 多项目根目录（`/var/www/<仓库名>/`）承载任意多个站点，与 GitHub Pages 项目页的路径约定一致；Pages 版则以普通文件（非 LFS 指针）推送到 `gh-pages` 分支。非默认子路径（自定义域名等）可用 `DEPLOY_PAGES_BASE=/` 覆盖。
 
 ## 操作一览
 

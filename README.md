@@ -9,7 +9,7 @@ This project is derived from **[GTA_SZ · ShenChengJi](https://github.com/linran
 **Play** (desktop browser with WebGL2):
 
 - <https://stonechan00.github.io/GTA_AMOY/> — primary entry
-- <http://39.96.117.179/> — China-friendly mirror (self-hosted, limited bandwidth; a full load takes a few minutes)
+- <http://39.96.117.179/GTA_AMOY/> — China-friendly mirror (self-hosted, limited bandwidth; a full load takes a few minutes)
 
 ## Quick start
 
@@ -32,13 +32,14 @@ npm run build     # production build
 npm run preview   # preview the build locally
 ```
 
-### Updating the online version
+### Updating the online versions
 
 ```sh
-npm run deploy:pages
+npm run deploy:ecs     # Alibaba Cloud ECS mirror
+npm run deploy:pages   # GitHub Pages
 ```
 
-One command to build and publish GitHub Pages: it derives the sub-path from the `origin` remote, rewrites root-absolute asset paths inside the bundle (failing loudly on any leftover instead of shipping 404s), and pushes the `gh-pages` branch as plain files (never Git LFS pointers). Override the sub-path via `DEPLOY_PAGES_BASE=/` for a custom domain.
+Both commands build with the sub-path derived from the `origin` remote and rewrite root-absolute asset paths inside the bundle (failing loudly on any leftover instead of shipping 404s). The ECS serves multiple projects from one Nginx root (`/var/www/<repo>/`), mirroring the GitHub Pages project-site convention; the Pages release pushes the `gh-pages` branch as plain files (never Git LFS pointers). Override the sub-path via `DEPLOY_PAGES_BASE=/` for a custom domain.
 
 ## Controls at a glance
 
