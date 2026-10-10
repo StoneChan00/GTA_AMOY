@@ -160,14 +160,45 @@ test('disconnected road graph stops without moving; invalid destinations are rej
  const {result}=tick(controller,state,collision);assert.equal(result.status.phase,'blocked');assert.equal(result.status.reason,'no-road-route');assert.equal(state.distance,0);
 });
 
+test('one-way roads: the planner and map preview loop around instead of reversing into traffic',()=>{
+ // A clockwise loop whose two long sides are one-way; the connectors are two-way.
+ // The destination sits 40 units "behind" the car on the same one-way road, so
+ // the only legal route drives the whole loop forward (~200 units). Reversing
+ // along the one-way edge — what an undirected search returns — is a regression.
+ const loop:CityData={meta:{counts:{},extent:[-40,-20,40,120],horizontalScale:.6},
+  land:[[[[-40,-20],[40,-20],[40,120],[-40,120],[-40,-20]]]],coast:[],
+  roads:[
+   {id:'north-flow',name:'North flow',kind:'residential',width:10,oneway:true,points:[[0,0],[0,100]]},
+   {id:'south-flow',name:'South flow',kind:'residential',width:10,oneway:true,points:[[20,100],[20,0]]},
+   {id:'top-link',name:'Top link',kind:'residential',width:10,oneway:false,points:[[0,100],[20,100]]},
+   {id:'bottom-link',name:'Bottom link',kind:'residential',width:10,oneway:false,points:[[0,0],[20,0]]},
+  ],
+  buildings:[],green:[],water:[],landmarks:[],spawn:{x:0,z:0,yaw:0,road:'North flow'}};
+ const collision=new CityCollision(loop),graph=new RoadGraph(loop.roads);
+ // Same rule the world publishes for NPC traffic: one-way roads allow travel only along their polyline.
+ graph.directionAllowed=(from,to)=>{const p=graph.nodes[from],q=graph.nodes[to],n=collision.nearest((p[0]+q[0])/2,(p[1]+q[1])/2);return !n?.road.oneway||(q[0]-p[0])*Math.sin(n.yaw)+(q[1]-p[1])*Math.cos(n.yaw)>0;};
+ const pathLength=(points:V2[])=>points.reduce((s,p,i)=>i?s+Math.hypot(p[0]-points[i-1][0],p[1]-points[i-1][1]):s,0);
+ const preview=graph.route([0,50],[0,10]);
+ assert(pathLength(preview)>150,`map preview must loop around one-way roads, got ${pathLength(preview).toFixed(1)}`);
+ const controller=new CityAutopilot(graph,collision),state=car(0,50);
+ controller.start({id:'oneway-behind',name:'Behind on a one-way road',arrival:[0,10]});
+ const run=drive(controller,state,collision,180);
+ assertArrived(controller,state,[0,10]);assert.equal(run.hits,0);
+ assert(state.distance>150,`the car must detour around the loop (odometer ${state.distance.toFixed(1)}), not reverse against one-way traffic`);
+});
+
 const actual=JSON.parse(fs.readFileSync('public/city/city.json','utf8'));
 const detail=JSON.parse(fs.readFileSync('public/city/landmark-detail.json','utf8'));
 actual.buildings=actual.buildings.filter((b:{id:string})=>!detail.baseBuildingIds.includes(b.id));
 for(const b of detail.collisionFootprints)actual.buildings.push({...b,height:1,style:'detail'});
 for(const m of detail.landmarks) {const index=actual.landmarks.findIndex((p:{id:string})=>p.id===m.id);if(index<0)actual.landmarks.push(m);else actual.landmarks[index]={...actual.landmarks[index],...m};}
 const city=actual as CityData,cityCollision=new CityCollision(city),cityGraph=new RoadGraph(city.roads,JSON.parse(fs.readFileSync('public/city/navigation.json','utf8')));
-test('actual two-way Gaoxin South Ring Road turns toward destinations 3.5 and 40 units behind the car',t=>{
- const road=city.roads.find(r=>r.id==='way/736676593')!;assert(road&&!road.oneway);assert.equal(road.width,12);
+// Same one-way rule the world publishes in CityWorld.startTraffic: these
+// integration tests must route like production traffic, never reversing
+// along a directed road (53.5% of this city's road length is one-way).
+cityGraph.directionAllowed=(from,to)=>{const p=cityGraph.nodes[from],q=cityGraph.nodes[to],n=cityCollision.nearest((p[0]+q[0])/2,(p[1]+q[1])/2);return !n?.road.oneway||(q[0]-p[0])*Math.sin(n.yaw)+(q[1]-p[1])*Math.cos(n.yaw)>0;};
+test('actual two-way Zongsilu turns toward destinations 3.5 and 40 units behind the car',t=>{
+ const road=city.roads.find(r=>r.id==='way/128826870')!;assert(road&&!road.oneway);assert.equal(road.width,12);
  const [a,b]=road.points,roadYaw=Math.atan2(b[0]-a[0],b[1]-a[1]),x=(a[0]+b[0])/2,z=(a[1]+b[1])/2;
  for(const distance of [3.5,40]) {
   const state=car(x,z,roadYaw+Math.PI),initial={...state},arrival:V2=[x+Math.sin(roadYaw)*distance,z+Math.cos(roadYaw)*distance];
@@ -179,14 +210,15 @@ test('actual two-way Gaoxin South Ring Road turns toward destinations 3.5 and 40
  }
 });
 for(const [name,start] of [
- ['actual Tencent parking pose',[-5465.953431,-684.687511,-.72075067]],
- ['reported stopped pose',[-5433.89895,-742.56657,-4.69739]],
-] as const)test(`stationary traffic near Tencent: ${name} safely detours to baypark`,t=>{
- const destination=city.landmarks.find(m=>m.id==='baypark')!,controller=new CityAutopilot(cityGraph,cityCollision),state=car(...start);
- // The original GPU capture has no traffic snapshot. This fixed stopped car
- // recreates a blocked lane at that exact road, without claiming it was the
- // lost traffic actor. Neither collision exemptions nor teleporting are used.
- const stoppedTraffic=[{x:-5429.1,z:-742.6,speed:12,yaw:Math.PI/2}];
+ ['actual spawn pose',[city.spawn.x,city.spawn.z,city.spawn.yaw]],
+ ['trunk approach pose',[2849,-1843,-2.393]],
+] as const)test(`stationary traffic on Huandao Avenue: ${name} safely detours to the convention centre`,t=>{
+ const destination=city.landmarks.find(m=>m.id==='huizhan')!,controller=new CityAutopilot(cityGraph,cityCollision),state=car(...start);
+ // A stopped car in the Huandao Avenue lane recreates a blocked one-way trunk;
+ // the parallel service street is the legal detour around it. The 1.15-unit lane
+ // offset leaves less than the 3.05 passing bubble to the wide offset line, so
+ // the controller must wait and reroute instead of squeezing past.
+ const stoppedTraffic=[{x:2827.9,z:-1864.5,speed:12,yaw:-2.393}];
  controller.start(destination);const run=drive(controller,state,cityCollision,600,()=>stoppedTraffic);
  assertArrived(controller,state,destination.arrival);assert.equal(run.hits,0);
  assert.equal(controller.status.reroutes,1);assert(run.waitingFrames>60,'wait for observed stationary traffic before rerouting');
@@ -194,11 +226,11 @@ for(const [name,start] of [
  assert(planned.slice(1).every((p,i)=>closest(obstacle.x,obstacle.z,planned[i],p).d>3.05),'the detour must not seed the far side of an obstructed start edge');
  t.diagnostic(JSON.stringify({name,state,reroutes:controller.status.reroutes,...run}));
 });
-const destinations=process.env.AUTOPILOT_ALL_DESTINATIONS==='1'?city.landmarks.map(m=>m.id):['bamboo','tencent','civic','talent','baypark','qijie-gongguan'];
+const destinations=process.env.AUTOPILOT_ALL_DESTINATIONS==='1'?city.landmarks.map(m=>m.id):['huizhan','xiamenzhan','gaoqi','shimao'];
 for(const id of destinations)test(`actual merged city: opening → ${id} completes entirely through stepCar`,t=>{
  const destination=city.landmarks.find(m=>m.id===id)!,controller=new CityAutopilot(cityGraph,cityCollision),state:CarState={...city.spawn,speed:0,steer:0,distance:0};
- controller.start(destination);const run=drive(controller,state,cityCollision,1200);
- assertArrived(controller,state,destination.arrival);assert.equal(run.hits,0);assert(state.distance>(id==='baypark'?600:2500));
+ controller.start(destination);const run=drive(controller,state,cityCollision,id==='huizhan'?400:1200);
+ assertArrived(controller,state,destination.arrival);assert.equal(run.hits,0);assert(state.distance>(id==='huizhan'?500:2500));
  t.diagnostic(JSON.stringify({id,distance:state.distance,maneuvers:controller.status.maneuvers,...run}));
 });
 

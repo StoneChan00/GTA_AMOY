@@ -22,16 +22,17 @@ const stopped=():DrivingInput=>({throttle:0,steer:0,handbrake:true});
 const neutral=():DrivingInput=>({throttle:0,steer:0,handbrake:false});
 const ROAD_CRUISE:Record<string,number>={trunk:24,primary:24,secondary:20,tertiary:17,residential:15,unclassified:14,service:10};
 
-/** Pure controller. The world owns stepCar/collision and must call cancel before manual input.
- * Uses the existing map RoadGraph's connectivity; it does not rewrite road direction rules.
- * No teleports, mesh access, timers, DOM input, or mutation of the supplied CarState.
- */
+ /** Pure controller. The world owns stepCar/collision and must call cancel before manual input.
+  * Uses the existing map RoadGraph's connectivity and its one-way direction rules
+  * (RoadGraph.directionAllowed, shared with NPC traffic); it does not rewrite them.
+  * No teleports, mesh access, timers, DOM input, or mutation of the supplied CarState.
+  */
 export class CityAutopilot {
  private phase:AutopilotPhase='idle';
  private destination:AutopilotDestination|null=null;
  private route:V2[]=[];
  private tail:number[]=[];
- private speedCautions:{index:number;speed:number}[]=[];
+ private speedCautions:{index:number;speed:number;sharp:boolean}[]=[];
  private junctions=new Set<string>();
  private cursor=0;
  private reason:string|null=null;
@@ -91,8 +92,11 @@ export class CityAutopilot {
  /** Same projected road endpoints/connectivity as RoadGraph, with bounded CPU slices.
   * RoadGraph.route is synchronous; scanning and shortest-path work must not stall a frame.
   */
- private *findRoute(start:V2,end:V2,avoid:readonly V2[]=[]):Generator<void,V2[],void> {
-  const nodes=this.graph.nodes,edges=this.graph.edges;
+  private *findRoute(start:V2,end:V2,avoid:readonly V2[]=[]):Generator<void,V2[],void> {
+   const nodes=this.graph.nodes,edges=this.graph.edges;
+   // One-way rule from the shared RoadGraph: a legal route never reverses along
+   // a directed road, exactly like NPC traffic (see CityTraffic.directionAllowed).
+   const allowed=(a:number,b:number)=>this.graph.directionAllowed(a,b);
   // A confirmed stationary traffic blockage excludes only intersecting graph
   // segments. Check partial start/end connectors too: seeding both endpoints
   // of a blocked edge would silently route straight through the obstruction.
@@ -107,18 +111,25 @@ export class CityAutopilot {
   }
   const [a,b]=nearest;if(!Number.isFinite(a.d)||!Number.isFinite(b.d))return [];
   if(!clear(start,a.point)||!clear(b.point,end))return [];
-  if(a.a===b.a&&a.b===b.b&&clear(a.point,b.point))return [start,a.point,b.point,end];
+   if(a.a===b.a&&a.b===b.b&&clear(a.point,b.point)&&(b.t>=a.t?allowed(a.a,a.b):allowed(a.b,a.a)))return [start,a.point,b.point,end];
   const distance=new Float64Array(nodes.length).fill(Infinity),parent=new Int32Array(nodes.length).fill(-1);
   type Entry={id:number;cost:number;score:number};const heap:Entry[]=[];
   const heuristic=(id:number)=>Math.hypot(nodes[id][0]-b.point[0],nodes[id][1]-b.point[1]);
   const push=(item:Entry)=>{let i=heap.length;heap.push(item);while(i>0){const p=(i-1)>>1;if(heap[p].score<=item.score)break;heap[i]=heap[p];i=p;}heap[i]=item;};
   const pop=()=>{const first=heap[0],last=heap.pop()!;if(heap.length){let i=0;while(i*2+1<heap.length){let j=i*2+1;if(j+1<heap.length&&heap[j+1].score<heap[j].score)j++;if(heap[j].score>=last.score)break;heap[i]=heap[j];i=j;}heap[i]=last;}return first;};
-  for(const [id,cost] of [[a.a,a.t*a.length],[a.b,(1-a.t)*a.length]])if(clear(a.point,nodes[id])){distance[id]=cost;push({id,cost,score:cost+heuristic(id)});}
-  let best=Infinity,last=-1;visited=0;
-  while(heap.length) {
-   const node=pop();if(node.score>=best)break;if(node.cost!==distance[node.id])continue;
-   if((node.id===b.a||node.id===b.b)&&clear(nodes[node.id],b.point)){const total=node.cost+(node.id===b.a?b.t:1-b.t)*b.length;if(total<best){best=total;last=node.id;}}
-   for(const [next,length] of edges[node.id]) {if(!clear(nodes[node.id],nodes[next]))continue;const cost=node.cost+length;if(cost<distance[next]){distance[next]=cost;parent[next]=node.id;push({id:next,cost,score:cost+heuristic(next)});}}
+   for(const [id,cost] of [[a.a,a.t*a.length],[a.b,(1-a.t)*a.length]])if(clear(a.point,nodes[id])&&(id===a.a?allowed(a.b,a.a):allowed(a.a,a.b))){distance[id]=cost;push({id,cost,score:cost+heuristic(id)});}
+   let best=Infinity,last=-1;visited=0;
+   while(heap.length) {
+    const node=pop();if(node.score>=best)break;if(node.cost!==distance[node.id])continue;
+    if((node.id===b.a&&allowed(b.a,b.b)||node.id===b.b&&allowed(b.b,b.a))&&clear(nodes[node.id],b.point)){const total=node.cost+(node.id===b.a?b.t:1-b.t)*b.length;if(total<best){best=total;last=node.id;}}
+    for(const [next,length] of edges[node.id]) {
+     if(!allowed(node.id,next)||!clear(nodes[node.id],nodes[next]))continue;
+     // Prefer roomier roads: legal one-way detours through narrow back-street grids
+     // are fragile (tight dogleg corners, curb-side wedges), so charge them a
+     // per-metre routing premium and keep detours on trunks and arterials.
+     const width=this.roadAt((nodes[node.id][0]+nodes[next][0])/2,(nodes[node.id][1]+nodes[next][1])/2)?.width??6;
+     const cost=node.cost+length*(width<7?1.6:width<10?1.15:1);
+     if(cost<distance[next]){distance[next]=cost;parent[next]=node.id;push({id:next,cost,score:cost+heuristic(next)});}}
    if(++visited%32===0&&performance.now()-slice>2){yield;slice=performance.now();}
   }
   if(last<0)return [];
@@ -136,8 +147,8 @@ export class CityAutopilot {
   }
   this.tail=Array(this.route.length).fill(0);
   for(let i=this.route.length-2;i>=0;i--)this.tail[i]=this.tail[i+1]+Math.hypot(this.route[i+1][0]-this.route[i][0],this.route[i+1][1]-this.route[i][1]);
-  this.speedCautions=[];
-  for(let i=1;i<this.route.length-1;i++){const a=this.route[i-1],b=this.route[i],c=this.route[i+1];const turn=Math.abs(wrap(Math.atan2(c[0]-b[0],c[1]-b[1])-Math.atan2(b[0]-a[0],b[1]-a[1])));let speed=turn>.75?3.5:turn>.35?6:Infinity;if(this.junctions.has(b.map(v=>Math.round(v*10)).join(',')))speed=Math.min(speed,11);if(Number.isFinite(speed))this.speedCautions.push({index:i,speed});}
+    this.speedCautions=[];
+   for(let i=1;i<this.route.length-1;i++){const a=this.route[i-1],b=this.route[i],c=this.route[i+1];const turn=Math.abs(wrap(Math.atan2(c[0]-b[0],c[1]-b[1])-Math.atan2(b[0]-a[0],b[1]-a[1])));const sharp=turn>1.2;let speed=sharp?2.2:turn>.75?3.5:turn>.35?6:Infinity;if(this.junctions.has(b.map(v=>Math.round(v*10)).join(',')))speed=Math.min(speed,11);if(Number.isFinite(speed))this.speedCautions.push({index:i,speed,sharp});}
   this.remaining=this.tail[0];return this.route.length>1;
  }
  private nearest(state:CarState) {
@@ -167,18 +178,24 @@ export class CityAutopilot {
   });
   this.previousTraffic=traffic.map(c=>({x:c.x,z:c.z}));return result;
  }
- private roadAt(x:number,z:number):{d:number;width:number}|null {
-  // Read the collision system's existing segment index. Prediction calls this
-  // often; scalar projection avoids allocating one closest-point object per segment.
-  let best=Infinity,width=0;
-  for(const segment of this.collision.cells.get(`${Math.floor(x/this.collision.size)},${Math.floor(z/this.collision.size)}`)??[]) {
-   const dx=segment.b[0]-segment.a[0],dz=segment.b[1]-segment.a[1];
-   const t=clamp(((x-segment.a[0])*dx+(z-segment.a[1])*dz)/(dx*dx+dz*dz||1),0,1);
-   const px=x-segment.a[0]-dx*t,pz=z-segment.a[1]-dz*t,d=px*px+pz*pz;
-   if(d<best){best=d;width=segment.road.width;}
+  private roadAt(x:number,z:number):{d:number;width:number}|null {
+   // Read the collision system's existing segment index. Prediction calls this
+   // often; scalar projection avoids allocating one closest-point object per segment.
+   // Junctions: prefer a road that actually covers the pose. Returning only the
+   // nearest segment misreads poses between two overlapping roads (e.g. a trunk and
+   // its parallel service lane) as off-road, which collapses clearance checks into
+   // phantom static obstructions exactly where streets cross.
+   let nearest=Infinity,nearestWidth=0,cover=Infinity,coverWidth=0;
+   for(const segment of this.collision.cells.get(`${Math.floor(x/this.collision.size)},${Math.floor(z/this.collision.size)}`)??[]) {
+    const dx=segment.b[0]-segment.a[0],dz=segment.b[1]-segment.a[1];
+    const t=clamp(((x-segment.a[0])*dx+(z-segment.a[1])*dz)/(dx*dx+dz*dz||1),0,1);
+    const px=x-segment.a[0]-dx*t,pz=z-segment.a[1]-dz*t,d=px*px+pz*pz;
+    if(d<nearest){nearest=d;nearestWidth=segment.road.width;}
+    if(d<(segment.road.width/2+.1)**2&&d<cover){cover=d;coverWidth=segment.road.width;}
+   }
+   if(coverWidth)return {d:Math.sqrt(cover),width:coverWidth};
+   return nearestWidth?{d:Math.sqrt(nearest),width:nearestWidth}:null;
   }
-  return width?{d:Math.sqrt(best),width}:null;
- }
  private poseClear(p:{x:number;z:number;yaw:number},traffic:readonly TrafficSample[],time=0):boolean {
   const n=this.roadAt(p.x,p.z);
   if(!n||n.d>n.width/2+.1)return false;
@@ -321,8 +338,13 @@ export class CityAutopilot {
   const guide=this.ahead(near,Math.min(8,Math.max(3,this.remaining))),guideAfter=this.ahead(near,Math.min(11,this.remaining));
   const heading=Math.atan2(guideAfter[0]-guide[0],guideAfter[1]-guide[1]);
   const toGuide=Math.atan2(guide[0]-state.x,guide[1]-state.z),headingError=wrap(toGuide-state.yaw);
-  const staticObstruction=this.wait>2&&this.clearance(state,0,[],4)<1.5;
-  if((Math.abs(headingError)>1.75&&arrivalDistance>this.arrivalRadius)||staticObstruction) {
+   const staticObstruction=this.wait>2&&this.clearance(state,0,[],4)<1.5;
+   // A prolonged yield is itself a wedge: the steered path is blocked ~1 unit
+   // ahead while neither a big heading error nor a straight static obstruction
+   // qualifies for recovery. Let the maneuver search try to worm out (it may
+   // use reverse arcs) instead of sitting until the road-blocked timeout.
+   const prolongedYield=this.wait>5&&Math.abs(state.speed)<.2;
+   if((Math.abs(headingError)>1.75&&arrivalDistance>this.arrivalRadius)||staticObstruction||prolongedYield) {
    this.phase='maneuvering';
    if(Math.abs(state.speed)>.15)return this.result(stopped());
    if(state.distance-this.lastTurnDistance>35)this.incidentTurns=0;
@@ -336,14 +358,29 @@ export class CityAutopilot {
    this.maneuverStart={x:state.x,z:state.z,yaw:state.yaw,gear:this.maneuver[0].gear};
    this.maneuverCount++;this.incidentTurns++;this.lastTurnDistance=state.distance;this.maneuverCursor=0;this.maneuverSeconds=0;this.maneuverReplans=0;return this.followManeuver(state,cars,dt);
   }
-  const roadWidth=Math.min(...[0,5,10,15].map(d=>{const p=this.ahead(near,d);return this.collision.nearest(...p)?.road.width??4;}));
-  const available=Math.max(0,roadWidth/2-1.1),fade=clamp((this.remaining-5)/25,0,1);
-  const offsets=[Math.min(1.15,available)*fade];
-  if(this.remaining>15)offsets.push(0);
-  if(available>3.5&&this.remaining>35)offsets.push(Math.min(5.2,available));
-  let best:{steer:number;clearance:number;error:number;offset:number;score:number}|null=null;
-  for(const offset of offsets) {
-   const look=offset>3.5?6:clamp(4+Math.abs(state.speed)*.5,5.5,10),a=this.ahead(near,look),b=this.ahead(near,look+3),yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);
+   const roadWidth=Math.min(...[0,5,10,15].map(d=>{const p=this.ahead(near,d);return this.collision.nearest(...p)?.road.width??4;}));
+   const available=Math.max(0,roadWidth/2-1.1),fade=clamp((this.remaining-5)/25,0,1);
+   const offsets=[Math.min(1.15,available)*fade];
+   if(this.remaining>15)offsets.push(0);
+   // The wide passing line exists to overtake stopped traffic. Offer it only when a
+   // car ahead is close enough to matter: on an empty road it degenerates into a
+   // hysteresis pull toward the road edge — exactly where junction-side pose
+   // coverage gets thin and the car can strand itself.
+   const passRange=Math.max(16,Math.abs(state.speed)*1.5);
+   const trafficAhead=cars.some(c=>{const dx=c.x-state.x,dz=c.z-state.z;return Math.hypot(dx,dz)<passRange&&dx*Math.sin(state.yaw)+dz*Math.cos(state.yaw)>0;});
+   if(available>3.5&&this.remaining>35&&trafficAhead)offsets.push(Math.min(5.2,available));
+   // Sharp route corners (>1.2 rad) need the pursuit target well PAST the corner:
+   // a near-side target tracks the corner late and the exit arc overshoots the
+   // entering road's far edge. Looking across the corner starts the arc early
+   // enough for the steering rack to land the exit (junction interiors are pose
+   // covered since roadAt prefers a covering road).
+   let sharpAhead:number|null=null;
+   for(const caution of this.speedCautions){if(caution.index<this.cursor||!caution.sharp)continue;sharpAhead=this.remaining-this.tail[caution.index];break;}
+   let best:{steer:number;clearance:number;error:number;offset:number;score:number}|null=null;
+   for(const offset of offsets) {
+    let look=offset>3.5?6:clamp(4+Math.abs(state.speed)*.5,5.5,10);
+    if(sharpAhead!==null&&sharpAhead<look+6)look=Math.max(look,Math.min(12,sharpAhead+9));
+    const a=this.ahead(near,look),b=this.ahead(near,look+3),yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);
    const target=[a[0]+Math.cos(yaw)*offset,a[1]-Math.sin(yaw)*offset],error=wrap(Math.atan2(target[0]-state.x,target[1]-state.z)-state.yaw);
    const wheel=Math.atan(6.4*Math.sin(error)/Math.max(2,Math.hypot(target[0]-state.x,target[1]-state.z))),limit=.48/(1+Math.abs(state.speed)*.026),steer=clamp(wheel/limit,-1,1);
    const clearance=this.clearance(state,steer,cars,Math.max(8,state.speed*1.5));
@@ -358,7 +395,7 @@ export class CityAutopilot {
   // into a corner and relying on the near-target heading error to brake late.
   const preview=Math.max(32,state.speed*state.speed/12+14);
   for(const caution of this.speedCautions){if(caution.index<this.cursor)continue;const distance=this.remaining-this.tail[caution.index];if(distance>preview)break;speed=Math.min(speed,Math.sqrt(caution.speed*caution.speed+12*Math.max(0,distance-7)));}
-  if(bend>.75||Math.abs(choice.error)>.65)speed=Math.min(speed,3.5);else if(bend>.35||Math.abs(choice.error)>.3)speed=Math.min(speed,6);
+   if(bend>1.2||Math.abs(choice.error)>1.0)speed=Math.min(speed,2.2);else if(bend>.75||Math.abs(choice.error)>.65)speed=Math.min(speed,3.5);else if(bend>.35||Math.abs(choice.error)>.3)speed=Math.min(speed,6);
   const stopDistance=this.remaining<10?arrivalDistance:this.remaining;
   speed=Math.min(speed,Math.sqrt(10*Math.max(.08,stopDistance-this.arrivalRadius)),Math.sqrt(12*Math.max(0,choice.clearance-1.2)));
   if(this.remaining<15)speed=Math.min(speed,4);
