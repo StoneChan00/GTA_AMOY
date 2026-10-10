@@ -10,7 +10,7 @@ type Slot={light:SpotLight;fixture:Fixture|null;pending:Fixture|null;changing:bo
 /** Shared by both sample districts. Intensities are intentionally independent
  * of the existing public irradiance field, which remains the broad lamp fill. */
 export const LOCAL_LIGHTING={
- regions:[{id:'bamboo',x:-5146,z:-1216.62,inner:130,outer:220},{id:'baypark',x:-2283.27,z:-794.82,inner:420,outer:600}],
+ regions:[{id:'bamboo',x:-5146,z:-1216.62,inner:130,outer:220},{id:'baypark',x:-150,z:-3850,inner:420,outer:600}],
  distanceFull:30,distanceEnd:72,heightFull:70,heightEnd:120,scanSeconds:.4,
  range:46,angle:2.6,innerAngle:1.5,exponent:1.6,nightIntensity:600,sunsetIntensity:60,
  color:[1,.82,.61] as const,transitionSeconds:.35,offThreshold:.035,switchAdvantage:12,

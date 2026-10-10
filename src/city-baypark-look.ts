@@ -7,12 +7,13 @@ type Mode='day'|'sunset'|'night';
 type SurfaceKind=1|2|3|4;
 type State={enabled:boolean;disposed:boolean;mode:Mode;meshes:Map<AbstractMesh,SurfaceKind>};
 
-/** The named sample is an existing coast strip by 中湾阅海广场. Coordinates
- * follow city.json's east/up/north frame (real metres * .60), not GCJ-02.
- * Paver sizes, joints and weathering are authored look development estimates;
- * they are not measurements or a reconstruction of a verified paving pattern. */
+/** The named sample is the Xiamen south-shore waterfront (沙坡尾/白城沙滩
+ * stretch, below the shimao towers). Coordinates follow city.json's east/up/
+ * north frame (real metres * .60), not GCJ-02. Paver sizes, joints and
+ * weathering are authored look development estimates; they are not
+ * measurements or a reconstruction of a verified paving pattern. */
 export const BAYPARK_LOOK={
- center:[-2283.27,-794.82],fullRadius:420,outerRadius:600,
+  center:[-150,-3850],fullRadius:420,outerRadius:600,
  detailNear:22,detailFar:115,paverSize:[.72,.36],jointWidth:.006,
  additionalMeshes:0,additionalTriangles:0,additionalTextures:0,
  additionalLights:0,additionalRenderTargets:0,

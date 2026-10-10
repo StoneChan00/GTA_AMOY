@@ -58,16 +58,21 @@ lamp_report=export('park-floodlight',b.finish('park_floodlight'))
 # Mapped concrete seawall and wave-weathered stones give the coast a vertical edge.
 b=B();rng=random.Random(741)
 material('coastal-rock',(.19,.21,.18),.93);material('seawall',(.29,.33,.32),.88)
+# Seawall/concrete/rock run per coast segment, gated to the Xiamen south-shore
+# waterfront (沙坡尾/白城沙滩 stretch, matching the BAYPARK_LOOK sample area).
+# The previous Shenzhen adaptation collapsed this loop one level, leaving the
+# shore detail only on the last segment of each OSM way.
 for line in city['coast']:
   for a,c in zip(line,line[1:]):
+   if not (-1200<(a[0]+c[0])/2<800 and -4100<(a[1]+c[1])/2<-3500):continue
    length=math.dist(a,c)
    if length<.2:continue
-  nx=-(c[1]-a[1])/length;nz=(c[0]-a[0])/length
-  b.face('seawall',[(a[0],a[1],-1.5),(c[0],c[1],-1.5),(c[0],c[1],.16),(a[0],a[1],.16)])
-  b.tube('concrete',(a[0],a[1],.22),(c[0],c[1],.22),.24,6)
-  for n in range(int(length/9)):
-   t=(n+.5)*9/length;x=a[0]+(c[0]-a[0])*t+nx*rng.uniform(-1.3,1.3);z=a[1]+(c[1]-a[1])*t+nz*rng.uniform(-1.3,1.3);w=rng.uniform(.4,1.1)
-   b.loft('coastal-rock',[(x,z,-.8,w,w*.7),(x+.08,z-.03,-.18,w*.84,w*.63),(x-.10,z+.13,rng.uniform(-.12,.09),w*.38,w*.33)],6)
+   nx=-(c[1]-a[1])/length;nz=(c[0]-a[0])/length
+   b.face('seawall',[(a[0],a[1],-1.5),(c[0],c[1],-1.5),(c[0],c[1],.16),(a[0],a[1],.16)])
+   b.tube('concrete',(a[0],a[1],.22),(c[0],c[1],.22),.24,6)
+   for n in range(int(length/9)):
+    t=(n+.5)*9/length;x=a[0]+(c[0]-a[0])*t+nx*rng.uniform(-1.3,1.3);z=a[1]+(c[1]-a[1])*t+nz*rng.uniform(-1.3,1.3);w=rng.uniform(.4,1.1)
+    b.loft('coastal-rock',[(x,z,-.8,w,w*.7),(x+.08,z-.03,-.18,w*.84,w*.63),(x-.10,z+.13,rng.uniform(-.12,.09),w*.38,w*.33)],6)
 coast_report=export('coastal-shoreline',b.finish('coastal_shore'))
 far=json.loads((O/'coastal/far-shore.json').read_text())
 if far['indices']:

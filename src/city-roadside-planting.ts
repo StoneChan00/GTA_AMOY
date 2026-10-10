@@ -22,7 +22,9 @@ type Rejection='green'|'land'|'water'|'road'|'building'|'coast'|'bridge'|'juncti
 /** Outward-rounded maximum horizontal vertex radius across BOTH shipped LODs.
  * Existing imported roots are reflected in Z; that preserves these circles.
  * Model-bound tests protect the envelope if an asset changes. */
-export const ROADSIDE_TREE_RADII={banyan:5.141,palm:3.582,orchid:4.083,openBroadleaf:7.235,openPalm:2.106} as const;
+// banyan envelope +0.1 vs the pre-Blender-5.2 value: the shipped banyan-lod
+// measures 5.227 (export quantization; the full-detail tree measures 4.810).
+export const ROADSIDE_TREE_RADII={banyan:5.241,palm:3.582,orchid:4.083,openBroadleaf:7.235,openPalm:2.106} as const;
 export const ROADSIDE_PLANTING_BUDGET={
  // A denser verge canopy is still capped by cells and by the renderer's
  // shared near/far tree budgets. These are placement/visibility budgets, not
