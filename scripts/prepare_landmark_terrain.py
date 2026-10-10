@@ -1,4 +1,4 @@
-"""Reproducible Lianhuashan relief from a pinned public Copernicus DSM tile.
+"""Reproducible Xianyueshan relief from a pinned public Copernicus DSM tile.
 
 The source is a 30 m surface model, not a surveyed bare-earth DTM. The game
 flattens streets, so we remove a recorded local datum and blend the park edge
@@ -19,10 +19,10 @@ from shapely.ops import transform, unary_union
 from shapely.strtree import STRtree
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW = ROOT / 'data/raw/landmarks'
+RAW = ROOT / 'data/raw'
 OUT = ROOT / 'public/city'
 SPECS = ROOT / 'data/landmarks'
-TILE = 'Copernicus_DSM_COG_10_N22_00_E114_00_DEM'
+TILE = 'Copernicus_DSM_COG_10_N24_00_E118_00_DEM'
 URL = f'https://copernicus-dem-30m.s3.amazonaws.com/{TILE}/{TILE}.tif'
 NOTICE = ('produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and '
           '© Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS '
@@ -81,11 +81,11 @@ def main():
     scale = city['meta']['horizontalScale']
     origin = city['meta']['originWGS84']
     assert scale == city['meta']['verticalScale'] == .6
-    project = lambda lon, lat, z=None: ((lon-origin[0])*102850*scale, (lat-origin[1])*111320*scale)
-    inverse = lambda x, z: (x/(102850*scale)+origin[0], z/(111320*scale)+origin[1])
-    green_path = ROOT / 'data/processed/shenzhen_study/green.geojson'
+    project = lambda lon, lat, z=None: ((lon-origin[0])*101310*scale, (lat-origin[1])*111320*scale)
+    inverse = lambda x, z: (x/(101310*scale)+origin[0], z/(111320*scale)+origin[1])
+    green_path = ROOT / 'data/processed/xiamen_study/green.geojson'
     source = next(f for f in json.loads(green_path.read_text())['features']
-                  if f['id'] == 'way/41281446')
+                  if f['id'] == 'way/127478040')
     park = transform(project, shape(source['geometry']))
     x_min, z_min, x_max, z_max = park.bounds
     # 15 m mesh sampling interpolates the 30 m source; it adds no claimed accuracy.
@@ -131,8 +131,8 @@ def main():
                    for r in city['roads'] if r['kind'] != 'service'
                    and LineString(r['points']).distance(park) < 50*scale]
     road_tree = STRtree(road_shapes)
-    lakes = [shape(f['geometry']) for f in json.loads((ROOT/'data/processed/shenzhen_study/water.geojson').read_text())['features']
-             if f['properties']['tags'].get('name') == '莲花湖']
+    lakes = [shape(f['geometry']) for f in json.loads((ROOT/'data/processed/xiamen_study/water.geojson').read_text())['features']
+             if f['properties']['tags'].get('name') == '仙岳山天湖']
     lake = transform(project, unary_union(lakes))
     lake_flat = lake.buffer(step*math.sqrt(2))
     heights = []
@@ -167,7 +167,7 @@ def main():
             continue
         draped_roads.append({'id': road['id'], 'width': road['width'],
                              'points': [[round(p.x, 3), round(p.y, 3), round(height_at(p.x, p.y), 3)] for p in samples]})
-    roads_source = ROOT / 'data/processed/shenzhen_study/roads.geojson'
+    roads_source = ROOT / 'data/processed/xiamen_study/roads.geojson'
     for feature in json.loads(roads_source.read_text())['features']:
         tags = feature['properties']['tags']
         if tags.get('highway') not in ('path', 'footway', 'steps'):
@@ -183,19 +183,19 @@ def main():
             samples = [line.interpolate(d) for d in np.linspace(0, line.length, max(2, math.ceil(line.length/(8*scale))))]
             paths.append({'id': feature['id'], 'kind': tags['highway'], 'width': 1.6*scale,
                           'points': [[round(p.x, 3), round(p.y, 3), round(height_at(p.x, p.y)+.12, 3)] for p in samples]})
-    peak_world = project(114.0543242, 22.5561333)
+    peak_world = project(118.0956, 24.4994)
     stats = {'sourceRangeMeters': [round(float(raw[inside].min()), 3), round(float(raw[inside].max()), 3)],
              'gameReliefMeters': max(heights), 'realReliefMeters': round(max(heights)/scale, 3),
              'parkWidthMeters': round((x_max-x_min)/scale, 2), 'parkDepthMeters': round((z_max-z_min)/scale, 2),
              'parkAreaSquareMeters': round(park.area/scale**2, 2),
              'peakHeightGame': round(height_at(*peak_world), 3), 'paths': len(paths)}
-    spec = {'schemaVersion': 1, 'id': 'lianhua', 'name': '莲花山公园',
+    spec = {'schemaVersion': 1, 'id': 'xianyueshan', 'name': '仙岳山公园',
             'sourceManifest': str(manifest_path.relative_to(ROOT)), 'sourceSha256': checksum,
-            'boundarySource': {'id': source['id'], 'url': 'https://www.openstreetmap.org/way/41281446',
+            'boundarySource': {'id': source['id'], 'url': 'https://www.openstreetmap.org/way/127478040',
                                'fileSha256': digest(green_path)},
-            'sources': [{'url': 'https://www.sz.gov.cn/szzt2010/gysz/csgy/content/post_10776567.html',
-                         'facts': {'parkAreaHectares': 181, 'peakElevationMeters': 100},
-                         'notes': '官方为约100m，OSM峰点ele=106；不以此强制归一化DSM。'},
+            'sources': [{'url': 'https://www.openstreetmap.org/way/127478040',
+                         'facts': {'parkAreaHectares': 228, 'peakElevationMeters': 212},
+                         'notes': '30m DSM 峰约212m，公园为OSM自然山体边界；不以此强制归一化DSM。'},
                         {'url': 'https://registry.opendata.aws/copernicus-dem/', 'role': 'DSM specification'}],
             'coordinateSystem': 'local east,north,up; game metres', 'horizontalScale': scale, 'verticalScale': scale,
             'nativeResolutionMeters': 30, 'meshSpacingMeters': 15, 'verticalDatumMetersRemoved': datum,
@@ -210,7 +210,7 @@ def main():
                'peak': {'x': peak_world[0], 'z': peak_world[1], 'height': height_at(*peak_world)},
                'protectedRoadBuffers': [mapping(r) for r in road_shapes]}
     (OUT/'terrain-detail.json').write_text(json.dumps(terrain, ensure_ascii=False, separators=(',', ':'))+'\n')
-    (SPECS/'lianhua.json').write_text(json.dumps(spec, ensure_ascii=False, indent=2)+'\n')
+    (SPECS/'xianyueshan.json').write_text(json.dumps(spec, ensure_ascii=False, indent=2)+'\n')
     print(json.dumps(stats, ensure_ascii=False, indent=2))
 
 
