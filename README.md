@@ -1,14 +1,19 @@
-# GTA_AMOY · 鹭岛纪
+# GTA_AMOY · LuDaoJi (鹭岛纪)
 
-在浏览器中驾驶、行走、飞行，探索一座可玩的厦门岛。基于 OpenStreetMap 地理数据、Blender 资产管线与 Babylon.js 实时渲染。
+**English** · [简体中文](README.zh-CN.md)
 
-本项目衍生自 **[GTA_SZ · 深城纪](https://github.com/linranff/GTA_SZ)**（原作者 [linranff](https://github.com/linranff)），感谢原项目提供的完整城市生成管线、渲染架构与工程实践。在本仓库中，城市数据与内容已替换为厦门岛（会展中心、厦门大学、白鹭洲、环岛路、五缘湾等），并完成信号灯、林冠、电动车、立面与屋顶等城市生活层的厦门化。
+Drive, walk, and fly through a playable island of Xiamen, China — built in the browser from OpenStreetMap data, a Blender asset pipeline, and Babylon.js real-time rendering.
 
-**在线体验**（桌面浏览器 + WebGL2）：<https://stonechan00.github.io/GTA_AMOY/>
+This project is derived from **[GTA_SZ · ShenChengJi](https://github.com/linranff/GTA_SZ)** (deep thanks to [linranff](https://github.com/linranff) for the complete city-generation pipeline, rendering architecture, and engineering practice). In this repository the city data and content have been replaced with Xiamen Island (Convention & Exhibition Center, Xiamen University, Bailu Zhou, Island Ring Road, Wuyuan Bay, …), and the city-life layers — signal lights, tree canopy, e-bikes, facades, rooftops — have been localized for the Xiamen setting.
 
-## 快速开始
+**Play** (desktop browser with WebGL2):
 
-需要 Node.js（建议 24）、npm、Git LFS 与支持 WebGL2 的桌面浏览器。
+- <https://stonechan00.github.io/GTA_AMOY/> — primary entry
+- <http://39.96.117.179/> — China-friendly mirror (self-hosted, limited bandwidth; a full load takes a few minutes)
+
+## Quick start
+
+Requires Node.js (24 recommended), npm, Git LFS, and a WebGL2 desktop browser.
 
 ```sh
 git lfs install
@@ -19,42 +24,42 @@ npm ci
 npm run dev
 ```
 
-打开 Vite 输出的地址（通常 `http://127.0.0.1:5173/`）。
+Open the URL Vite prints (usually `http://127.0.0.1:5173/`).
 
 ```sh
-npm test          # 运行测试
-npm run build     # 生产构建
-npm run preview   # 本地预览构建产物
+npm test          # run tests
+npm run build     # production build
+npm run preview   # preview the build locally
 ```
 
-### 更新在线版
+### Updating the online version
 
 ```sh
 npm run deploy:pages
 ```
 
-一键构建并发布 GitHub Pages：自动从 `origin` 推导子路径并传入 `--base`、重写产物内的根绝对资源路径（有遗漏会直接构建失败而非上线 404）、以普通文件（非 LFS 指针）推送到 `gh-pages` 分支。非默认子路径（自定义域名等）可用 `DEPLOY_PAGES_BASE=/` 覆盖。
+One command to build and publish GitHub Pages: it derives the sub-path from the `origin` remote, rewrites root-absolute asset paths inside the bundle (failing loudly on any leftover instead of shipping 404s), and pushes the `gh-pages` branch as plain files (never Git LFS pointers). Override the sub-path via `DEPLOY_PAGES_BASE=/` for a custom domain.
 
-## 操作一览
+## Controls at a glance
 
-| 模式 / 按键 | 动作 |
+| Mode / input | Action |
 | --- | --- |
-| 车辆：WASD / 方向键，Space | 驾驶、手刹 |
-| F / T | 上下车；驾驶中切换车辆 / 坦克 |
-| 步行：WASD，Shift，C | 行走、奔跑、第一 / 第三人称 |
-| G / B | 无人机观察；切换无人机 / 飞机 |
-| M / L / J | 地图、光照预设、城市日志 |
-| P | 帧率信息 |
+| Car: WASD / arrows, Space | Drive, handbrake |
+| F / T | Enter/exit a vehicle; switch car / tank while driving |
+| Walking: WASD, Shift, C | Walk, run, first/third person |
+| G / B | Drone observation; switch drone / aircraft |
+| M / L / J | Map, lighting preset, city journal |
+| P | Frame-rate info |
 
-## 城市数据
+## City data
 
-- 道路与建筑轮廓来自 OpenStreetMap（© OpenStreetMap contributors，ODbL）
-- 地形高程来自 Copernicus DEM
-- 城市为艺术化的压缩演绎（建筑高度、立面与地形有美术加工），并非测绘级数字孪生
-- 详细数据来源与署名见 [data/ATTRIBUTION.md](data/ATTRIBUTION.md)
+- Roads and building footprints from OpenStreetMap (© OpenStreetMap contributors, ODbL)
+- Terrain elevation from Copernicus DEM
+- The city is an artistic, compressed interpretation (building heights, facades, and terrain are stylized) — not a survey-grade digital twin
+- Full data provenance and attribution: [data/ATTRIBUTION.md](data/ATTRIBUTION.md)
 
-## 许可
+## License
 
-代码以 MIT 许可发布，见 [LICENSE](LICENSE)（含原项目版权声明）。
+Code is released under the MIT license, see [LICENSE](LICENSE) (it preserves the upstream copyright notice).
 
-**许可仅覆盖代码。** `public/` 下的模型、贴图与 HDR 环境，以及 `data/` 下的地理数据保留各自的原始许可与署名要求，详见 [public/licenses/](public/licenses/) 与 [data/ATTRIBUTION.md](data/ATTRIBUTION.md)。角色模型由米哈游提供、观海（Guanhai）MMD 改编，原始条款禁止商用与二次分发。本项目为非商业原型，与米哈游 / HoYoverse 无关联，未获其授权或背书。
+**The license covers code only.** Models, textures, and HDR environments under `public/`, and geographic data under `data/`, keep their own original licenses and attribution requirements — see [public/licenses/](public/licenses/) and [data/ATTRIBUTION.md](data/ATTRIBUTION.md). Character models are provided by miHoYo with MMD adaptation by Guanhai (观海); the original terms prohibit commercial use and redistribution. This is a non-commercial prototype, not affiliated with or endorsed by miHoYo / HoYoverse.
