@@ -1,9 +1,432 @@
 {
   "schemaVersion": 1,
   "asset": "/city/landmark-detail.glb",
-  "replacedMeshPrefixes": [],
-  "baseBuildingIds": [],
-  "landmarks": [],
-  "collisionFootprints": [],
-  "terrain": {"url": "/city/terrain-detail.json"}
+  "assetStats": {
+    "file": "landmark-detail.glb",
+    "bytes": 262876,
+    "triangles": 3176,
+    "meshes": 7,
+    "sha256": "dfc493263653583c66f43f95f30983e4b7aa3be5ab24163d4862e4b21aeb63ce"
+  },
+  "replacedMeshPrefixes": [
+    "landmark_shimao_"
+  ],
+  "baseBuildingIds": [
+    "way/564921671",
+    "way/564921672",
+    "way/564921673"
+  ],
+  "landmarks": [
+    {
+      "id": "shimao",
+      "name": "世茂海峡大厦 · 双子塔",
+      "lon": 118.08379,
+      "lat": 24.43827,
+      "x": -2202.95,
+      "z": -3118.11,
+      "height": 180,
+      "area": "思明 · 沙坡尾",
+      "excludeRadius": 0,
+      "arrival": [
+        -2159.3,
+        -3115.8
+      ],
+      "yaw": -0.8202493395925966,
+      "detailCollision": true,
+      "photoDistance": 640,
+      "photoTargetHeight": 118,
+      "photoElevation": 0.24,
+      "photoAngle": -1.42,
+      "sourceStatus": "source-grounded exterior: OSM-mapped footprints; reported heights/floors/form; photo-estimated taper and crowns",
+      "arrivalRoad": "周边连通道路"
+    }
+  ],
+  "baseBuildingExclusionsRequired": true,
+  "collisionFootprints": [
+    {
+      "id": "detail-shimao-a",
+      "rings": [
+        [
+          [
+            -2234.0132,
+            -3065.5658
+          ],
+          [
+            -2239.259,
+            -3069.1525
+          ],
+          [
+            -2243.1858,
+            -3073.1667
+          ],
+          [
+            -2246.0913,
+            -3076.9071
+          ],
+          [
+            -2248.6869,
+            -3081.4823
+          ],
+          [
+            -2250.2309,
+            -3087.2598
+          ],
+          [
+            -2250.5105,
+            -3092.6967
+          ],
+          [
+            -2246.7661,
+            -3096.0697
+          ],
+          [
+            -2243.2162,
+            -3098.0467
+          ],
+          [
+            -2237.5327,
+            -3099.5295
+          ],
+          [
+            -2233.8247,
+            -3099.7766
+          ],
+          [
+            -2227.7704,
+            -3099.7766
+          ],
+          [
+            -2223.3209,
+            -3099.0353
+          ],
+          [
+            -2219.9898,
+            -3098.0133
+          ],
+          [
+            -2216.8958,
+            -3096.1899
+          ],
+          [
+            -2215.1695,
+            -3094.834
+          ],
+          [
+            -2215.9111,
+            -3088.776
+          ],
+          [
+            -2217.7651,
+            -3082.8382
+          ],
+          [
+            -2220.9442,
+            -3076.533
+          ],
+          [
+            -2224.6886,
+            -3071.9578
+          ],
+          [
+            -2229.0044,
+            -3068.2575
+          ],
+          [
+            -2234.0132,
+            -3065.5658
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "detail-shimao-b",
+      "rings": [
+        [
+          [
+            -2178.1873,
+            -3135.4169
+          ],
+          [
+            -2181.8831,
+            -3141.5484
+          ],
+          [
+            -2183.9133,
+            -3147.0253
+          ],
+          [
+            -2184.7826,
+            -3152.529
+          ],
+          [
+            -2184.6306,
+            -3158.3866
+          ],
+          [
+            -2183.0076,
+            -3163.5296
+          ],
+          [
+            -2180.102,
+            -3168.7861
+          ],
+          [
+            -2178.321,
+            -3171.6849
+          ],
+          [
+            -2172.3518,
+            -3169.9149
+          ],
+          [
+            -2164.7779,
+            -3167.2432
+          ],
+          [
+            -2159.1552,
+            -3164.6317
+          ],
+          [
+            -2153.9701,
+            -3160.7644
+          ],
+          [
+            -2150.2987,
+            -3156.5098
+          ],
+          [
+            -2152.3836,
+            -3151.6406
+          ],
+          [
+            -2155.4716,
+            -3146.678
+          ],
+          [
+            -2159.8725,
+            -3141.5216
+          ],
+          [
+            -2165.0818,
+            -3138.3156
+          ],
+          [
+            -2170.0967,
+            -3136.6725
+          ],
+          [
+            -2174.9474,
+            -3135.6239
+          ],
+          [
+            -2178.1873,
+            -3135.4169
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "detail-shimao-podium",
+      "rings": [
+        [
+          [
+            -2169.8961,
+            -3135.4569
+          ],
+          [
+            -2169.732,
+            -3131.0487
+          ],
+          [
+            -2171.0328,
+            -3125.8322
+          ],
+          [
+            -2173.6466,
+            -3121.4306
+          ],
+          [
+            -2176.5765,
+            -3118.1645
+          ],
+          [
+            -2217.7651,
+            -3082.8382
+          ],
+          [
+            -2215.9111,
+            -3088.776
+          ],
+          [
+            -2215.1695,
+            -3094.834
+          ],
+          [
+            -2216.8958,
+            -3096.1899
+          ],
+          [
+            -2219.9898,
+            -3098.0133
+          ],
+          [
+            -2223.3209,
+            -3099.0353
+          ],
+          [
+            -2227.7704,
+            -3099.7766
+          ],
+          [
+            -2233.8247,
+            -3099.7766
+          ],
+          [
+            -2237.5327,
+            -3099.5295
+          ],
+          [
+            -2243.2162,
+            -3098.0467
+          ],
+          [
+            -2246.2251,
+            -3101.5066
+          ],
+          [
+            -2245.2403,
+            -3107.3375
+          ],
+          [
+            -2241.1494,
+            -3113.9299
+          ],
+          [
+            -2233.0588,
+            -3123.047
+          ],
+          [
+            -2224.7737,
+            -3130.3206
+          ],
+          [
+            -2218.2757,
+            -3132.6116
+          ],
+          [
+            -2211.6925,
+            -3140.6133
+          ],
+          [
+            -2212.6347,
+            -3142.8241
+          ],
+          [
+            -2206.24,
+            -3149.1092
+          ],
+          [
+            -2190.7639,
+            -3156.7502
+          ],
+          [
+            -2189.0437,
+            -3153.1835
+          ],
+          [
+            -2184.6306,
+            -3158.3866
+          ],
+          [
+            -2184.7826,
+            -3152.529
+          ],
+          [
+            -2183.9133,
+            -3147.0253
+          ],
+          [
+            -2181.8831,
+            -3141.5484
+          ],
+          [
+            -2178.1873,
+            -3135.4169
+          ],
+          [
+            -2174.9474,
+            -3135.6239
+          ],
+          [
+            -2170.0967,
+            -3136.6725
+          ],
+          [
+            -2169.8961,
+            -3135.4569
+          ]
+        ]
+      ]
+    }
+  ],
+  "terrain": {
+    "url": "/city/terrain-detail.json"
+  },
+  "modelReports": [
+    {
+      "id": "detail_shimao",
+      "triangles": 3176,
+      "meshes": 7,
+      "report": {
+        "towers": [
+          {
+            "id": "A",
+            "quads": 376,
+            "peak": [
+              -2225.83,
+              -3093.7,
+              180
+            ]
+          },
+          {
+            "id": "B",
+            "quads": 368,
+            "peak": [
+              -2163.26,
+              -3160.44,
+              180
+            ]
+          }
+        ],
+        "podium": {
+          "ringPoints": 33,
+          "roofMeters": 32.5
+        }
+      }
+    }
+  ],
+  "sourceSha256": {
+    "data/landmarks/shimao.json": "59ed2273b8fc2cf02dab0da2e6761f423b9c2ec246bb5794eb8b57dabd446e97",
+    "scripts/landmarks/shimao.py": "5e0a83506d47e1b1acc477edc1a0daa820d29c8e36789142b40f36b6ac1a3c1b",
+    "scripts/build_landmark_details.py": "736a1261d0965a2cbe037d8eac652bfb5acddb4c6120f15de9b8406873f48254",
+    "scripts/city_mesh.py": "4c7c619d02805d1629081eed9a8bcd893a9670686162424e50b998a9fdbaabd7"
+  },
+  "coordinateSystem": "Blender east,north,up; GLB y-up; runtime preserves root Z reflection",
+  "horizontalScale": 0.6,
+  "verticalScale": 0.6,
+  "generator": {
+    "blender": "5.2.2 LTS"
+  },
+  "limitations": [
+    "Taper scale factors and crown slant are photo estimates, not measured surveys",
+    "Curtain wall mullion rhythm is art direction informed by photos; no per-bay panel layout claim",
+    "Podium roof plant, Emall interior and the wave parapet curves are simplified",
+    "Tower A/B crown discrepancy with the OSM height tag (261) is recorded rather than resolved"
+  ],
+  "compression": {
+    "before": 465828,
+    "after": 262876,
+    "algorithm": "EXT_meshopt_compression",
+    "positionBits": 16
+  }
 }

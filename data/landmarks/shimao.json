@@ -1,0 +1,445 @@
+{
+ "schemaVersion": 1,
+ "id": "shimao",
+ "name": "世茂海峡大厦 · 双子塔",
+ "status": "source-grounded exterior: OSM-mapped footprints; reported heights/floors/form; photo-estimated taper and crowns",
+ "sources": [
+  "osm-fujian-snapshot",
+  "baidu-baike",
+  "shimaogroup-official",
+  "ceedi-project",
+  "wikidata-q60989686",
+  "ctbuh-scraperbase",
+  "commons-shimao-photos"
+ ],
+ "site": {
+  "centerWGS84": [
+   118.08379,
+   24.43827
+  ],
+  "basis": "osm-mapped tower/podium centroid mean",
+  "note": "M1 in-game marker sat 2.2km east at (118.1187,24.4296); this spec moves it to the mapped site"
+ },
+ "towers": [
+  {
+   "id": "A",
+   "osmId": "way/564921672",
+   "name": "A塔（SOHO 办公）",
+   "floors": {
+    "value": 64,
+    "basis": "reported"
+   },
+   "roofMeters": {
+    "value": 249.9,
+    "basis": "reported"
+   },
+   "crownTopMeters": {
+    "value": 300,
+    "basis": "reported"
+   },
+   "footprintWGS84": [
+    [
+     118.0832479,
+     24.4391028
+    ],
+    [
+     118.0831616,
+     24.4390491
+    ],
+    [
+     118.083097,
+     24.438989
+    ],
+    [
+     118.0830492,
+     24.438933
+    ],
+    [
+     118.0830065,
+     24.4388645
+    ],
+    [
+     118.0829811,
+     24.438778
+    ],
+    [
+     118.0829765,
+     24.4386966
+    ],
+    [
+     118.0830381,
+     24.4386461
+    ],
+    [
+     118.0830965,
+     24.4386165
+    ],
+    [
+     118.08319,
+     24.4385943
+    ],
+    [
+     118.083251,
+     24.4385906
+    ],
+    [
+     118.0833506,
+     24.4385906
+    ],
+    [
+     118.0834238,
+     24.4386017
+    ],
+    [
+     118.0834786,
+     24.438617
+    ],
+    [
+     118.0835295,
+     24.4386443
+    ],
+    [
+     118.0835579,
+     24.4386646
+    ],
+    [
+     118.0835457,
+     24.4387553
+    ],
+    [
+     118.0835152,
+     24.4388442
+    ],
+    [
+     118.0834629,
+     24.4389386
+    ],
+    [
+     118.0834013,
+     24.4390071
+    ],
+    [
+     118.0833303,
+     24.4390625
+    ]
+   ]
+  },
+  {
+   "id": "B",
+   "osmId": "way/564921671",
+   "name": "B塔（酒店/写字楼）",
+   "floors": {
+    "value": 55,
+    "basis": "reported"
+   },
+   "roofMeters": {
+    "value": 249.9,
+    "basis": "reported"
+   },
+   "crownTopMeters": {
+    "value": 300,
+    "basis": "reported",
+    "note": "OSM way height tag says 261; Baidu/official report both crowns top at 300 and photos show near-equal heights; kept 300 with the discrepancy recorded"
+   },
+   "footprintWGS84": [
+    [
+     118.0841663,
+     24.438057
+    ],
+    [
+     118.0841055,
+     24.4379652
+    ],
+    [
+     118.0840721,
+     24.4378832
+    ],
+    [
+     118.0840578,
+     24.4378008
+    ],
+    [
+     118.0840603,
+     24.4377131
+    ],
+    [
+     118.084087,
+     24.4376361
+    ],
+    [
+     118.0841348,
+     24.4375574
+    ],
+    [
+     118.0841641,
+     24.437514
+    ],
+    [
+     118.0842623,
+     24.4375405
+    ],
+    [
+     118.0843869,
+     24.4375805
+    ],
+    [
+     118.0844794,
+     24.4376196
+    ],
+    [
+     118.0845647,
+     24.4376775
+    ],
+    [
+     118.0846251,
+     24.4377412
+    ],
+    [
+     118.0845908,
+     24.4378141
+    ],
+    [
+     118.08454,
+     24.4378884
+    ],
+    [
+     118.0844676,
+     24.4379656
+    ],
+    [
+     118.0843819,
+     24.4380136
+    ],
+    [
+     118.0842994,
+     24.4380382
+    ],
+    [
+     118.0842196,
+     24.4380539
+    ]
+   ]
+  }
+ ],
+ "podium": {
+  "osmId": "way/564921673",
+  "floors": {
+   "value": 6,
+   "basis": "reported"
+  },
+  "roofMeters": {
+   "value": 32.5,
+   "basis": "reported"
+  },
+  "footprintWGS84": [
+   [
+    118.0843027,
+    24.4380564
+   ],
+   [
+    118.0843054,
+    24.4381224
+   ],
+   [
+    118.084284,
+    24.4382005
+   ],
+   [
+    118.084241,
+    24.4382664
+   ],
+   [
+    118.0841928,
+    24.4383153
+   ],
+   [
+    118.0835152,
+    24.4388442
+   ],
+   [
+    118.0835457,
+    24.4387553
+   ],
+   [
+    118.0835579,
+    24.4386646
+   ],
+   [
+    118.0835295,
+    24.4386443
+   ],
+   [
+    118.0834786,
+    24.438617
+   ],
+   [
+    118.0834238,
+    24.4386017
+   ],
+   [
+    118.0833506,
+    24.4385906
+   ],
+   [
+    118.083251,
+    24.4385906
+   ],
+   [
+    118.08319,
+    24.4385943
+   ],
+   [
+    118.0830965,
+    24.4386165
+   ],
+   [
+    118.083047,
+    24.4385647
+   ],
+   [
+    118.0830632,
+    24.4384774
+   ],
+   [
+    118.0831305,
+    24.4383787
+   ],
+   [
+    118.0832636,
+    24.4382422
+   ],
+   [
+    118.0833999,
+    24.4381333
+   ],
+   [
+    118.0835068,
+    24.438099
+   ],
+   [
+    118.0836151,
+    24.4379792
+   ],
+   [
+    118.0835996,
+    24.4379461
+   ],
+   [
+    118.0837048,
+    24.437852
+   ],
+   [
+    118.0839594,
+    24.4377376
+   ],
+   [
+    118.0839877,
+    24.437791
+   ],
+   [
+    118.0840603,
+    24.4377131
+   ],
+   [
+    118.0840578,
+    24.4378008
+   ],
+   [
+    118.0840721,
+    24.4378832
+   ],
+   [
+    118.0841055,
+    24.4379652
+   ],
+   [
+    118.0841663,
+    24.438057
+   ],
+   [
+    118.0842196,
+    24.4380539
+   ],
+   [
+    118.0842994,
+    24.4380382
+   ]
+  ]
+ },
+ "taper": {
+  "levelsMetersScale": [
+   [
+    0,
+    1.0
+   ],
+   [
+    32.5,
+    1.0
+   ],
+   [
+    60,
+    0.98
+   ],
+   [
+    90,
+    0.958
+   ],
+   [
+    120,
+    0.93
+   ],
+   [
+    150,
+    0.9
+   ],
+   [
+    180,
+    0.865
+   ],
+   [
+    210,
+    0.82
+   ],
+   [
+    232,
+    0.75
+   ],
+   [
+    249.9,
+    0.62
+   ]
+  ],
+  "basis": "estimated",
+  "method": "Gulangyu photo (2023-06 Commons) shows continuous upward narrowing without setbacks; per-30m steps kept within 4-6% so the stack reads as continuous; deepened to 0.62 at the roof after screenshot review showed the crown silhouette cancelling the taper; uncertainty ±0.08 scale"
+ },
+ "crown": {
+  "kind": "open steel framework above the roof, topping at 300 m",
+  "basis": "reported",
+  "slant": {
+   "basis": "estimated",
+   "method": "photo-observed slanted sail tip; high edge toward the south-east sea view, low edge ~256 m, uncertainty ±10 m"
+  }
+ },
+ "facade": {
+  "towers": "unitized glass curtain wall, vertical-mullion dominant read",
+  "podium": "stone curtain wall with wave motif",
+  "basis": "reported (Gensler design notes via Baidu)"
+ },
+ "separation": {
+  "towerCenterDistanceMeters": {
+   "value": 154,
+   "basis": "osm-mapped",
+   "note": "satellite centroid estimate 126 m; CTBUH-derived closest-at-least-as-tall 168 m; OSM ring centroids used"
+  }
+ },
+ "arrival": {
+  "roadName": "大学路",
+  "basis": "osm-highway"
+ },
+ "limitations": [
+  "Taper scale factors and crown slant are photo estimates, not measured surveys",
+  "Curtain wall mullion rhythm is art direction informed by photos; no per-bay panel layout claim",
+  "Podium roof plant, Emall interior and the wave parapet curves are simplified",
+  "Tower A/B crown discrepancy with the OSM height tag (261) is recorded rather than resolved"
+ ]
+}

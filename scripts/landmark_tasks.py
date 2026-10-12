@@ -86,7 +86,7 @@ def prompt(job, folder):
 1. 补全 evidence.json：地点身份、EPSG:4326 坐标、带来源与不确定度的形体观察；必需观察类别为 {', '.join(job['requiredShapes'])}。
 2. 运行 `.venv/bin/python scripts/landmark_tasks.py check --job '{folder / 'job.json'}' --stage evidence-ready --record`。失败时修复证据或报告阻塞，不跳过。
 3. 在 scripts/landmarks/{place['id']}.py 中编写可重复构建的对象模块，使用 scripts/city_mesh.py 的 B API；只有经主集成确认的调用接口才可接入。若尚无独立导出器，交付模块和参数并等待主集成导出，不能虚构 GLB。
-4. 真实米制参数保留在证据中。当前游戏 x=(lon-114.025)*102850*0.60，north=(lat-22.536)*111320*0.60；Blender 为 east/north/up，垂直尺度同为0.60。只缩放一次。旧 UTM 参考不能直接混入当前游戏坐标。
+4. 真实米制参数保留在证据中。当前游戏 x=(lon-118.12)*101310*0.60，north=(lat-24.485)*111320*0.60；Blender 为 east/north/up，垂直尺度同为0.60。只缩放一次。旧 UTM 参考不能直接混入当前游戏坐标。
 5. 填 model.json 的真实文件路径、模型 SHA256、sourceModuleSha256，执行 modelled 检查。任务预算：{json.dumps(job['budget'], ensure_ascii=False)}；这是暂定增量预算，不能据此声称已通过性能验收。
 6. 与主集成协作生成至少俯视、远景轮廓、街面高度三个实机视角，记录逐项验收及性能数据到 validation.json。每项必须有可读取证据路径、reviewedBy、reviewedAt。verified 仅由主集成人员结合实机复核推进。
 
@@ -134,9 +134,9 @@ def generate(args):
             "sourceManifest": str(source.relative_to(ROOT)) if source.is_relative_to(ROOT) else str(source),
             "sourceManifestSha256": digest(source), "sourceRecord": place,
             "requiredShapes": shapes,
-            "coordinatePolicy": {"sourceCRS": "EPSG:4326", "originWGS84": [114.025, 22.536],
+            "coordinatePolicy": {"sourceCRS": "EPSG:4326", "originWGS84": [118.12, 24.485],
                 "blenderAxes": ["east", "north", "up"], "horizontalScale": 0.60, "verticalScale": 0.60,
-                "projection": "equirectangular; x=(lon-114.025)*102850*0.60; y=(lat-22.536)*111320*0.60"},
+                "projection": "equirectangular; x=(lon-118.12)*101310*0.60; y=(lat-24.485)*111320*0.60"},
             "budget": {"status": "provisional", "maxTriangles": 60000 if broad else 25000,
                 "maxMaterials": 12, "maxBytes": (12 if broad else 8) * 1024 * 1024, "maxTextureEdge": 2048},
             "ownership": {"workerFiles": [f"scripts/landmarks/{ident}.py"],

@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "researchedAt": "2026-10-12",
+  "coordinatePolicy": {
+    "canonical": "EPSG:4326",
+    "projectOrigin": [118.12, 24.485],
+    "horizontalScale": 0.6,
+    "verticalScale": 0.6,
+    "note": "中心和轮廓使用本地WGS84；GCJ-02/BD-09线索必须保留其坐标系，不混入模型。高德/百度 POI 坐标仅作核对。"
+  },
+  "sources": [
+    {
+      "id": "osm-fujian-snapshot",
+      "title": "OSM-FR 镜像福建快照（本地物化 data/raw/fujian-latest.osm.pbf）",
+      "url": "https://download.openstreetmap.fr/extracts/asia/china/fujian-latest.osm.pbf",
+      "publisher": "OpenStreetMap contributors / OSM-FR",
+      "accessedAt": "2026-10-08",
+      "evidenceType": "open_vector",
+      "notes": "Geofabrik 被 TLS 重置阻断后改用 OSM-FR 镜像。WGS84。建筑高度及轮廓并非测绘核实；世茂双塔与裙房足印为 way/564921672、way/564921671、way/564921673。许可证 ODbL-1.0。"
+    },
+    {
+      "id": "copernicus-dsm",
+      "title": "Copernicus DSM 30m 瓦片 N24 E117/E118",
+      "url": "https://spacedata.copernicus.eu/",
+      "publisher": "Copernicus / ESA",
+      "accessedAt": "2026-10-09",
+      "evidenceType": "open_raster",
+      "notes": "已用于 M3 山体地形（仙岳山/天马山）。30m 分辨率树冠含建筑顶，非裸地；不用于单体建筑尺寸主张。"
+    },
+    {
+      "id": "baidu-baike-shimao",
+      "title": "厦门世茂海峡大厦（百度百科条目）",
+      "url": "https://baike.baidu.com/item/厦门世茂海峡大厦/3496361",
+      "publisher": "百度百科",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "reference_page",
+      "notes": "层高/屋面/裙房数值条目（A塔64层、B塔55层、屋面249.9m、构架顶300m、裙房6层32.5m、核心筒面积）。二手汇编来源，关键数值已与官方/设计院页交叉核对。"
+    },
+    {
+      "id": "shimaogroup-official",
+      "title": "世茂海峡大厦项目页（世茂集团官网）",
+      "url": "https://www.shimaogroup.com/smlist/view.php?aid=254",
+      "publisher": "世茂集团",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "official_page",
+      "notes": "300米风帆造型、占地约3万㎡、地上建筑面积27万㎡、云上厦门观光厅等官方表述。"
+    },
+    {
+      "id": "ceedi-project",
+      "title": "厦门世茂海峡大厦工程设计页（中国电子工程设计院）",
+      "url": "https://www.ceedi.com.cn/gtdzyen/ywly/myjz/sybgjz/webinfo/2020/05/1626042751017232.htm",
+      "publisher": "中国电子工程设计院股份有限公司",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "designer_page",
+      "notes": "设计2010/建成2016、项目高度300米、建筑规模35万㎡、合作设计 Gensler、2017年度全国优秀工程勘察设计行业奖一等奖。"
+    },
+    {
+      "id": "wikidata-q60989686",
+      "title": "Shimao Cross-Strait Plaza (Q60989686)",
+      "url": "https://www.wikidata.org/wiki/Q60989686",
+      "publisher": "Wikidata",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "structured_reference",
+      "notes": "建筑群坐标 24°26'18\"N 118°05'01\"E（WGS84），与中文维基条目坐标（24.43892,118.0831）及 CTBUH 塔B坐标互洽。"
+    },
+    {
+      "id": "ctbuh-scraperbase",
+      "title": "Xiamen Shimao Straits Tower A/B（CTBUH 高层建筑数据）",
+      "url": "https://www.skyscrapercenter.com/",
+      "publisher": "CTBUH（经 Scraperbase 镜像页核对）",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "structured_reference",
+      "notes": "塔B坐标 24.437707/118.084315；两塔中心距与最近同高建筑距离 168m。用于坐标交叉验证，不作足印来源。"
+    },
+    {
+      "id": "commons-shimao-photos",
+      "title": "Category:Xiamen Shimao Straits Tower（Wikimedia Commons 照片）",
+      "url": "https://commons.wikimedia.org/wiki/Category:Xiamen_Shimao_Straits_Tower",
+      "publisher": "Wikimedia Commons 贡献者（CC BY-SA 4.0）",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "photo_reference",
+      "notes": "仅作观察参考（形态/收分/冠顶/排列），照片不打包为贴图。含从鼓浪屿东望、仰视、黄昏等多视角。"
+    },
+    {
+      "id": "esri-world-imagery",
+      "title": "Esri World Imagery 瓦片（z16-z19 局部）",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+      "publisher": "Esri 及其影像供应商",
+      "accessedAt": "2026-10-12",
+      "evidenceType": "satellite_imagery",
+      "notes": "用于沙坡尾场地方位/间距交叉验证（瓦片时相未标定，不作尺寸实测依据）。"
+    }
+  ],
+  "places": [
+    {
+      "id": "shimao",
+      "name": "世茂海峡大厦 · 双子塔",
+      "aliases": ["厦门双子塔", "世茂 Emall"],
+      "kind": "building_complex",
+      "priority": 1,
+      "status": "owned_by_shimao_workflow",
+      "location": {
+        "crs": "EPSG:4326",
+        "center": [118.08379, 24.43827],
+        "bbox": [118.0830, 24.4375, 118.0847, 24.4391],
+        "status": "osm-mapped-cross-validated"
+      },
+      "facts": [
+        "A塔64层/B塔55层，屋面均249.9m，屋顶钢构架顶标高300m（reported，百科+官网+设计院）",
+        "裙房6层32.5m（reported）",
+        "双塔+裙房足印 OSM way/564921672、way/564921671、way/564921673（open vector）",
+        "Gensler 风帆造型，塔玻璃幕墙+裙房石材幕墙（reported）"
+      ],
+      "localData": ["data/landmarks/shimao.json"],
+      "referencePages": [
+        "https://www.shimaogroup.com/smlist/view.php?aid=254",
+        "https://baike.baidu.com/item/厦门世茂海峡大厦/3496361",
+        "https://www.ceedi.com.cn/gtdzyen/ywly/myjz/sybgjz/webinfo/2020/05/1626042751017232.htm"
+      ],
+      "modeling": {
+        "components": ["detail_shimao（双帆塔+冠顶钢构+裙房）"],
+        "nextSteps": ["已建模块 scripts/landmarks/shimao.py；后续轮次补幕墙分格与裙房波浪檐口精修"],
+        "blockers": []
+      }
+    },
+    {
+      "id": "xmu",
+      "name": "厦门大学（思明校区）",
+      "aliases": ["厦大"],
+      "kind": "district",
+      "priority": 2,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": [],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {
+        "components": [],
+        "nextSteps": ["拆分嘉庚楼群/群贤楼群/上弦场等可辨识对象后逐个立任务"],
+        "blockers": ["M1 坐标为游戏设计估算（118.0897,24.4366），需证据工作流核实；校区为片区，须先拆分对象"]
+      }
+    },
+    {
+      "id": "gulangyu",
+      "name": "鼓浪屿",
+      "aliases": [],
+      "kind": "district",
+      "priority": 2,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": [118.0683, 24.4446], "bbox": [118.066, 24.442, 118.073, 24.451], "status": "osm-island-polygon"},
+      "facts": ["1e47291 已入岛：步行动线+建筑+绿地，车行道限主岛", "建筑高度沿用全市估算（中位23.4m），与2-4层历史街区画像有偏差"],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {
+        "components": [],
+        "nextSteps": ["日光岩/八卦楼等单点对象另立任务；岛内建筑高度 heritage 上限处理"],
+        "blockers": ["历史街区高度需来源支持，不能用估算冒充"]
+      }
+    },
+    {
+      "id": "huizhan",
+      "name": "厦门国际会展中心",
+      "aliases": [],
+      "kind": "building_complex",
+      "priority": 2,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": [],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {
+        "components": [],
+        "nextSteps": ["扇形屋面结构证据调查后立任务"],
+        "blockers": ["M1 坐标为估算；扇壳屋面几何需来源"]
+      }
+    },
+    {
+      "id": "wuyuan",
+      "name": "五缘湾",
+      "aliases": [],
+      "kind": "district",
+      "priority": 3,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": [],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {"components": [], "nextSteps": ["湾区天际线与游艇港拆分"], "blockers": ["坐标与范围未核实"]}
+    },
+    {
+      "id": "yundang",
+      "name": "筼筜湖",
+      "aliases": [],
+      "kind": "park",
+      "priority": 3,
+      "status": "candidate_registered",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": ["landmark-candidates.json 已注册 park 候选"],
+      "localData": ["public/city/landmark-candidates.json"],
+      "referencePages": [],
+      "modeling": {"components": [], "nextSteps": ["湖面/白鹭岛/音乐喷泉分对象调查"], "blockers": ["水域与绿地范围需来源"]}
+    },
+    {
+      "id": "bailu",
+      "name": "白鹭洲公园",
+      "aliases": [],
+      "kind": "park",
+      "priority": 3,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": [],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {"components": [], "nextSteps": ["公园绿岛与雕塑广场调查"], "blockers": ["坐标未核实"]}
+    },
+    {
+      "id": "gaoqi",
+      "name": "高崎机场 T4",
+      "aliases": [],
+      "kind": "building_complex",
+      "priority": 3,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": [],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {"components": [], "nextSteps": ["航站楼构形与跑道关系调查"], "blockers": ["M1 坐标为估算"]}
+    },
+    {
+      "id": "xiamenzhan",
+      "name": "厦门站",
+      "aliases": [],
+      "kind": "building_complex",
+      "priority": 3,
+      "status": "pending_evidence",
+      "location": {"crs": "EPSG:4326", "center": null, "bbox": null, "status": "m1_game_estimate"},
+      "facts": ["M3 街面走廊已锚定湖滨东路（厦门站-筼筜湖）"],
+      "localData": [],
+      "referencePages": [],
+      "modeling": {"components": [], "nextSteps": ["站房与站前广场证据调查"], "blockers": ["坐标为估算"]}
+    },
+    {
+      "id": "shapowei",
+      "name": "沙坡尾",
+      "aliases": ["避风坞"],
+      "kind": "district",
+      "priority": 4,
+      "status": "content_partial",
+      "location": {"crs": "EPSG:4326", "center": [118.0817, 24.4398], "bbox": null, "status": "osm-water-feature"},
+      "facts": ["M3 已落：月白咖啡厅（-2051,-3282）、baypark 南岸、世茂双塔（1e47291 后续轮次）"],
+      "localData": ["public/city/bamboo-cafe/manifest.json"],
+      "referencePages": [],
+      "modeling": {"components": ["cafe", "baypark"], "nextSteps": ["避风坞岸线与渔船道具精修"], "blockers": []}
+    }
+  ]
+}
