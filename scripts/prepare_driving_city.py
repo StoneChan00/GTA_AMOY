@@ -26,6 +26,13 @@ coasts=[shape(f['geometry']).intersection(bounds) for f in load('coastline') if 
 # the bbox boundary and stays outside the playable area.
 cells=polygonize(unary_union([bounds.boundary,*coasts]))
 islands=[p for p in cells if p.area>.004 and not p.intersects(bounds.boundary)]
+# Gulangyu (1.9 km²) sits far below the 0.004°² filter but belongs with the
+# island set per the design comment above: union its cell explicitly when the
+# coastline closes around it, so the pedestrian island renders with land,
+# buildings and green instead of a lone map marker.
+_gy=Point(118.0683,24.4446)
+_gy_cell=next((p for p in cells if p.contains(_gy) and not p.intersects(bounds.boundary)),None)
+if _gy_cell is not None and not any(p.equals(_gy_cell) for p in islands):islands.append(_gy_cell)
 anchor=Point(118.128,24.490)
 if not any(p.contains(anchor) for p in islands):
  # Coastline topology connected the island to the mainland (e.g. a mapped
@@ -33,6 +40,11 @@ if not any(p.contains(anchor) for p in islands):
  big=max((p for p in cells if p.contains(anchor)),key=lambda p:p.area,default=None)
  if big is None:raise SystemExit('coastline does not close around Xiamen Island; check source data')
  islands=[big.intersection(box(118.055,24.415,118.195,24.565))]
+main=max(islands,key=lambda p:p.area)
+main_land=transform(project,main)
+# Car roads belong to the main island only: Gulangyu is a pedestrian island in
+# reality, and its footpath-derived service lanes would strand the 鼓浪屿
+# landmark arrival on a road graph island with no bridge to the mainland.
 island_union=unary_union(islands)
 # Only island shores get the runtime promenade; mainland coastlines stay bare.
 coasts=[l for l in coasts if l.geom_type=='LineString' and island_union.distance(l)<.002]
@@ -45,7 +57,7 @@ for f in load('roads'):
  if k not in allowed or not g.intersects(bounds) or t.get('access') in ['private','no'] or t.get('motor_vehicle')=='no':continue
  # Flatten grade separation consistently, including tunnel centerlines. No
  # claim of surveyed bridge/tunnel reconstruction in this iteration.
- g=transform(project,g.intersection(bounds)).intersection(land.buffer(12))
+ g=transform(project,g.intersection(bounds)).intersection(main_land.buffer(12))
  try: lanes=max(1,min(5,int(t.get('lanes','2').split(';')[0])))
  except:lanes=2
  width=max(5.8,min(16,lanes*3.0))
