@@ -14,7 +14,7 @@ USER REQUESTS (AS-IS)
 
 GOAL
 ----
-继续 GTA_AMOY（鹭岛纪，厦门岛浏览器城市，fork 自 GTA_SZ）的 M3 阶段：山体地形接入、对岸天际线、地标精修内容生产。
+维护 GTA_AMOY（鹭岛纪，厦门岛浏览器城市，fork 自 GTA_SZ）并推进 M3 后迭代：M3 已收官（山体地形/对岸天际线/地标精修管线+双子塔样板/鼓浪屿入岛/地图可见性），当前主线为地标内容生产与观感调优（见 PENDING TASKS）。
 
 WORK COMPLETED
 --------------
@@ -30,9 +30,9 @@ WORK COMPLETED
 
 CURRENT STATE
 -------------
-- 14 个 commit（6def972 M1 → 7b8a1de 地标精修管线+双子塔样板），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
-- 2026-10-12 双提交：1e47291 鼓浪屿入岛（面积阈值误滤修复+全管线重跑+链末段补齐：car.glb LFS 恢复/facade diversity 重跑/coastal-horizon 重编号 54582/3426/6852）；7b8a1de M3 地标精修管线+世茂双子塔样板 verified（详见 docs/landmarks/agent-workflow.md）
-- npm test：290/290 全通过（M3 主体完成后无已知失败）
+- 16 个 commit（6def972 M1 → 1f28ed8 地图可见性修复），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 2026-10-12 四提交：1e47291 鼓浪屿入岛；7b8a1de 地标精修管线+双子塔样板 verified；4a05097 HANDOFF 刷新；1f28ed8 地图可见性（minimap 陆地图层/海岸描边、M 地图虚线步道层、深圳残留文案清理：地图副标题/咖啡厅 area/航拍 8 镜/README reel 6 镜全量厦门化）
+- npm test：290/290 全通过；tsc 干净
 - 浏览器验证：12-14s 启动；鼓浪屿独立岛屿（红屋顶建筑群+绿地+0 车行道）；世茂双塔新模型（收分比实测 0.67-0.75）
 - dev server 已重启（PID 会变，遇到 "Unexpected magic: 1868833084" 先重启）
 - 环境：Windows + Blender 5.2.2（winget，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium(shapely/pyproj/rasterio/numpy/PIL 已装，scipy 未装）+ npm ci 完成
@@ -40,6 +40,8 @@ CURRENT STATE
 RELEASE & DEPLOYMENT
 --------------------
 - 三入口（均验证可用）：源码 https://github.com/StoneChan00/GTA_AMOY · Pages https://stonechan00.github.io/GTA_AMOY/ · 国内镜像 http://39.96.117.179/GTA_AMOY/（根路径 302 跳转）
+- 2026-10-12 已部署 M3 双提交（鼓浪屿+双子塔）到双端并验证（index.html 资源哈希两入口均与本地 dist MATCH、鼓浪屿地标在公网 city.json 确认）；1f28ed8 地图修复待下次部署
+- **GitHub 推送间歇性 TLS 阻断**（代理 127.0.0.1:7897 出口不稳，直连同样被限速）：gh-pages 160MB 推送抓住窗口完成；`git push origin master` 多次失败——网络稳定后一条命令即可（本地 master 领先 origin 多个提交）。ECS 通道（SSH IP 直连）不受影响
 - 一键部署：npm run deploy:pages（推 gh-pages 分支，普通 blob 非 LFS 指针）；npm run deploy:ecs（scp+解压到 /var/www/<repo>/）。两条命令共享 scripts/rewrite-dist-paths.mjs：源码 57+ 处 JS 与 4 处 JSON manifest 的根绝对路径（'/city/...'、'/characters' 等）Vite 不会重写，必须后处理加 /GTA_AMOY/ 前缀，**残留即构建失败**（新增硬编码路径需先加进重写清单）
 - ECS：Ubuntu 24.04（2C/1.6G，磁盘 27G 可用），Nginx 多项目根 /var/www（正则 location 适配任意 /<repo>/ 子目录），gzip+缓存+Range 已配；SSH 免密 root@39.96.117.179（ssh config 别名 ali-cloud-ecs 带括号，**scp 用它会传参失败，一律 IP 直连**）；安全组 80 已放行；带宽 3Mbps 固定（完整加载 5-6 分钟，与 MC 服 frp 共享，详见 worklog）
 - **M3 编码注意**：ECS 是纯 HTTP（无域名无法签证书），crypto.subtle/clipboard/ServiceWorker 等安全上下文 API 不可用——新代码要么不用，要么按 src/sha256.ts 的模式做回退（city-observer-beacons.ts 的 globalThis.crypto?.randomUUID?.() ?? fallback 是范本）
@@ -48,7 +50,7 @@ PENDING TASKS
 ------------
 - 地标精修内容生产（M3 主线，管线+样板已就绪）：9/10 地标 planned 待证据整理（priority-places.json 已建）；契约入口 docs/landmarks/agent-workflow.md + skills/landmark-reconstruction/SKILL.md（厦门化）；样板 scripts/landmarks/shimao.py；鼓浪屿建筑高度 heritage 上限（全市估算中位 23.4m vs 真实 2-4 层）
 - 管线债：M1 错位 radius-42 在厦港老城误除的普通楼，下次 prepare_driving_city 全量重跑时回归；shimao 冠部斜撑一塔仍略外张、帆面弧线远距微妙（记录于 validation.json）
-- 双端部署：1e47291+7b8a1de 未推送（npm run deploy:pages / deploy:ecs）
+- 地图调优：鼓浪屿 POI 标签密集（91 个 map-places 过 600m 道路筛后堆积岛上）遮挡步道细节——POI 资格在无车区的节流待做；600m 过滤使幸存 POI 的 arrival 吸到海峡对岸道路（步行岛目的地需单独处理）
 - 海面观感调参（1-2 天）：暮色/夜间黑色空洞、白昼波浪细节衰减（机制已在，纯调参）
 - 岛外扩展三档（可选）：远景剪影已完成；半实景天际线 1-2 天；可驾驶大陆 2-4 周
 - make_facade_relief_atlas.py 需 scipy（当前用 LFS 预生成 PNG，管线不完全可复现）
@@ -81,7 +83,7 @@ IMPORTANT DECISIONS
 
 EXPLICIT CONSTRAINTS
 --------------------
-- "不能把照片估计或 OSM 标签自动当作实测值"（AGENTS.md，厦门地标坐标当前全部标注 estimated，待 landmark-reconstruction 证据工作流修正）
+- "不能把照片估计或 OSM 标签自动当作实测值"（AGENTS.md；厦门地标坐标中 shimao 已经证据工作流修正——M1 曾偏 2.2km，其余 9 个仍为 estimated）
 - "不同 Agent 只能并行改独立对象模块；共享渲染源码、数据和总资产由一个集成人员串行修改"（AGENTS.md）
 - "不得只凭构建成功宣称外观或性能通过；具名视觉复核和性能结果须来自当前资产"（AGENTS.md）
 
@@ -89,7 +91,7 @@ CONTEXT FOR CONTINUATION
 ------------------------
 - 所有构建命令样例：$env:PYTHONUTF8='1'; & .venv\Scripts\python.exe scripts\<x>.py；& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background --factory-startup --python scripts\<x>.py；node scripts\optimize_city.mjs <names>
 - M2 完整构建顺序（依赖驱动）：prepare_driving_city → node_city_roads → prepare_city_ground → build_driving_assets[Blender] → copy car→traffic-car → prepare_city_streets → build_city_ground[B] → build_city_detail_assets[B] → prepare_coastal_infrastructure → build_coastal_infrastructure[B] → optimize_city buildings roads terrain → copy indigo-gt→car.glb → prepare_city_ambient → (M2) signals/canopy/ebikes --prepare+[B] → rooftops → facades→split→colorize→diversity→atlas→relief
-- 失败测试速查：mountains×2=需地形；coastal-horizon=需 far-shore；autopilot×3=深圳现场断言；cafe×3+corridor+baypark+character-gaits=深圳内容；roadside-planting=banyan-lod 包络
+- 失败测试速查：当前无已知失败（290/290）；历史条目已清空——如再出现 mountains/coastal-horizon/autopilot 类失败，先查对应管线段是否重跑完整（链末段缺失是 1e47291 修过的坑：car.glb LFS 恢复/facade diversity 重跑）
 - 遇到 "Unexpected magic: 1868833084" = Vite 返回了 index.html（文件不存在或 dev server 太老）→ 先 curl 确认、必要时重启 dev server
 - GTA_SZ（D:\2_Projects\github\GTA_SZ）是参照仓库，其 git 工作树处于异常状态（大量文件标记删除但实际存在，git lfs pull 静默失败），LFS 取物一律走 GitHub media URL
 - 今日排障/部署三篇 worklog（~/worklogs，检索关键词：ECS 部署 / 子路径化 / crypto.subtle）：「GTA_AMOY 部署阿里云 ECS 全程」「ECS 部署子路径化 /GTA_AMOY/」「纯 HTTP 部署下 crypto.subtle 缺失」——含 SSH 锁死恢复、PowerShell 传参坑、nginx reload 瞬态 404、安全上下文教训等完整链路
