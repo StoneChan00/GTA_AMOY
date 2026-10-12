@@ -117,8 +117,48 @@ export class MapRoadIndex {
   }
 }
 
-/** Observation stays at the clicked point; only the car's arrival snaps to a road. */
-export function mapPointDestination(point: V2, roads: MapRoadIndex): (Landmark & {category: MapCategory; source: MapPlaceSource}) | null {
+function pointInRing(x: number, z: number, ring: readonly V2[]): boolean {
+  let inside = false;
+  for (let i = 1, j = 0; i < ring.length; j = i++) {
+    const [xi, zi] = ring[i], [xj, zj] = ring[j];
+    if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+function pointInLandPolygon(x: number, z: number, polygon: readonly V2[][]): boolean {
+  if (!pointInRing(x, z, polygon[0])) return false;
+  for (let i = 1; i < polygon.length; i++) if (pointInRing(x, z, polygon[i])) return false;
+  return true;
+}
+
+/** Land polygons that carry no road geometry are walk-only islands (Gulangyu):
+ *  car destinations there must stay on the island instead of snapping across
+ *  the strait to the nearest drivable road. */
+export function carFreeLandTest(land: readonly V2[][][], roads: readonly Road[]): (point: V2) => boolean {
+  if (!land.length || !roads.length) return () => false;
+  const walkOnly: V2[][][] = [];
+  for (const polygon of land) {
+    const ring = polygon[0];
+    if (!ring || ring.length < 3) continue;
+    let xmin = Infinity, zmin = Infinity, xmax = -Infinity, zmax = -Infinity;
+    for (const [x, z] of ring) { xmin = Math.min(xmin, x); xmax = Math.max(xmax, x); zmin = Math.min(zmin, z); zmax = Math.max(zmax, z); }
+    const carriesRoad = roads.some(road => road.points.some(([x, z]) =>
+      x >= xmin && x <= xmax && z >= zmin && z <= zmax && pointInLandPolygon(x, z, polygon)));
+    if (!carriesRoad) walkOnly.push(polygon);
+  }
+  return point => walkOnly.some(polygon => pointInLandPolygon(point[0], point[1], polygon));
+}
+
+/** Observation stays at the clicked point; on drivable land the car's arrival
+ *  snaps to a road, while walk-only islands keep the arrival where clicked. */
+export function mapPointDestination(point: V2, roads: MapRoadIndex, isWalkOnly?: (point: V2) => boolean): (Landmark & {category: MapCategory; source: MapPlaceSource}) | null {
+  if (isWalkOnly?.(point)) {
+    return {id: `map-point:${point[0].toFixed(2)}:${point[1].toFixed(2)}`, name: '步行岛 · 选定位置',
+      x: point[0], z: point[1], height: 0, area: '厦门 · 地图选点', excludeRadius: 0,
+      arrival: [point[0], point[1]], yaw: 0, category: 'place',
+      source: {provider: 'OpenStreetMap', coordinateMethod: 'map_pointer_walk_only_island'}};
+  }
   const nearest = roads.nearest(point);
   if (!nearest) return null;
   return {id: `map-point:${point[0].toFixed(2)}:${point[1].toFixed(2)}`, name: `${roadVicinityName(nearest.road)} · 选定位置`,

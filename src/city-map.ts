@@ -3,7 +3,7 @@ import {roadDisplayName,isUnnamedRoad} from './city-road-names.ts';
 import type {CityData, Landmark, Road, V2} from './city-types.ts';
 import type {RoadGraph} from './navigation.ts';
 import {localMapView, rememberLocalMapWidth} from './city-map-view.ts';
-import {MapRoadIndex, mapPointDestination, mapToScreen, screenToMap, zoomMapAt, placeMapLabels, roadLabelAnchor, wgs84ToMap,
+import {MapRoadIndex, mapPointDestination, mapToScreen, screenToMap, zoomMapAt, placeMapLabels, roadLabelAnchor, wgs84ToMap, carFreeLandTest,
   type MapCategory, type MapView, type MapLabelCandidate, type MapPlaceSource, type SourcedMapPlace} from './city-map-geometry.ts';
 
 export type CityMapDestination = Landmark & {
@@ -108,6 +108,9 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
   const manual = node<HTMLButtonElement>('#drive-route'), auto = node<HTMLButtonElement>('#auto-drive');
   const sourceLink = node<HTMLAnchorElement>('#map-place-source');
   const roadIndex = new MapRoadIndex(data.roads);
+  // Walk-only islands (Gulangyu) carry no road graph; destinations there keep
+  // on-island arrivals instead of snapping across the strait.
+  const isWalkOnlyLand = carFreeLandTest(data.land, data.roads);
   const abort = new AbortController(), signal = abort.signal;
   let state: CityMapState = {...data.spawn}, selected: CatalogPlace | null = null, route: V2[] = [];
   let visited = new Set<string>(), catalog: CatalogPlace[] = [], filtered: CatalogPlace[] = [];
@@ -276,7 +279,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
     const resolved = typeof destination === 'string' ? catalog.find(place => place.id === destination) : destination;
     if (!resolved) return;
     selected = catalog.find(place => place.id === resolved.id) ?? asCatalog(resolved);
-    route = graph.nodes.length ? graph.route([state.x, state.z], selected.arrival) : [];
+    route = graph.nodes.length && !isWalkOnlyLand(selected.arrival) ? graph.route([state.x, state.z], selected.arrival) : [];
     renderSelection(); renderList();
     if (focus) focusAt([selected.x, selected.z], selected.category === 'district' ? 2.1 : 3.4); else schedule();
     writeText(status, `已选择 ${selected.name}`);
@@ -287,7 +290,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
     const label = [...hitLabels].reverse().find(box => point[0] >= box.left && point[0] <= box.left + box.width && point[1] >= box.top && point[1] <= box.top + box.height);
     const marker = hitMarkers.find(p => Math.hypot(p.x - point[0], p.y - point[1]) < 13);
     if (label || marker) { selectDestination((label ?? marker)!.place, false); return; }
-    const destination = mapPointDestination(screenToMap(view, point), roadIndex);
+      const destination = mapPointDestination(screenToMap(view, point), roadIndex, isWalkOnlyLand);
     if (!destination) { writeText(status, '道路数据暂时未载入，请稍后重试。'); return; }
     selectDestination(destination, false);
   }
@@ -378,7 +381,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
       const priority = chosen ? 1500 : city ? 950 : place.category === 'landmark' ? 850 : district ? 500 + (place.kind === 'suburb' ? 80 : 0) : place.rank + 350;
       const color = chosen ? '#f3f3e9' : city ? '#c3ccc485' : district ? '#d7dfd1ba' : visited.has(place.id) ? '#d8e5c8' : '#deded3';
       labels.push({id: place.id, name: place.name, x, y: district ? y : y - 20, width, height, priority, font, color, angle: 0, place, city,
-        offsets: district ? [[0, 0], [0, -20], [0, 20]] : [[0, 0], [0, 42], [width / 2 + 7, 20], [-width / 2 - 7, 20]]});
+        offsets: district ? [[0, 0], [0, -20], [0, 20]] : [[0, 0], [0, 42], [width / 2 + 7, 20], [-width / 2 - 7, 20], ...(chosen ? [[0, -46] as V2] : [])]});
       if (!district) {
         ctx.beginPath(); ctx.arc(x, y, chosen ? 6 : 3.2, 0, Math.PI * 2); ctx.fillStyle = chosen ? '#c1d99e' : '#b8c8b1'; ctx.fill();
         ctx.strokeStyle = '#17241dee'; ctx.lineWidth = 2; ctx.stroke();
@@ -562,7 +565,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
         incoming.arrival[0] !== selected.arrival[0] || incoming.arrival[1] !== selected.arrival[1] || incoming.yaw !== selected.yaw || incoming.height !== selected.height);
       if (nextId !== (selected?.id ?? null) || payloadChanged) {
         selected = incoming ? asCatalog({...catalog.find(p => p.id === nextId), ...incoming}) : null;
-        if (!next.route) route = selected && graph.nodes.length ? graph.route([state.x, state.z], selected.arrival) : [];
+        if (!next.route) route = selected && graph.nodes.length && !isWalkOnlyLand(selected.arrival) ? graph.route([state.x, state.z], selected.arrival) : [];
         listChanged = true;
       }
     }
@@ -579,10 +582,18 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
       const converted = wgs84ToMap(place.lon, place.lat);
       if (!Number.isFinite(place.x + place.z) || Math.hypot(converted[0] - place.x, converted[1] - place.z) > .02) continue;
       if (catalog.some(p => p.name === place.name && Math.hypot(p.x - place.x, p.z - place.z) < 180)) continue;
-      const nearest = roadIndex.nearest([place.x, place.z]); if (!nearest || nearest.distance > 600) continue;
+      // Walk-only islands keep their attraction POIs with on-island arrivals and
+      // skip the road filter (the nearest road lies across the strait); generic
+      // named places (hotels, shops) are throttled so the walkable lanes stay
+      // readable at street zoom.
+      const walkOnly = isWalkOnlyLand([place.x, place.z]);
+      const nearest = walkOnly ? null : roadIndex.nearest([place.x, place.z]);
+      if (!walkOnly && (!nearest || nearest.distance > 600)) continue;
+      if (walkOnly && place.category === 'place') continue;
       catalog.push({...place, height: 0, excludeRadius: 0, area: `厦门 · ${categoryNames[place.category]}`,
-        arrival: [nearest.x, nearest.z], yaw: nearest.yaw,
-        rank: place.kind === 'city' ? 95 : place.kind === 'suburb' ? 65 : place.category === 'park' ? 70 : place.category === 'district' ? 35 : 55});
+        arrival: walkOnly ? [place.x, place.z] : [nearest!.x, nearest!.z],
+        yaw: walkOnly ? 0 : nearest!.yaw,
+        rank: place.kind === 'city' ? 95 : place.kind === 'suburb' ? 65 : place.category === 'park' ? 70 : place.category === 'district' ? 35 : place.category === 'landmark' ? 65 : 55});
     }
     if (visible) { renderList(); schedule(); }
   }).catch(error => {

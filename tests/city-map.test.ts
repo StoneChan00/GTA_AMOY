@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {MapRoadIndex, mapPointDestination, mapToScreen, screenToMap, zoomMapAt, placeMapLabels, wgs84ToMap, roadLabelAnchor,
+import {MapRoadIndex, mapPointDestination, mapToScreen, screenToMap, zoomMapAt, placeMapLabels, wgs84ToMap, roadLabelAnchor, carFreeLandTest,
   type MapView, type SourcedMapPlace} from '../src/city-map-geometry.ts';
 import type {CityData, Road, V2} from '../src/city-types.ts';
 import {localMapView, rememberLocalMapWidth} from '../src/city-map-view.ts';
@@ -101,6 +101,40 @@ test('road label anchors use arc length, not a bounding-box or vertex average', 
   const anchor = roadLabelAnchor(makeRoad('曲线路', [[0, 0], [100, 0], [100, 20]]))!;
   assert.deepEqual(anchor.point, [60, 0]); close(anchor.length, 120); close(anchor.angle, 0);
   assert.equal(roadLabelAnchor(makeRoad('退化', [[0, 0], [0, 0]])), null);
+});
+
+test('car-free land detection marks roadless islands only, honoring holes', () => {
+  const square = (x0: number, z0: number, size: number, hole = false): V2[][] => {
+    const ring: V2[] = [[x0, z0], [x0 + size, z0], [x0 + size, z0 + size], [x0, z0 + size]];
+    if (!hole) return [ring];
+    const h = size * .2;
+    return [ring, [[x0 + h, z0 + h], [x0 + size - h, z0 + h], [x0 + size - h, z0 + size - h], [x0 + h, z0 + size - h]]];
+  };
+  const drivable = square(0, 0, 1000), island = square(3000, 2000, 800);
+  const road = makeRoad('主干道', [[100, 100], [900, 900]]);
+  const isWalkOnly = carFreeLandTest([drivable, island], [road]);
+  assert.equal(isWalkOnly([500, 500]), false); // main island carries roads
+  assert.equal(isWalkOnly([3080, 2080]), true); // roadless island stays walk-only
+  assert.equal(isWalkOnly([-500, -500]), false); // open sea is not walk-only land
+  assert.equal(carFreeLandTest([drivable, island], [])([3080, 2080]), false); // no roads loaded: never claim walk-only
+  const holed = carFreeLandTest([drivable, square(3000, 2000, 800, true)], [road]);
+  assert.equal(holed([3080, 2080]), true); // land ring outside the hole
+  assert.equal(holed([3400, 2400]), false); // inside the hole is water, not land
+});
+
+test('map clicks on walk-only islands keep the arrival on the island', () => {
+  const road = makeRoad('鹭江道', [[-2200, -2200], [-2200, -1600]]);
+  const roads = new MapRoadIndex([road]);
+  const island: V2[][] = [[[-2600, -3100], [-1800, -3100], [-1800, -2300], [-2600, -2300]]];
+  const isWalkOnly = carFreeLandTest([island], [road]);
+  const destination = mapPointDestination([-2200, -2700], roads, isWalkOnly)!;
+  assert.deepEqual([destination.x, destination.z], [-2200, -2700]);
+  assert.deepEqual(destination.arrival, [-2200, -2700]); // no snap across the strait
+  assert.equal(destination.yaw, 0);
+  assert.match(destination.name, /步行岛/);
+  assert.equal(destination.source.url, undefined);
+  const snapped = mapPointDestination([-2200, -2700], roads)!; // legacy behavior on drivable land
+  assert.deepEqual(snapped.arrival, [-2200, -2200]);
 });
 
 test('sourced place catalog has unique source IDs and uses the current game coordinate conversion', () => {
