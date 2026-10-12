@@ -30,13 +30,12 @@ WORK COMPLETED
 
 CURRENT STATE
 -------------
-- 12 个 commit（6def972 M1 → ea9cd1b SHA-256 回退），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
-- 历史已邮箱净化：全部 commit 作者/提交者重写为 chensitongsndn@163.com（工作邮箱零暴露，repo-local git config 已设，**勿再用 huawei 邮箱提交**）；早期交接文档引用的 e1cc500/9570a7f 等旧 hash 已失效
-- npm test：266 通过/20 失败（+4 个 sha256.test.ts；失败均为已知深圳内容/待产内容，见失败速查）
-- 浏览器验证：12-14 秒启动（本地 dev，真机 GPU），环岛干道 126km/h 行驶正常，NPC 在玩家 2.8m 处驻停避让，61 FPS（日落场景）
-- dev server 已重启（M1 期间启动的老 Vite 进程不会拾取 public/ 新文件，遇到"Unexpected magic: 1868833084"=Vite SPA 回退 index.html 时先重启 dev server）
-- 环境：Windows + Blender 5.2.2（winget 安装，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium/shapely/pyproj/rasterio/numpy/PIL 已装，scipy 未装）+ npm ci 完成
-- DSM 瓦片已下载并验证：data/raw/Copernicus_DSM_COG_10_N24_00_E117_00_DEM.tif（46.29MB）+ E118（18.72MB，3600×3600 完整）
+- 14 个 commit（6def972 M1 → 7b8a1de 地标精修管线+双子塔样板），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 2026-10-12 双提交：1e47291 鼓浪屿入岛（面积阈值误滤修复+全管线重跑+链末段补齐：car.glb LFS 恢复/facade diversity 重跑/coastal-horizon 重编号 54582/3426/6852）；7b8a1de M3 地标精修管线+世茂双子塔样板 verified（详见 docs/landmarks/agent-workflow.md）
+- npm test：290/290 全通过（M3 主体完成后无已知失败）
+- 浏览器验证：12-14s 启动；鼓浪屿独立岛屿（红屋顶建筑群+绿地+0 车行道）；世茂双塔新模型（收分比实测 0.67-0.75）
+- dev server 已重启（PID 会变，遇到 "Unexpected magic: 1868833084" 先重启）
+- 环境：Windows + Blender 5.2.2（winget，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium(shapely/pyproj/rasterio/numpy/PIL 已装，scipy 未装）+ npm ci 完成
 
 RELEASE & DEPLOYMENT
 --------------------
@@ -46,26 +45,27 @@ RELEASE & DEPLOYMENT
 - **M3 编码注意**：ECS 是纯 HTTP（无域名无法签证书），crypto.subtle/clipboard/ServiceWorker 等安全上下文 API 不可用——新代码要么不用，要么按 src/sha256.ts 的模式做回退（city-observer-beacons.ts 的 globalThis.crypto?.randomUUID?.() ?? fallback 是范本）
 
 PENDING TASKS
--------------
-- 山体地形（M3）：prepare_city_mountains.py 需适配——line 22 采样范围 x0/z0/x1/z1（厦门 extent [-3270,-4077,4724,5014]）、line 37 geotransform 61710→60786/114.025→118.12/22.536→24.485（66792 不变）、lines 38-39 DSM 路径（data/raw/landmarks/...N22...→data/raw/...N24...，注意目录不同）、line 31 lianhua→仙岳山对应地标 id、line 88 北侧山脊 x 范围重定义、需先 pip install scipy 且需 prepare_landmark_terrain 适配仙岳山（way/41281446→仙岳山公园 way id，需从 data/processed/xiamen_study/green.geojson 查找；峰坐标约 118.10,24.504）
-- 对岸天际线（M3）：prepare_coastal_infrastructure.py far-shore 段（M1 时被我替换为空 manifest 占位，注释标记"M2"）需真实 DSM 环岛采样（建议环形排除岛屿本体）；重建 opposite-shore.glb 后 city-coastal-horizon.test.ts 的深圳面数断言（48,868/1812）需按厦门实测重编号
-- autopilot 测试深圳化重写：tests/autopilot.test.ts line 170 way/736676593→厦门道路（如 way/1465237390 文园路 width 15）、lines 182-195 腾讯停车坐标→厦门等效、line 197 目的地列表→厦门可达地标（注意 40s 模拟预算内只有 huizhan 距 spawn 272m 可达，其余 3.5-6km 需加大预算或换近点）
-- 深圳内容禁用项（M3 内容生产）：bamboo-cafe×3/corridor/baypark-look/character-gaits（咖啡馆 jk/maid 角色）需厦门版内容重写或永久移除
-- banyan-lod 包络 0.086m 偏差（city-roadside-planting.test.ts:107）：Blender 5.2 导出量化差异，build_landscape_assets.py 的 radii 常量 +0.1 可消除
+------------
+- 地标精修内容生产（M3 主线，管线+样板已就绪）：9/10 地标 planned 待证据整理（priority-places.json 已建）；契约入口 docs/landmarks/agent-workflow.md + skills/landmark-reconstruction/SKILL.md（厦门化）；样板 scripts/landmarks/shimao.py；鼓浪屿建筑高度 heritage 上限（全市估算中位 23.4m vs 真实 2-4 层）
+- 管线债：M1 错位 radius-42 在厦港老城误除的普通楼，下次 prepare_driving_city 全量重跑时回归；shimao 冠部斜撑一塔仍略外张、帆面弧线远距微妙（记录于 validation.json）
+- 双端部署：1e47291+7b8a1de 未推送（npm run deploy:pages / deploy:ecs）
+- 海面观感调参（1-2 天）：暮色/夜间黑色空洞、白昼波浪细节衰减（机制已在，纯调参）
+- 岛外扩展三档（可选）：远景剪影已完成；半实景天际线 1-2 天；可驾驶大陆 2-4 周
 - make_facade_relief_atlas.py 需 scipy（当前用 LFS 预生成 PNG，管线不完全可复现）
-- README.md 已完成双语化（英文主版 + README.zh-CN.md，含三入口/部署/操作/许可），本仓库无 AGENTS.md（EXPLICIT CONSTRAINTS 引用的是上游 GTA_SZ 的 AGENTS.md）
+- EXPLICIT CONSTRAINTS 引用的 AGENTS.md 属上游 GTA_SZ（本仓库无）
 
 KEY FILES
 ---------
 - src/city-map-geometry.ts - 厦门坐标系唯一权威（origin [118.12,24.485]，经度系数 101310，纬度 111320，缩放 0.60）
-- scripts/prepare_driving_city.py - city.json 生成器（岛屿选择算法/10 地标/spawn 沿环岛干道自动定向/主干道最小宽度 10.5m）
-- scripts/prepare_city_mountains.py - 山体生成器（M3 待适配，全部硬编码行号见 PENDING）
-- scripts/prepare_coastal_infrastructure.py - 海岸设施（far-shore 段 M1 被我改为空占位）
+- scripts/prepare_driving_city.py - city.json 生成器（岛屿选择含鼓浪屿显式并入+车行道限主岛 main_land；10 地标/spawn 自动定向/主干道最小宽度 10.5m）
+- scripts/landmark_tasks.py + data/landmarks/priority-places.json - 地标精修任务包生成器与清单（厦门坐标策略）
+- scripts/build_landmark_details.py + scripts/landmarks/shimao.py + data/landmarks/shimao.json - 地标总构建器与双子塔样板（evidence→model→verified 全链路）
+- docs/landmarks/agent-workflow.md - 地标精修契约（集成链命令/机位三角学/管道陷阱/交付状态）
+- scripts/build_city_facades.py - 基础楼体+立面重建（读 landmark-detail.json 的 baseBuildingIds 排除旧楼；两导出缺一不可）
 - scripts/traffic.ts 旁边的 src/traffic.ts - NPC 避让（ahead(px,pz,true) 玩家检查）
-- src/landmark-details.ts - landmark manifest schema 与加载契约（空 manifest 可安全通过）
+- src/landmark-details.ts - landmark manifest schema 与加载契约（运行时合并地标/过滤旧楼/处置旧网格/碰撞足印）
 - scripts/build_placeholder_landmark_glbs.py - Blender 占位 GLB 生成器（勿用 gltf-transform 替代）
-- docs/landmarks/agent-workflow.md - 地标精修并行契约（M3 内容生产入口）
-- output/amoy/ - Playwright 截图证据（boot/drive/night/day/aerial/wheels）
+- output/amoy/ - Playwright 截图证据（gulangyu-fix/、shimao-detail/、sea-check/）
 - config/regions.json - xiamen_study [117.95,24.35,118.30,24.65] / xiamen_island bbox
 - scripts/deploy-pages.mjs + scripts/deploy-ecs.mjs + scripts/rewrite-dist-paths.mjs - 双入口一键部署与子路径重写（见 RELEASE & DEPLOYMENT）
 - src/sha256.ts - SHA-256 纯 JS 回退（安全上下文优先 crypto.subtle，HTTP 部署依赖它）
