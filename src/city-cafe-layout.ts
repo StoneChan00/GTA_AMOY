@@ -29,6 +29,6 @@ export function cafeLayout(spec:CafeSpec,colliders:CafeCollider[],baseHeight:num
   return colliders.some(b=>Math.abs(p.x-b.x)<b.width/2+padding&&Math.abs(p.z-b.z)<b.depth/2+padding);
  };
  const entry=world(0,-6.15),door=world(0,-7.8);
- const landmark:Landmark={id:spec.id,name:spec.name,x,z,height:f.height,area:'南山 · 春笋旁',excludeRadius:0,detailCollision:true,arrival:[spec.site.arrival[0],spec.site.arrival[1]],yaw:spec.site.roadYaw,photoDistance:28,photoAngle:heading+.25,photoElevation:.22,photoTargetHeight:baseHeight+1.8};
+  const landmark:Landmark={id:spec.id,name:spec.name,x,z,height:f.height,area:'思明 · 沙坡尾',excludeRadius:0,detailCollision:true,arrival:[spec.site.arrival[0],spec.site.arrival[1]],yaw:spec.site.roadYaw,photoDistance:28,photoAngle:heading+.25,photoElevation:.22,photoTargetHeight:baseHeight+1.8};
  return {local,world,inside,reserved,floorAt,blocked,entry,door,landmark,baseHeight};
 }

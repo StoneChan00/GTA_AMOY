@@ -205,6 +205,7 @@ type Segment = {a: V2; b: V2; width: number; major: boolean};
 type MapPolygon = {rings: V2[][]; bounds: Bounds};
 type MapCache = {
   segments: Map<string, Segment[]>;
+  land: MapPolygon[];
   green: MapPolygon[];
   water: MapPolygon[];
   tiles: Map<string, HTMLCanvasElement>;
@@ -227,6 +228,7 @@ function getMapCache(city: CityData): MapCache {
   if (existing) return existing;
   const cache: MapCache = {
     segments: new Map(), tiles: new Map(),
+    land: city.land.map(p => ({rings: p, bounds: polygonBounds(p)})),
     green: city.green.map(p => ({rings: p.rings, bounds: polygonBounds(p.rings)})),
     water: city.water.map(p => ({rings: p.rings, bounds: polygonBounds(p.rings)})),
   };
@@ -262,8 +264,7 @@ function getMapTile(cache: MapCache, tx: number, tz: number): HTMLCanvasElement 
   const xmin = tx * TILE_WORLD, zmin = tz * TILE_WORLD;
   const xmax = xmin + TILE_WORLD, zmax = zmin + TILE_WORLD;
   const point = ([x, z]: V2): V2 => [(x - xmin) * TILE_SCALE, (zmax - z) * TILE_SCALE];
-  const polygons = (items: MapPolygon[], fill: string): void => {
-    ctx.fillStyle = fill;
+  const polygons = (items: MapPolygon[], fill: string, stroke?: string, lineWidth = 1.6): void => {
     for (const {rings, bounds: b} of items) {
       if (b[2] < xmin || b[0] > xmax || b[3] < zmin || b[1] > zmax) continue;
       ctx.beginPath();
@@ -274,9 +275,15 @@ function getMapTile(cache: MapCache, tx: number, tz: number): HTMLCanvasElement 
         }
         ctx.closePath();
       }
-      ctx.fill('evenodd');
+      if (fill) { ctx.fillStyle = fill; ctx.fill('evenodd'); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineWidth; ctx.stroke(); }
     }
   };
+  // Land polygons give car-free islands (Gulangyu) and every coastline their
+  // outline on the minimap; without this layer land reads as open water. The
+  // coastline stroke (same tone as the atlas map) is what survives the haze
+  // gradient, perspective compression and HUD translucency.
+  polygons(cache.land, 'rgba(163, 181, 169, 0.5)', 'rgba(145, 205, 212, 0.9)', 3);
   polygons(cache.water, 'rgba(152, 189, 202, 0.12)');
   polygons(cache.green, 'rgba(150, 164, 113, 0.18)');
   const segments = cache.segments.get(key) ?? [];

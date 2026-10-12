@@ -75,8 +75,8 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
       </header>
       <div class="atlas-layout">
         <div class="atlas-map-wrap">
-          <canvas id="city-map" tabindex="0" aria-label="深圳道路地图。拖拽浏览，滚轮缩放，点击选择目的地。方向键移动，加减键缩放。"></canvas>
-          <div class="atlas-map-caption"><span>南山 · 福田 · 罗湖</span><small id="map-view-level">街道与周边</small></div>
+          <canvas id="city-map" tabindex="0" aria-label="厦门道路地图。拖拽浏览，滚轮缩放，点击选择目的地。方向键移动，加减键缩放。"></canvas>
+          <div class="atlas-map-caption"><span>思明 · 湖里</span><small id="map-view-level">街道与周边</small></div>
           <div class="atlas-map-tools" aria-label="地图视角"><button type="button" data-map-command="in" aria-label="放大地图">＋</button><button type="button" data-map-command="out" aria-label="缩小地图">−</button><span></span><button type="button" data-map-command="player" aria-label="定位我的车辆" title="定位我的车辆">⌖</button><button type="button" data-map-command="all" aria-label="查看完整城市" title="查看完整城市">↔</button></div>
           <div class="atlas-map-north" aria-hidden="true"><span>↑</span>N</div>
           <div class="atlas-map-bottom"><div class="atlas-scale"><span id="map-scale-label"></span><i id="map-scale-line"></i></div><span id="map-status" role="status">点击地点，规划下一段路</span></div>
@@ -138,6 +138,15 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
     for (const p of b.rings[0]) { xmin = Math.min(xmin, p[0]); xmax = Math.max(xmax, p[0]); zmin = Math.min(zmin, p[1]); zmax = Math.max(zmax, p[1]); }
     return [xmin, zmin, xmax, zmax] as [number, number, number, number];
   });
+  // Walkable paths (sidewalks, footbridges, the car-free Gulangyu lanes) drawn at
+  // street zoom; absent from city.json, so loaded lazily from the pipeline output.
+  let pedestrianPath: Path2D | null = null;
+  void fetch('/city/pedestrian-paths.json').then(r => r.ok ? r.json() : null).then((segments: number[][]) => {
+    if (destroyed || !Array.isArray(segments) || !segments.length) return;
+    const path = new Path2D();
+    for (const [x1, z1, x2, z2] of segments) { path.moveTo(x1, z1); path.lineTo(x2, z2); }
+    pedestrianPath = path; baseDirty = true; if (visible) schedule();
+  }).catch(() => {});
 
   function asCatalog(destination: CityMapDestination): CatalogPlace {
     const category = destination.category ?? (isPark(destination) ? 'park' : 'landmark');
@@ -147,7 +156,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
   for (const {road, point} of roadByName.values()) {
     const snapped = roadIndex.nearest(point, undefined, road.id);
     if (!snapped) continue;
-    catalog.push({id: `road:${roadDisplayName(road)}`, name: roadDisplayName(road), x: point[0], z: point[1], height: 0, area: isUnnamedRoad(road)?'深圳 · 道路方位参考':'深圳 · 道路',
+      catalog.push({id: `road:${roadDisplayName(road)}`, name: roadDisplayName(road), x: point[0], z: point[1], height: 0, area: isUnnamedRoad(road)?'厦门 · 道路方位参考':'厦门 · 道路',
       arrival: [snapped.x, snapped.z], yaw: snapped.yaw, excludeRadius: 0, category: 'road', kind: road.kind,
       rank: 10, source: {provider: 'OpenStreetMap', id: road.id, url: `https://www.openstreetmap.org/${road.id}`, file: 'public/city/city.json', coordinateMethod: 'road_polyline_midpoint'}});
   }
@@ -311,6 +320,15 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
       unclassified: ['#51737f', .45, 2.4], service: ['#44646f', .4, 1.7],
     };
     c.lineCap = 'round'; c.lineJoin = 'round';
+    if (zoomLevel >= 2.3 && pedestrianPath) {
+      // Dashed footpaths: the cartographic convention keeps them readable next
+      // to solid car roads; width matches minor streets so short sidewalk
+      // segments survive at street zoom (Gulangyu's lanes are this layer).
+      c.strokeStyle = '#9fb9c2'; c.lineWidth = Math.max(.52 / s, 2.6);
+      c.setLineDash([6 / s, 2.6 / s]);
+      c.stroke(pedestrianPath);
+      c.setLineDash([]);
+    }
     for (const kind of [...roadKinds].reverse()) {
       if (zoomLevel < 1.55 && ['residential', 'unclassified', 'service'].includes(kind)) continue;
       const path = roadsByKind.get(kind); if (!path) continue;
@@ -562,7 +580,7 @@ export function initializeCityMap(options: CityMapOptions): CityMapController {
       if (!Number.isFinite(place.x + place.z) || Math.hypot(converted[0] - place.x, converted[1] - place.z) > .02) continue;
       if (catalog.some(p => p.name === place.name && Math.hypot(p.x - place.x, p.z - place.z) < 180)) continue;
       const nearest = roadIndex.nearest([place.x, place.z]); if (!nearest || nearest.distance > 600) continue;
-      catalog.push({...place, height: 0, excludeRadius: 0, area: `深圳 · ${categoryNames[place.category]}`,
+      catalog.push({...place, height: 0, excludeRadius: 0, area: `厦门 · ${categoryNames[place.category]}`,
         arrival: [nearest.x, nearest.z], yaw: nearest.yaw,
         rank: place.kind === 'city' ? 95 : place.kind === 'suburb' ? 65 : place.category === 'park' ? 70 : place.category === 'district' ? 35 : 55});
     }

@@ -122,7 +122,7 @@ export function mapPointDestination(point: V2, roads: MapRoadIndex): (Landmark &
   const nearest = roads.nearest(point);
   if (!nearest) return null;
   return {id: `map-point:${point[0].toFixed(2)}:${point[1].toFixed(2)}`, name: `${roadVicinityName(nearest.road)} · 选定位置`,
-    x: point[0], z: point[1], height: 0, area: '深圳 · 地图选点', excludeRadius: 0,
+    x: point[0], z: point[1], height: 0, area: '厦门 · 地图选点', excludeRadius: 0,
     arrival: [nearest.x, nearest.z], yaw: nearest.yaw, category: 'place',
     source: {provider: 'OpenStreetMap', id: nearest.road.id, url: `https://www.openstreetmap.org/${nearest.road.id}`, coordinateMethod: 'map_pointer_with_nearest_road_arrival'}};
 }
