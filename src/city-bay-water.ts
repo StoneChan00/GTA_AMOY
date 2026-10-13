@@ -40,7 +40,7 @@ class BaySurface extends MaterialPluginBase{
   '!reflectionCoords.y=1\\.0-reflectionCoords.y;':`$0
    // Projection mirrors otherwise ignore wave normals: keep the exact mirror
    // projection and perturb only its sample, never the camera or its timing.
-   reflectionCoords+=normalW.xz*vec2(.023,.040)*mix(1.,.30,smoothstep(100.,900.,length(vPositionW-vEyePosition.xyz)));
+   reflectionCoords+=normalW.xz*vec2(.023,.040)*mix(1.,.45,smoothstep(120.,1500.,length(vPositionW-vEyePosition.xyz)));
   `,
   '!reflectionLOD=reflectionLOD\\*vReflectionMicrosurfaceInfos.y\\+vReflectionMicrosurfaceInfos.z;':`$0
    // PBR picks an explicit mip from roughness. Also honour the projected
@@ -79,18 +79,24 @@ class BaySurface extends MaterialPluginBase{
    // radians/pixel), including low waves at grazing angles and drone heights.
    vec4 phase=vec4(p1,p2,p3,p4);
    vec4 waveWeight=1.-smoothstep(vec4(.35),vec4(1.80),fwidth(phase));
-   // Preserve close ripples; at overview distances broad sky reflections
-   // dominate instead of equally strong crests stretching across the bay.
-   float bayResolvedStrength=mix(1.,.08,smoothstep(80.,1100.,length(vPositionW-vEyePosition.xyz)));
+   // Preserve close ripples; at overview range keep a readable swell fraction
+   // so far water still shows modulation instead of a dead mirror, while the
+   // broad sky reflections stay dominant over equally strong far crests.
+   float bayResolvedStrength=mix(1.,.30,smoothstep(120.,2600.,length(vPositionW-vEyePosition.xyz)));
    float bayWindPatch=.80+.20*sin(dot(wp,vec2(.0047,-.0061))+bayBend.x*1.5);
    waveWeight*=bayResolvedStrength*bayWindPatch;
-   vec2 wind=vec2(.024,.040)*cos(p1)*waveWeight.x+vec2(-.014,.007)*cos(p2)*waveWeight.y;
-   wind+=vec2(.010,.006)*cos(p3)*waveWeight.z+vec2(-.005,.012)*cos(p4)*waveWeight.w;
+   vec2 wind=vec2(.032,.054)*cos(p1)*waveWeight.x+vec2(-.019,.010)*cos(p2)*waveWeight.y;
+   wind+=vec2(.014,.008)*cos(p3)*waveWeight.z+vec2(-.007,.016)*cos(p4)*waveWeight.w;
    float bayUnresolvedVariance=dot(vec4(.001088,.0001225,.000068,.0000845),1.-waveWeight*waveWeight);
    normalW=normalize(vec3(wind.x,1.,wind.y));
-   float shallows=1.-smoothstep(2.,62.,shoreDistance);
-   surfaceAlbedo=mix(vec3(.018,.069,.078),vec3(.060,.126,.113),shallows*.78);
-   float foam=(1.-smoothstep(1.5,6.,shoreDistance))*smoothstep(.62,.92,sin(p1*.8+sin(p2))* .5+.5)*.11*min(waveWeight.x,waveWeight.y);
+   float shallows=1.-smoothstep(3.,85.,shoreDistance);
+   // cityBayClock.y is the night flag: the daylight teal body would be
+   // crushed back into the black-hole band the night mode lift above is
+   // compensating for. A moonlit blue body keeps the bay reading as water.
+   vec3 bayBody=mix(vec3(.018,.069,.078),vec3(.052,.09,.13),cityBayClock.y);
+   vec3 bayShallows=mix(vec3(.060,.126,.113),vec3(.082,.13,.155),cityBayClock.y);
+   surfaceAlbedo=mix(bayBody,bayShallows,shallows*.9);
+   float foam=(1.-smoothstep(2.,9.,shoreDistance))*smoothstep(.62,.92,sin(p1*.8+sin(p2))* .5+.5)*.15*min(waveWeight.x,waveWeight.y);
    surfaceAlbedo=mix(surfaceAlbedo,vec3(.32,.34,.30),foam);
   `};}
 }
@@ -125,11 +131,22 @@ export function createBayWater(scene:Scene,mirror:MirrorTexture,meshes:AbstractM
  mirror.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE);
  mirror.mirrorPlane.d=meta.waterHeight;mirror.level=.92;
  const setMode=(mode:CinematicLightingMode)=>{
-  state.mode=mode;state.night=mode==='night'?1:0;material.environmentIntensity=state.night?.78:1;
+  state.mode=mode;state.night=mode==='night'?1:0;
+  // Night: the planar mirror offers only a 2-4 % starfield and the bay is
+  // excluded from every street lamp and headlight, so the base response
+  // rendered open water as a pure black hole. Spend the leftover budget on
+  // the bay itself: a hotter urban-HDR irradiance, a slightly hotter mirror
+  // (lamp streaks and the moon path survive the night exposure) and a hair
+  // more roughness so the mirrored stars smear into sheen instead of specks.
+  if(state.night){material.environmentIntensity=3;material.roughness=.16;mirror.level=1.4;}
+  else{material.environmentIntensity=mode==='sunset'?1.35:1;material.roughness=.13;mirror.level=.92;}
   const sky=scene.getMeshByName('atmosphere')?.material;
   state.skyEnabled=mode==='day'&&sky instanceof BackgroundMaterial&&!!sky.reflectionTexture?.isCube;
   if(sky instanceof BackgroundMaterial&&sky.reflectionTexture?.isCube){state.sky=sky.reflectionTexture;state.skyColor.copyFrom(sky.primaryColor);}
  };
+ // The world only fans lighting modes out on the first L press; apply the
+ // boot mode's response now so a fresh bay never runs on creation defaults.
+ setMode(state.mode);
  const setNight=(night:boolean)=>setMode(night?'night':'sunset');
  scene.onDisposeObservable.addOnce(()=>{extension.dispose(false,false);state.shore.dispose();material.dispose(false,false);});
  return {material,update:(time:number)=>{state.time=time;},setMode,setNight,stats:()=>({meshWorldHeights:meshes.map(m=>({min:m.getBoundingInfo().boundingBox.minimumWorld.y,max:m.getBoundingInfo().boundingBox.maximumWorld.y})),horizonCoverageBounds:bounds.length?[x0,z0,x1,z1]:null,horizonAtmosphere:{enabled:state.skyEnabled,source:state.sky?.name??null,start:1800,end:14000,extraRenderTargets:0,extraGeometry:0},shoreTextureReady:state.ready,waterLevel:meta.waterHeight,planarLevel:mirror.mirrorPlane.d,normalScale:'world-metres, four wind components, pixel-footprint filtered',reflectionFiltering:'trilinear mipmaps with projected pixel footprint',subpixelWaves:'slope variance retained as roughness',lighting:'PBR with moon/sun specular; vehicle headlights excluded',mode:state.mode,night:!!state.night})};

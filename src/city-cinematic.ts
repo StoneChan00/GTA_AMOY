@@ -70,13 +70,16 @@ export function applyAntiAliasing(pipeline:DefaultRenderingPipeline,aerial:boole
  * flattened into one warm grey. Values are authored, linear, pre-tonemap.
  * Sunset irradiance was re-balanced once the post chain kept HDR and full
  * resolution: the fire-hemisphere cube alone pushed west walls past white.
+ * Fog follows the bay: at the old dusk/night colours the far sea faded to a
+ * band darker than the sky it met, which read as a hole under the horizon
+ * glow instead of open water.
  */
 export const CINEMATIC_LOOK:Record<CinematicLightingMode,LookMode>={
  sunset:{sun:1.4,sunColor:[1,.60,.33],hemi:.12,hemiSky:[.55,.62,.95],hemiGround:[.20,.16,.17],environment:.40,
-  fogDensity:.00011,fogColor:[.44,.27,.31],exposure:1.0,contrast:1.09,bloomThreshold:1.35,bloomWeight:.19,
+  fogDensity:.00011,fogColor:[.58,.37,.38],exposure:1.0,contrast:1.09,bloomThreshold:1.35,bloomWeight:.19,
   grade:{shadowsHue:235,shadowsDensity:28,highlightsHue:32,highlightsDensity:18,saturation:-6,shadowsSaturation:-4}},
  night:{sun:.30,sunColor:[.70,.79,1],hemi:.08,hemiSky:[.42,.50,.82],hemiGround:[.06,.06,.09],environment:.55,
-  fogDensity:.00010,fogColor:[.055,.05,.095],exposure:.83,contrast:1.09,bloomThreshold:1.30,bloomWeight:.24,
+  fogDensity:.00010,fogColor:[.085,.085,.15],exposure:.83,contrast:1.09,bloomThreshold:1.30,bloomWeight:.24,
   grade:{shadowsHue:225,shadowsDensity:30,highlightsHue:45,highlightsDensity:10,saturation:-10,shadowsSaturation:-8}},
  day:{sun:3.0,sunColor:[1,.91,.78],hemi:.28,hemiSky:[.74,.80,.94],hemiGround:[.30,.27,.22],environment:.78,
   fogDensity:.000045,fogColor:[.57,.70,.84],exposure:1.08,contrast:1.10,bloomThreshold:2.5,bloomWeight:.045,
