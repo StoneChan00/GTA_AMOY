@@ -3,10 +3,10 @@
   "asset": "/city/landmark-detail.glb",
   "assetStats": {
     "file": "landmark-detail.glb",
-    "bytes": 359972,
-    "triangles": 7858,
-    "meshes": 42,
-    "sha256": "a7b796fc239e7eed492b109d564739220144ffa552c8ff6781a9b3948b253e94"
+    "bytes": 476172,
+    "triangles": 17316,
+    "meshes": 67,
+    "sha256": "c6a98a8bf3567e70db0219b3b3ce23462857ef8e2c61557c878f8aa2a94cf4b3"
   },
   "replacedMeshPrefixes": [
     "landmark_shimao_"
@@ -106,7 +106,7 @@
     },
     {
       "id": "xmu",
-      "name": "厦门大学",
+      "name": "厦门大学 · 嘉庚建筑群",
       "lon": 118.0907,
       "lat": 24.4392,
       "x": -1803.25,
@@ -194,6 +194,98 @@
       "photoElevation": 0.18,
       "photoAngle": -2.2,
       "sourceStatus": "source-grounded exterior: OSM-mapped hall footprints; reported phase-1 program; photo-estimated shell roofs",
+      "arrivalRoad": "周边连通道路"
+    },
+    {
+      "id": "wuyuan",
+      "name": "五缘湾 · 游艇港",
+      "lon": 118.175692,
+      "lat": 24.535432,
+      "x": 3385.29,
+      "z": 3368.45,
+      "height": 9,
+      "area": "湖里 · 五缘湾游艇港",
+      "excludeRadius": 0,
+      "arrival": [
+        3505.2,
+        3378.6
+      ],
+      "yaw": 3.1384966882492322,
+      "detailCollision": true,
+      "photoDistance": 520,
+      "photoTargetHeight": 8,
+      "photoElevation": 0.22,
+      "photoAngle": 2.4,
+      "sourceStatus": "source-grounded exterior: OSM-mapped pier lines (145 ways); reported berth/boat counts and marina history; artistic boat fleet on evidence positions",
+      "arrivalRoad": "周边连通道路"
+    },
+    {
+      "id": "bailu",
+      "name": "白鹭洲公园 · 白鹭女神",
+      "x": -1883.21,
+      "z": -619.03,
+      "lon": 118.089019,
+      "lat": 24.475732,
+      "height": 8.2,
+      "area": "思明 · 白鹭洲",
+      "excludeRadius": 0,
+      "detailCollision": true,
+      "photoDistance": 220,
+      "photoTargetHeight": 6,
+      "photoElevation": 0.18,
+      "photoAngle": -2.2,
+      "sourceStatus": "source-grounded exterior: OSM artwork node position; reported height/material/sculptor; photo-estimated rock plinth and pose",
+      "arrival": [
+        -1940,
+        -573.9
+      ],
+      "yaw": 0.7027840795888055,
+      "arrivalRoad": "周边连通道路"
+    },
+    {
+      "id": "yundang",
+      "name": "筼筜湖 · 音乐喷泉",
+      "x": -2102,
+      "z": -633.3,
+      "lon": 118.0854196,
+      "lat": 24.4755183,
+      "height": 24,
+      "area": "思明 · 筼筜湖",
+      "excludeRadius": 0,
+      "detailCollision": true,
+      "photoDistance": 260,
+      "photoTargetHeight": 4,
+      "photoElevation": 0.25,
+      "photoAngle": 2.6,
+      "sourceStatus": "source-grounded exterior: OSM-mapped pool ring; reported nozzle/light counts and spray height; photo/satellite-estimated platform layout",
+      "arrival": [
+        -2026,
+        -614.7
+      ],
+      "yaw": 1.2679114584199294,
+      "arrivalRoad": "周边连通道路"
+    },
+    {
+      "id": "shapowei",
+      "name": "沙坡尾 · 避风坞",
+      "lon": 118.081232,
+      "lat": 24.441824,
+      "x": -2356.54,
+      "z": -2883.83,
+      "height": 7.2,
+      "area": "思明 · 沙坡尾避风坞",
+      "excludeRadius": 0,
+      "arrival": [
+        -2288.8,
+        -2916.9
+      ],
+      "yaw": 2.4909657746700287,
+      "detailCollision": true,
+      "photoDistance": 380,
+      "photoTargetHeight": 6,
+      "photoElevation": 0.2,
+      "photoAngle": 1.2,
+      "sourceStatus": "source-grounded exterior: OSM-mapped basin ring; reported basin history/dimensions; reported landscape-boat fleet (2017+) with photo-estimated hull forms",
       "arrivalRoad": "周边连通道路"
     }
   ],
@@ -1616,6 +1708,65 @@
           ]
         ]
       ]
+    },
+    {
+      "id": "detail-bailu-statue",
+      "rings": [
+        [
+          [
+            -1879.0111,
+            -619.0283
+          ],
+          [
+            -1879.5738,
+            -616.9283
+          ],
+          [
+            -1881.1111,
+            -615.3909
+          ],
+          [
+            -1883.2111,
+            -614.8283
+          ],
+          [
+            -1885.3111,
+            -615.3909
+          ],
+          [
+            -1886.8484,
+            -616.9283
+          ],
+          [
+            -1887.4111,
+            -619.0283
+          ],
+          [
+            -1886.8484,
+            -621.1283
+          ],
+          [
+            -1885.3111,
+            -622.6656
+          ],
+          [
+            -1883.2111,
+            -623.2283
+          ],
+          [
+            -1881.1111,
+            -622.6656
+          ],
+          [
+            -1879.5738,
+            -621.1283
+          ],
+          [
+            -1879.0111,
+            -619.0283
+          ]
+        ]
+      ]
     }
   ],
   "terrain": {
@@ -1732,6 +1883,52 @@
         },
         "prowCrownMeters": 42.6
       }
+    },
+    {
+      "id": "detail_wuyuan",
+      "triangles": 7486,
+      "meshes": 7,
+      "report": {
+        "piers": 145,
+        "boats": 90,
+        "trianglesApprox": 7486
+      }
+    },
+    {
+      "id": "detail_bailu",
+      "triangles": 534,
+      "meshes": 4,
+      "report": {
+        "statueMeters": 13.6,
+        "figureMeters": 11,
+        "rockMeters": 2.5,
+        "trianglesApprox": 534
+      }
+    },
+    {
+      "id": "detail_yundang",
+      "triangles": 968,
+      "meshes": 6,
+      "report": {
+        "poolExtentMeters": [
+          63,
+          38
+        ],
+        "nozzleRings": 3,
+        "bollards": 8,
+        "nozzleHeads": 42,
+        "trianglesApprox": 968
+      }
+    },
+    {
+      "id": "detail_shapowei",
+      "triangles": 470,
+      "meshes": 8,
+      "report": {
+        "boats": 10,
+        "junkLoaMeters": 15,
+        "trianglesApprox": 470
+      }
     }
   ],
   "sourceSha256": {
@@ -1742,6 +1939,11 @@
     "data/landmarks/gaoqi.json": "3acc1990849ec489ef8877205d9ba92412c6877abaa120ebb65942eb5e2c6415",
     "data/landmarks/xiamenzhan.json": "a4c467f14d381989a1e01efe16fcfba1b3a17ae3c4f6b341161eaa5a0735fcd8",
     "data/landmarks/huizhan.json": "212cb920e4c5513b7764a80cd2c9943b8d9cbc3dc09f40380f62c2ec956d1725",
+    "data/landmarks/wuyuan.json": "60842e98086e56729b09a560154accfee9da1dd0aed5fafa6312050f3c343b43",
+    "data/landmarks/wuyuan-piers.json": "0fb6631d5dd20049d30245741b7a1a6a8432d9ec9c460a554a5c2ba65422dd0b",
+    "data/landmarks/bailu.json": "3914a358691f372a66b9101648303cf81f44a6c5f9543ba6da0f465ae416a357",
+    "data/landmarks/yundang.json": "40a6ecd2a24531961aed198db2ae24542a86983d43c6efe9aa23422d3f407631",
+    "data/landmarks/shapowei.json": "6bad2de1cd650fd298c932eea00a06e19570f6e9ea177d9fadd06ab3118d6a58",
     "scripts/landmarks/shimao.py": "5e0a83506d47e1b1acc477edc1a0daa820d29c8e36789142b40f36b6ac1a3c1b",
     "scripts/landmarks/riguangyan.py": "d10e2655a4ce7a82532c33e24df23f47d71db4a6de4613b60f53a09c41d6bb8e",
     "scripts/landmarks/bagua.py": "fe5ba3ca6e4a6e9392656a09e52617b9a5a5ffc66ce6b057f4050e32e2b4399b",
@@ -1749,8 +1951,12 @@
     "scripts/landmarks/gaoqi.py": "a8679bca5c0c50dc15381b8d2a778c260ac02fec0a6bf44eb8dfe36b85aa9f09",
     "scripts/landmarks/xiamenzhan.py": "5da9906072b2dbb69c2e071810aeaa338f59bc235705d10ac85f9061304bc497",
     "scripts/landmarks/huizhan.py": "4be391dbc8b48df5787169bf0bd41222acd99976d866c68331dbd870f680ba67",
+    "scripts/landmarks/wuyuan.py": "2184770b049ceaf0105d6410e63cc9e2bdba7b81f7abc6f10d11aebaa543aea3",
+    "scripts/landmarks/bailu.py": "0b65acd4e2bfbdd2593e786d3ce6941d2111751e332e8da313838ce25dc64525",
+    "scripts/landmarks/yundang.py": "cc7a7c04e695cd5cfec094b3094f1ae3684f788688a087c1bbb00b8d1f5ffdf5",
+    "scripts/landmarks/shapowei.py": "fc0da31a2fae8e80ce2a7e30397427abeeba4ad8102d81870181922600b38848",
     "scripts/landmarks/_helpers.py": "661e188af736f1cecb7f03bdfb7b7e5823c0baf8ea00687246b9e9d6eb9e1979",
-    "scripts/build_landmark_details.py": "2ab96d068d2cfbdf5fb93f6d4815a0167d8c829c6d1687d574a6998292b5768b",
+    "scripts/build_landmark_details.py": "91e9b5ab9ed6414cda134a8643e99afdd3d9fb0314cc3a15f7df6a2eb98f6381",
     "scripts/city_mesh.py": "a0f969a6e95145f53b1433be755ed911b1b3e5610d6bdfd2a72b41d04cb91f81"
   },
   "coordinateSystem": "Blender east,north,up; GLB y-up; runtime preserves root Z reflection",
@@ -1780,11 +1986,27 @@
     "屋盖按拱顶 31m 单拱示意，未复原多跨曲线细部",
     "主楼 432m/42.6m 数值来自低置信转译页，仅用于量级校核，几何以 OSM 足印 + 净高/大堂高为基准",
     "拱壳屋面为艺术化连续拱，不复原逐跨桁架",
-    "北侧二期馆群（二号馆/D展厅/海峡大剧院）保留通用建筑，不在本轮替换范围"
+    "北侧二期馆群（二号馆/D展厅/海峡大剧院）保留通用建筑，不在本轮替换范围",
+    "浮桥宽度/干舷为估计值（OSM 线无宽度标签）；码头面取 0.4m real 干舷",
+    "船队为艺术化布点（真实 220 艘超预算，取 ~90 艘沿 OSM 码头线布泊）",
+    "游艇汇塔楼保留通用建筑；帆形 PTFE 膜结构省略",
+    "五座圆桥/五缘大桥拱肋不建模（道路层已平面化）",
+    "13.6m 是否含基岩存在表述歧义（按含基岩处理，像身约 11m + 基岩约 2.5m）",
+    "人物为低多边形艺术化轮廓（跪姿+举臂+栖鹭剪影可读即可），非雕塑复刻；基岩为照片估计的 2-3 块花岗岩体",
+    "白鹭按肩头小体量示意（身+颈+喙三段）",
+    "东公园游艇码头其余设施不建模",
+    "喷泉水柱为瞬时表演形态，模型按停演静水状态（水面平台+喷头环+灯桩）",
+    "933 喷头以 3 圈环轨+代表喷头示意；1094 LED 以池缘灯桩/灯带示意",
+    "水下控制中心（17 台控制柜）以池角小型设备房示意",
+    "放射环形广场铺装不建模（绿地/道路层已有底色）",
+    "渔船为停泊静水状态（景观船时代），不做渔获作业道具",
+    "王船（10.58m，厦港海洋文化展示厅岸上陈列）不建模",
+    "演武大桥拱段不建模（道路层已平面化）；坞口以岸线留白示意",
+    "彩旗以 2-3 面小旗示意，不做满挂"
   ],
   "compression": {
-    "before": 832756,
-    "after": 359972,
+    "before": 1485792,
+    "after": 476172,
     "algorithm": "EXT_meshopt_compression",
     "positionBits": 16
   }

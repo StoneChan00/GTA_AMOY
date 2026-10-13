@@ -2,9 +2,9 @@
  "version": 1,
  "file": "occlusion.png",
  "cell": 4,
- "minX": -3269,
+ "minX": -4062,
  "minZ": -4061,
- "width": 1964,
+ "width": 2162,
  "height": 2252,
  "channels": "sky visibility 0–255 at heights[i] metres above the ground plane; 255 = open sky",
  "heights": [

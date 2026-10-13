@@ -166,14 +166,18 @@ export function planRooftop(building:RooftopBuilding):RooftopPlan{
   let helipad=false,screenHeight=0;
   // Mechanical screen around the crown roof on a third of mid/high offices without a helipad; it
   // changes the silhouette from the street and hides the plant inside from the air.
-  if(h>=45&&minSide>=9&&rng()<.4){
+  if(h>=45&&h<140&&minSide>=9&&rng()<.4){
    screenHeight=frange(rng,2.4,4);
    const [x,z]=layout.world(0,0);
    props.push([KIND['crown-screen'],round(x),round(z),round(top),round(layout.hu*2-.6),round(screenHeight),round(layout.hv*2-.6),round(yaw,3)]);
   }
   const radius=Math.min(7.5,minSide*.38);
   if(radius>=4.2&&!screenHeight){
-   const p=h>=90?.65:h>=60?.3:0;
+   // Supertalls (>=140 game m = 233 real m — 厦门绿发新时代广场 340 m and the
+   // 251 m office trio) always carry a helipad: the landmark exclusions took
+   // the twin towers out of the rooftop pool, and only four ordinary towers
+   // remain eligible, so leaving them to the rng once rolled an empty city.
+   const p=h>=140?1:h>=90?.65:h>=60?.3:0;
    if(rng()<p){
     const raised=h>=90&&rng()<.35,kind=raised?KIND['helipad-raised']:KIND.helipad;
     // Helipad at one end of the rect when there is room for a plant room beside it.

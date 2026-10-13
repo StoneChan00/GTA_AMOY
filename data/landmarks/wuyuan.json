@@ -1,0 +1,62 @@
+{
+ "schemaVersion": 1,
+ "id": "wuyuan",
+ "name": "五缘湾 · 游艇港",
+ "status": "source-grounded exterior: OSM-mapped pier lines (145 ways); reported berth/boat counts and marina history; artistic boat fleet on evidence positions",
+ "sources": [
+  "osm-fujian-snapshot",
+  "cctv-wuyuan-2026",
+  "lqyacht-group",
+  "xmtv-wuyuan-doc",
+  "easyboat-yachthui",
+  "taiyo-membrane-2018"
+ ],
+ "sourceRefs": {
+  "osm-fujian-snapshot": "data/raw/fujian-latest.osm.pbf (OSM-FR mirror, 2026-10-08); man_made=pier ways, WGS84",
+  "cctv-wuyuan-2026": "https://local.cctv.com/2026/02/28/... 央视网 2026-02-28：五缘湾游艇帆船港 2007 年一期码头建成；351 个标准泊位、全市 400 多艘船艇、年出海休闲体验超 100 万人次",
+  "lqyacht-group": "厦门路桥游艇旅游集团（运营方）项目页：五缘湾游艇港为国内规模最大最成熟的公共游艇港之一",
+  "xmtv-wuyuan-doc": "厦门广电纪录片《潮起五缘湾》：2002 年片区综合开发启动，2006 年建成/2007 年投用",
+  "easyboat-yachthui": "易艇网厦门国际游艇汇页：24°32'11.18\"N 118°10'33.83\"E（CRS 未标注，仅核对，不作几何依据）；占地 9.3 万 m²、总建面 24.6 万 m²、5 栋高层写字楼+9 栋低层会所",
+  "taiyo-membrane-2018": "太阳膜结构（上海）工程页：游艇汇码头膜结构 PTFE 26,196 m²、断面三维长度 220m、对角 67m（2018-11）"
+ },
+ "site": {
+  "centerWGS84": [118.175692, 24.535432],
+  "basis": "OSM 145 条 man_made=pier 码头线质心（内湾东岸游艇汇一带，WGS84）",
+  "note": "M1 游戏标记 (118.153,24.533) 在湾口开阔水面，本轮移至游艇港实测锚点"
+ },
+ "marina": {
+  "berths": {"value": 351, "basis": "reported (央视网 2026-02-28：仅五缘湾就拥有 351 个标准泊位)", "planned": "500-600（多源规划口径）"},
+  "vesselsMoored": {"value": 220, "basis": "reported (常态停靠帆船游艇 220 余艘)", "note": "模型取 ~90 艘预算内规模"},
+  "opened": "2007（一期码头建成投用；2002 片区开发启动）",
+  "operator": "厦门路桥游艇旅游集团（厦门五缘游艇文化发展有限公司）",
+  "waterArea": "湾内水域 1.5-2 km²（reported，多源分歧记录，不作几何依据）",
+  "maxBerth": "160 英尺超艇泊位；50 吨龙门吊、加油站泊位、下水泊位"
+ },
+ "yachtHui": {
+  "note": "东岸厦门国际游艇汇（2015 开工、约 2019 建成）：5 栋高层写字楼(10-21F)+9 栋低层会所(2-4F)+3F 商业街+膜结构，总建面 24.6 万 m²。塔楼已作为 OSM 普通建筑存在于 city.json，本轮不替换；帆形膜结构屋顶省略",
+  "basis": "reported (易艇网/易企秀项目页)"
+ },
+ "piers": {
+  "file": "wuyuan-piers.json",
+  "count": 145,
+  "closed": 14,
+  "lengthRealMeters": "min 5 / med 43 / max 566",
+  "basis": "OSM man_made=pier（open+closed ways，WGS84）；浮桥宽度 OSM 未标，按 2.2-3.5m real 估计"
+ },
+ "boats": {
+  "target": 90,
+  "loaRealMeters": [8, 18],
+  "mix": "以白色帆艇为主（whiteroof 船体+钢桅），少量深蓝机动艇与个别红/橙点缀",
+  "basis": "estimated/artistic——泊位与常态 220 艘为 reported，逐艇形态为艺术创作"
+ },
+ "bridges": {
+  "observedNotModeled": "五缘大桥（湾口，2004，主跨 208m 中承式钢箱提篮拱，全长 810m）；日圆桥(环湖里大道，80m 拱，红)；天圆桥(五石路，127m 钢箱拱，蓝)；人圆/地圆人行桥；月圆桥",
+  "note": "道路层已平面化呈现桥面，拱肋与桥塔本轮不建模，记录待后续轮次"
+ },
+ "limitations": [
+  "浮桥宽度/干舷为估计值（OSM 线无宽度标签）；码头面取 0.4m real 干舷",
+  "船队为艺术化布点（真实 220 艘超预算，取 ~90 艘沿 OSM 码头线布泊）",
+  "游艇汇塔楼保留通用建筑；帆形 PTFE 膜结构省略",
+  "五座圆桥/五缘大桥拱肋不建模（道路层已平面化）"
+ ]
+}

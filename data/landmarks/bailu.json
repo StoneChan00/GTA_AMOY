@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "id": "bailu",
+ "name": "白鹭洲公园 · 白鹭女神",
+ "status": "source-grounded exterior: OSM artwork node position; reported height/material/sculptor; photo-estimated rock plinth and pose",
+ "sources": [
+  "osm-fujian-snapshot",
+  "baidu-baike-bailunvshen",
+  "baijiahao-bailunvshen-2017",
+  "baidu-baike-bailuzhou-park",
+  "xm-government-origin"
+ ],
+ "sourceRefs": {
+  "osm-fujian-snapshot": "data/raw/fujian-latest.osm.pbf (OSM-FR 镜像 2026-10-08)；node/7153005485 tourism=artwork artwork_type=statue name=白鹭女神 name:en=Egret goddess，WGS84",
+  "baidu-baike-bailunvshen": "百度百科·白鹭女神（厦门城市原点标志雕像）：雕像高13.6米，白花岗岩雕成，重约400吨，王则坚创作；1977 年鼓浪屿福建工艺美术学院门口白水泥原作（5-6米），1984 获首届全国城市雕塑设计优秀作品奖，1995 入选《经济特区》特种邮票",
+  "baijiahao-bailunvshen-2017": "百家号 2017：雕像立于白鹭洲公园，是厦门城市原点标志；王则坚（原福建工艺美术学院/福州大学工艺美术学院教授）",
+  "baidu-baike-bailuzhou-park": "百度百科·白鹭洲公园：白鹭女神雕塑立于园南游艇码头（东公园，以白鹭女神雕塑广场为中心）",
+  "xm-government-origin": "厦门市政府/规划口资料：白鹭洲为筼筜湖最大湖心岛，湖中台地约 40 万 m²；公园占地 39.66 公顷，分西园（1997，回归石/生肖石柱/音乐喷泉广场）、中央公园（1995，5.9 万 m²）、东公园"
+ },
+ "site": {
+  "centerWGS84": [118.089019, 24.475732],
+  "basis": "OSM node/7153005485（白鹭女神雕像节点，WGS84）；位于白鹭洲东公园南侧水域边缘岩石上（岛东南），与百度百科『园南游艇码头』一致",
+  "note": "雕像立于湖中岩石上（OSM 节点落在筼筜湖水域多边形内、白鹭洲岛孔洞之外）；模型自带基岩"
+ },
+ "statue": {
+  "totalMeters": {"value": 13.6, "basis": "reported (百度百科：雕像高13.6米；多家转载 14 米取整口径并存)"},
+  "material": "白花岗岩，重约 400 吨（reported）",
+  "sculptor": "王则坚（原福建工艺美术学院教授）；1977 白水泥原作（鼓浪屿校门，5-6m）→ 1997 放大立像于白鹭洲（个别来源作 1996，年份分歧已记录）",
+  "pose": "跪坐于岩石上梳理长发的女神，一只白鹭栖于肩头（reported，多源一致；1995 特种邮票图样互证）"
+ },
+ "island": {
+  "note": "白鹭洲为筼筜湖最大湖心岛（湖中台地约 40 万 m²）；公园 39.66 公顷分西/中/东三园。岛体已有 green 层绿地与 OSM 建筑，本轮只建雕像与基岩",
+  "markAnchorWGS84": [118.087126, 24.476662, "OSM 白鹭洲公园绿地三部分并集质心"]
+ },
+ "limitations": [
+  "13.6m 是否含基岩存在表述歧义（按含基岩处理，像身约 11m + 基岩约 2.5m）",
+  "人物为低多边形艺术化轮廓（跪姿+举臂+栖鹭剪影可读即可），非雕塑复刻；基岩为照片估计的 2-3 块花岗岩体",
+  "白鹭按肩头小体量示意（身+颈+喙三段）",
+  "东公园游艇码头其余设施不建模"
+ ]
+}

@@ -13,7 +13,7 @@ from city_mesh import *
 import hashlib
 import math
 from collections import defaultdict
-from landmarks import shimao, riguangyan, bagua, xmu, gaoqi, xiamenzhan, huizhan
+from landmarks import shimao, riguangyan, bagua, xmu, gaoqi, xiamenzhan, huizhan, wuyuan, bailu, yundang, shapowei
 
 city = json.loads((O/'city.json').read_text())
 scale = city['meta']['horizontalScale']
@@ -24,7 +24,8 @@ objects, records, collisions, replacements = [], [], [], ['landmark_shimao_']
 base_ids = set()
 reports = []
 specs = {sid: json.loads((R/f'data/landmarks/{sid}.json').read_text(encoding='utf-8'))
-         for sid in ('shimao', 'riguangyan', 'bagua', 'xmu', 'gaoqi', 'xiamenzhan', 'huizhan')}
+         for sid in ('shimao', 'riguangyan', 'bagua', 'xmu', 'gaoqi', 'xiamenzhan', 'huizhan',
+                     'wuyuan', 'bailu', 'yundang', 'shapowei')}
 
 
 def project_ring(points):
@@ -295,6 +296,64 @@ records.append({**legacy, 'x': round(hx, 2), 'z': round(hz, 2),
                 'photoDistance': 620, 'photoTargetHeight': 18, 'photoElevation': .18, 'photoAngle': -2.2,
                 'sourceStatus': specs['huizhan']['status'], **arrival(hx, hz)})
 
+# ------------------------------------------------- 五缘湾游艇港 (round 2)
+# The 145 OSM pier ways drive every pontoon; the bay water plane (z=-0.25)
+# carries the fleet. No collision footprints: the marina basin sits outside
+# the land polygons, so CityCollision already blocks walking there.
+_wy_piers = json.loads((R/'data/landmarks/wuyuan-piers.json').read_text(encoding='utf-8'))
+piers_proj = [{'osmId': p['osmId'], 'closed': p['closed'],
+               'polyline': [project(lon, lat) for lon, lat in p['polyline']]} for p in _wy_piers['piers']]
+b = B()
+collect(b, 'detail_wuyuan', wuyuan.build(b, specs['wuyuan'], piers_proj, scale))
+wx, wz = project(*specs['wuyuan']['site']['centerWGS84'])
+legacy = next(lm for lm in city['landmarks'] if lm['id'] == 'wuyuan')
+records.append({**legacy, 'x': round(wx, 2), 'z': round(wz, 2),
+                'lon': specs['wuyuan']['site']['centerWGS84'][0], 'lat': specs['wuyuan']['site']['centerWGS84'][1],
+                'height': round(15*scale, 1), 'area': '湖里 · 五缘湾游艇港',
+                'excludeRadius': 0, 'detailCollision': True,
+                'photoDistance': 520, 'photoTargetHeight': 8, 'photoElevation': .22, 'photoAngle': 2.4,
+                'sourceStatus': specs['wuyuan']['status'], **arrival(wx, wz)})
+
+# ------------------------------------------------- 白鹭洲 · 白鹭女神 (round 2)
+bcx, bcz = project(*specs['bailu']['site']['centerWGS84'])
+b = B()
+collect(b, 'detail_bailu', bailu.build(b, specs['bailu'], bcx, bcz, scale))
+footprint('detail-bailu-statue', [[bcx + 7*scale*math.cos(i*math.tau/12),
+                                   bcz + 7*scale*math.sin(i*math.tau/12)] for i in range(12)])
+records.append({'id': 'bailu', 'name': '白鹭洲公园 · 白鹭女神', 'x': round(bcx, 2), 'z': round(bcz, 2),
+                'lon': specs['bailu']['site']['centerWGS84'][0], 'lat': specs['bailu']['site']['centerWGS84'][1],
+                'height': round(13.6*scale, 1), 'area': '思明 · 白鹭洲',
+                'excludeRadius': 0, 'detailCollision': True,
+                'photoDistance': 220, 'photoTargetHeight': 6, 'photoElevation': .18, 'photoAngle': -2.2,
+                'sourceStatus': specs['bailu']['status'], **arrival(bcx, bcz)})
+
+# ------------------------------------------------- 筼筜湖 · 音乐喷泉 (round 2)
+pool_ring = project_ring(specs['yundang']['pool']['ringWGS84'])
+b = B()
+collect(b, 'detail_yundang', yundang.build(b, specs['yundang'], pool_ring, scale))
+yx = sum(p[0] for p in pool_ring)/len(pool_ring)
+yz = sum(p[1] for p in pool_ring)/len(pool_ring)
+records.append({'id': 'yundang', 'name': '筼筜湖 · 音乐喷泉', 'x': round(yx, 2), 'z': round(yz, 2),
+                'lon': specs['yundang']['site']['centerWGS84'][0], 'lat': specs['yundang']['site']['centerWGS84'][1],
+                'height': round(40*scale, 1), 'area': '思明 · 筼筜湖',
+                'excludeRadius': 0, 'detailCollision': True,
+                'photoDistance': 260, 'photoTargetHeight': 4, 'photoElevation': .25, 'photoAngle': 2.6,
+                'sourceStatus': specs['yundang']['status'], **arrival(yx, yz)})
+
+# ------------------------------------------------- 沙坡尾 · 避风坞渔船 (round 2)
+basin_ring = project_ring(specs['shapowei']['basin']['ringWGS84'])
+b = B()
+collect(b, 'detail_shapowei', shapowei.build(b, specs['shapowei'], basin_ring, scale))
+sx = sum(p[0] for p in basin_ring)/len(basin_ring)
+sz = sum(p[1] for p in basin_ring)/len(basin_ring)
+legacy = next(lm for lm in city['landmarks'] if lm['id'] == 'shapowei')
+records.append({**legacy, 'x': round(sx, 2), 'z': round(sz, 2),
+                'lon': specs['shapowei']['site']['centerWGS84'][0], 'lat': specs['shapowei']['site']['centerWGS84'][1],
+                'height': round(12*scale, 1), 'area': '思明 · 沙坡尾避风坞',
+                'excludeRadius': 0, 'detailCollision': True,
+                'photoDistance': 380, 'photoTargetHeight': 6, 'photoElevation': .2, 'photoAngle': 1.2,
+                'sourceStatus': specs['shapowei']['status'], **arrival(sx, sz)})
+
 # Final pass: later footprints may cover an earlier arrival; re-snap any that
 # ended up inside a model's own collision ring.
 for r in records:
@@ -309,10 +368,12 @@ asset = export('landmark-detail', objects)
 bpy.ops.wm.save_as_mainfile(filepath=str(A/'landmark-details.blend'))
 source_paths = ['data/landmarks/shimao.json', 'data/landmarks/riguangyan.json', 'data/landmarks/bagua.json',
                 'data/landmarks/xmu.json', 'data/landmarks/gaoqi.json', 'data/landmarks/xiamenzhan.json',
-                'data/landmarks/huizhan.json',
+                'data/landmarks/huizhan.json', 'data/landmarks/wuyuan.json', 'data/landmarks/wuyuan-piers.json',
+                'data/landmarks/bailu.json', 'data/landmarks/yundang.json', 'data/landmarks/shapowei.json',
                 'scripts/landmarks/shimao.py', 'scripts/landmarks/riguangyan.py', 'scripts/landmarks/bagua.py',
                 'scripts/landmarks/xmu.py', 'scripts/landmarks/gaoqi.py', 'scripts/landmarks/xiamenzhan.py',
-                'scripts/landmarks/huizhan.py', 'scripts/landmarks/_helpers.py',
+                'scripts/landmarks/huizhan.py', 'scripts/landmarks/wuyuan.py', 'scripts/landmarks/bailu.py',
+                'scripts/landmarks/yundang.py', 'scripts/landmarks/shapowei.py', 'scripts/landmarks/_helpers.py',
                 'scripts/build_landmark_details.py', 'scripts/city_mesh.py']
 manifest = {'schemaVersion': 1, 'asset': '/city/landmark-detail.glb', 'assetStats': asset,
             'replacedMeshPrefixes': replacements,

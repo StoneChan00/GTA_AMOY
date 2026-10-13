@@ -50,6 +50,30 @@ island_union=unary_union(islands)
 coasts=[l for l in coasts if l.geom_type=='LineString' and island_union.distance(l)<.002]
 land=transform(project,island_union).simplify(.5,preserve_topology=True)
 landparts=parts(land,'Polygon')
+# --------------------------------------------------------------- heritage
+# Heritage low-rise height policy (real metres; basis=reported):
+# - Gulangyu (UNESCO World Heritage historic town): villa fabric is "普遍为
+#   二三层，有的达到四层" (鼓浪屿管委会官网 2009), 2-4 storeys on 300-1200 m²
+#   footprints (Buildings 2023, 13, 229), and the tallest old villa is the
+#   26.6 m 八卦楼 (厦门日报 2024-09-26); redevelopment "一般不超过相邻历史风貌
+#   建筑的平均基本高度" (鼓浪屿历史风貌建筑保护规划). The citywide typology
+#   estimate (median 23.4 game m) buries those low-rise streets and the
+#   hand-modelled landmarks behind generic towers, so untagged blocks here
+#   draw from a 2-4 storey range instead.
+# - XMU Siming campus (OSM way/154986493; ring in data/landmarks/heritage-
+#   zones.json): Jiageng core is 2-3 storeys with 21-25 m rooflines (群贤 3F
+#   通高21m, 建南 5F 通高25m, 厦大新闻网/资产与后勤处), 1950s dorms 3F 局部5F,
+#   late-20th-c blocks 5-6F ≈ 15-18 m; the campus sits inside the 鼓浪屿-万石山
+#   scenic control zone (厦大基建处 2024). Untagged blocks draw from 3-6 storeys.
+# Tagged heights (osm_height / building:levels) clamp to the zone cap — OSM
+# tags in these zones are unvetted and the conservation policy wins. Modelled
+# landmarks (八卦楼/群贤群/颂恩楼…) keep their own true heights via
+# landmark-detail.json and baseBuildingIds.
+heritage=[]
+if _gy_cell is not None:
+ heritage.append((transform(project,_gy_cell).simplify(2,preserve_topology=True),15.0,(7,10,13,15)))
+_hz=json.loads((R/'data/landmarks/heritage-zones.json').read_text(encoding='utf-8'))
+heritage.append((transform(project,shape({'type':'Polygon','coordinates':[_hz['xmuCampus']['ring']]})).simplify(2,preserve_topology=True),18.0,(10,13,16,18)))
 allowed={'trunk','primary','secondary','tertiary','residential','unclassified','service','trunk_link','primary_link','secondary_link','tertiary_link'}
 roads=[]
 for f in load('roads'):
@@ -70,26 +94,53 @@ for f in load('roads'):
   if line.length<3:continue
   roads.append({'id':f['id'],'name':t.get('name','支路'),'kind':k,'width':width,'oneway':t.get('oneway')=='yes','points':coords(line),'grade':t.get('layer','0')})
 roadlines=[LineString(r['points']) for r in roads];tree=STRtree(roadlines)
+# Arrival roads must sit on the largest connected component: marina/quay and
+# campus service lanes are drive-isolated and would strand the travel teleport
+# (city.test.ts routes every mark continuously from spawn). Union-find over
+# road vertices on a 1.5 m grid approximates the navigation graph's main
+# component the same way build_landmark_details.arrival does.
+_parent=list(range(len(roads)))
+def _find(a):
+ while _parent[a]!=a:_parent[a]=_parent[_parent[a]];a=_parent[a]
+ return a
+_node_roads={}
+for _i,_r in enumerate(roads):
+ for _p in _r['points']:_node_roads.setdefault((round(_p[0]/1.5),round(_p[1]/1.5)),[]).append(_i)
+for _rs in _node_roads.values():
+ for _a in _rs[1:]:_parent[_find(_rs[0])]=_find(_a)
+_comp_size=Counter(_find(_i) for _i in range(len(roads)))
+_main_root=max(_comp_size,key=_comp_size.get)
+mainlines=[roadlines[_i] for _i in range(len(roads)) if _find(_i)==_main_root]
+maintree=STRtree(mainlines)
 landmarks=[
- # Coordinates are game-design estimates for M1 map marks (basis: estimated),
- # to be replaced by the landmark-reconstruction evidence workflow. Only shimao
- # carries a model in M1, so it alone keeps an exclusion radius; the others set
- # 0 so their real OSM buildings stay visible and collidable.
- ('shimao','世茂海峡大厦 · 双子塔',118.1187,24.4296,300,'思明 · 演武大桥',70),
- ('xmu','厦门大学',118.0897,24.4366,30,'思明 · 厦大',0),
+ # Evidence-corrected anchors (see data/landmarks/*.json specs and the
+ # landmark-detail manifest). M1 estimates drifted up to 2.5 km: shimao sat in
+ # the strait off 演武大桥, huizhan 2.5 km SW, xiamenzhan 700 m N, gaoqi
+ # mid-field. Every excludeRadius is now 0 — site clearing is owned by the
+ # landmark workflow (landmark-detail.json baseBuildingIds via
+ # extend_landmark_exclusions.py), so a mislocated radius can never again
+ # remove ordinary blocks: M1's shimao radius-70 (= 42 game m) sat harmlessly
+ # in the sea, but placed on the corrected 沙坡尾 site it would have eaten
+ # 厦港老城 blocks. xiamenzhan/yundang keep their M1 spots: they anchor the
+ # locked M3 湖滨东路 street corridor (src/city-bamboo-corridor.ts
+ # BAMBOO_CORRIDOR origin/talent are test-locked there); the landmark
+ # manifest owns the corrected station position and the round-2 yundang
+ # spec owns the lake anchor.
+ ('shimao','世茂海峡大厦 · 双子塔',118.08379,24.43827,300,'思明 · 沙坡尾',0),
+ ('xmu','厦门大学 · 嘉庚建筑群',118.0907,24.4392,85,'思明 · 厦大',0),
  ('gulangyu','鼓浪屿',118.0683,24.4446,0,'思明 · 鼓浪屿',0),
- ('xiamenzhan','厦门站',118.1075,24.4775,25,'思明 · 厦门站',0),
+ ('xiamenzhan','厦门站',118.1075,24.4775,25,'思明 · 厦禾路',0),
  ('yundang','筼筜湖',118.0946,24.4832,0,'思明 · 筼筜湖',0),
- ('bailu','白鹭洲公园',118.0930,24.4800,0,'思明 · 白鹭洲',0),
- ('gaoqi','高崎机场 T4',118.1250,24.5075,30,'湖里 · 高崎',0),
- ('wuyuan','五缘湾',118.1530,24.5330,0,'湖里 · 五缘湾',0),
- ('huizhan','厦门国际会展中心',118.1630,24.4570,40,'思明 · 会展',0),
- ('shapowei','沙坡尾',118.0838,24.4340,0,'思明 · 沙坡尾',0)]
+ ('bailu','白鹭洲公园 · 白鹭女神',118.087126,24.476662,14,'思明 · 白鹭洲',0),
+ ('gaoqi','高崎机场 T4',118.142327,24.547275,39,'湖里 · 高崎机场',0),
+ ('wuyuan','五缘湾 · 游艇港',118.175692,24.535432,0,'湖里 · 五缘湾',0),
+ ('huizhan','厦门国际会展中心',118.177954,24.468992,42.6,'思明 · 前埔会展',0),
+ ('shapowei','沙坡尾 · 避风坞',118.081863,24.441888,0,'思明 · 沙坡尾',0)]
 marks=[]
 for id,name,lon,lat,h,area,radius in landmarks:
  x,z=project(lon,lat); p=Point(x,z)
- # Arrival point lies on a driveable surface, never at tower centre.
- ri=int(tree.nearest(p));line=roadlines[ri];q=line.interpolate(line.project(p));dd=min(line.length,max(0,line.project(p))+4);p2=line.interpolate(dd)
+ # Arrival point lies on a driveable, connected surface, never at the centre.
+ ri=int(maintree.nearest(p));line=mainlines[ri];q=line.interpolate(line.project(p));dd=min(line.length,max(0,line.project(p))+4);p2=line.interpolate(dd)
  if q.distance(p2)<1:p2=line.interpolate(max(0,line.project(p)-4))
  marks.append({'id':id,'name':name,'lon':lon,'lat':lat,'x':round(x,2),'z':round(z,2),'height':h*SCALE,'area':area,'excludeRadius':radius*SCALE,'arrival':[round(q.x,2),round(q.y,2)],'yaw':math.atan2(p2.x-q.x,p2.y-q.y)})
 buildings=[];seen=set();est=Counter()
@@ -110,6 +161,14 @@ for f in load('buildings'):
   except:
    try:h=float(lev)*3.3*SCALE;status='osm_levels_estimated'
    except:h=rnd.choice([18,24,30,39,54,72,96])*SCALE;status='typology_estimate'
+  # Heritage low-rise policy (zone evidence at the heritage block above):
+  # untagged estimates redraw from the zone's real storey range; tagged
+  # values clamp to the zone cap.
+  for hz_poly,hz_cap,hz_storeys in heritage:
+   if hz_poly.contains(center):
+    if status=='typology_estimate':h=rnd.choice(hz_storeys)*SCALE;status='heritage_estimate'
+    else:h=min(h,hz_cap*SCALE)
+    break
   h=max(5,min(290,h));est[status]+=1
   # Preserve footprint shape, reserve pavement clearance where the compressed
   # real streets require it. Reject clipped slivers instead of blocking roads.

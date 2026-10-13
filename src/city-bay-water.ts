@@ -69,25 +69,39 @@ class BaySurface extends MaterialPluginBase{
     sin(dot(wp,vec2(.017,.011))-t*.060)+.45*sin(dot(wp,vec2(-.031,.007))+t*.041),
     sin(dot(wp,vec2(-.013,.019))+t*.052)+.45*sin(dot(wp,vec2(.006,.029))-t*.047)
    );
-   vec2 wavePosition=wp+bayBend*18.;
-   float p1=dot(wavePosition,vec2(.092,.171))-t*.72;
-   float p2=dot(wavePosition,vec2(-.238,.114))-t*.48;
-   float p3=dot(wavePosition,vec2(1.62,.83))-t*1.36;
-   float p4=dot(wavePosition,vec2(-.74,2.31))+t*.86;
-   // Differentiate unwrapped phases, never cos(phase): sampled normals have
-   // already aliased by then. Suppress each frequency before Nyquist (PI
-   // radians/pixel), including low waves at grazing angles and drone heights.
-   vec4 phase=vec4(p1,p2,p3,p4);
-   vec4 waveWeight=1.-smoothstep(vec4(.35),vec4(1.80),fwidth(phase));
-   // Preserve close ripples; at overview range keep a readable swell fraction
-   // so far water still shows modulation instead of a dead mirror, while the
-   // broad sky reflections stay dominant over equally strong far crests.
-   float bayResolvedStrength=mix(1.,.30,smoothstep(120.,2600.,length(vPositionW-vEyePosition.xyz)));
-   float bayWindPatch=.80+.20*sin(dot(wp,vec2(.0047,-.0061))+bayBend.x*1.5);
-   waveWeight*=bayResolvedStrength*bayWindPatch;
-   vec2 wind=vec2(.032,.054)*cos(p1)*waveWeight.x+vec2(-.019,.010)*cos(p2)*waveWeight.y;
-   wind+=vec2(.014,.008)*cos(p3)*waveWeight.z+vec2(-.007,.016)*cos(p4)*waveWeight.w;
-   float bayUnresolvedVariance=dot(vec4(.001088,.0001225,.000068,.0000845),1.-waveWeight*waveWeight);
+    vec2 wavePosition=wp+bayBend*18.;
+    float p1=dot(wavePosition,vec2(.092,.171))-t*.72;
+    float p2=dot(wavePosition,vec2(-.238,.114))-t*.48;
+    float p3=dot(wavePosition,vec2(1.62,.83))-t*1.36;
+    float p4=dot(wavePosition,vec2(-.74,2.31))+t*.86;
+    // Four straight fronts interfere into a regular crosshatch lattice inside
+    // the sun/moon glitter. Two more incommensurable fronts per band — rotated
+    // directions, irrational wavelength ratios — break the lattice without a
+    // noise texture or extra vertex work.
+    float p5=dot(wavePosition,vec2(.038,.224))-t*.55;
+    float p6=dot(wavePosition,vec2(-.191,.067))+t*.61;
+    float p7=dot(wavePosition,vec2(2.07,-.59))-t*1.12;
+    float p8=dot(wavePosition,vec2(1.18,1.86))+t*1.58;
+    // Differentiate unwrapped phases, never cos(phase): sampled normals have
+    // already aliased by then. Suppress each frequency before Nyquist (PI
+    // radians/pixel), including low waves at grazing angles and drone heights.
+    vec4 phase=vec4(p1,p2,p3,p4);
+    vec4 waveWeight=1.-smoothstep(vec4(.35),vec4(1.80),fwidth(phase));
+    vec4 phaseB=vec4(p5,p6,p7,p8);
+    vec4 waveWeightB=1.-smoothstep(vec4(.35),vec4(1.80),fwidth(phaseB));
+    // Preserve close ripples; at overview range keep a readable swell fraction
+    // so far water still shows modulation instead of a dead mirror, while the
+    // broad sky reflections stay dominant over equally strong far crests.
+    float bayResolvedStrength=mix(1.,.30,smoothstep(120.,2600.,length(vPositionW-vEyePosition.xyz)));
+    float bayWindPatch=.80+.20*sin(dot(wp,vec2(.0047,-.0061))+bayBend.x*1.5);
+    float bayWavePatch=bayResolvedStrength*bayWindPatch;
+    waveWeight*=bayWavePatch;waveWeightB*=bayWavePatch;
+    vec2 wind=vec2(.032,.054)*cos(p1)*waveWeight.x+vec2(-.019,.010)*cos(p2)*waveWeight.y;
+    wind+=vec2(.014,.008)*cos(p3)*waveWeight.z+vec2(-.007,.016)*cos(p4)*waveWeight.w;
+    wind+=vec2(.011,.019)*cos(p5)*waveWeightB.x+vec2(-.012,.005)*cos(p6)*waveWeightB.y;
+    wind+=vec2(.007,-.002)*cos(p7)*waveWeightB.z+vec2(.004,.006)*cos(p8)*waveWeightB.w;
+    float bayUnresolvedVariance=dot(vec4(.001088,.0001225,.000068,.0000845),1.-waveWeight*waveWeight)
+     +dot(vec4(.000235,.000083,.000026,.000026),1.-waveWeightB*waveWeightB);
    normalW=normalize(vec3(wind.x,1.,wind.y));
    float shallows=1.-smoothstep(3.,85.,shoreDistance);
    // cityBayClock.y is the night flag: the daylight teal body would be
@@ -149,5 +163,5 @@ export function createBayWater(scene:Scene,mirror:MirrorTexture,meshes:AbstractM
  setMode(state.mode);
  const setNight=(night:boolean)=>setMode(night?'night':'sunset');
  scene.onDisposeObservable.addOnce(()=>{extension.dispose(false,false);state.shore.dispose();material.dispose(false,false);});
- return {material,update:(time:number)=>{state.time=time;},setMode,setNight,stats:()=>({meshWorldHeights:meshes.map(m=>({min:m.getBoundingInfo().boundingBox.minimumWorld.y,max:m.getBoundingInfo().boundingBox.maximumWorld.y})),horizonCoverageBounds:bounds.length?[x0,z0,x1,z1]:null,horizonAtmosphere:{enabled:state.skyEnabled,source:state.sky?.name??null,start:1800,end:14000,extraRenderTargets:0,extraGeometry:0},shoreTextureReady:state.ready,waterLevel:meta.waterHeight,planarLevel:mirror.mirrorPlane.d,normalScale:'world-metres, four wind components, pixel-footprint filtered',reflectionFiltering:'trilinear mipmaps with projected pixel footprint',subpixelWaves:'slope variance retained as roughness',lighting:'PBR with moon/sun specular; vehicle headlights excluded',mode:state.mode,night:!!state.night})};
+ return {material,update:(time:number)=>{state.time=time;},setMode,setNight,stats:()=>({meshWorldHeights:meshes.map(m=>({min:m.getBoundingInfo().boundingBox.minimumWorld.y,max:m.getBoundingInfo().boundingBox.maximumWorld.y})),horizonCoverageBounds:bounds.length?[x0,z0,x1,z1]:null,horizonAtmosphere:{enabled:state.skyEnabled,source:state.sky?.name??null,start:1800,end:14000,extraRenderTargets:0,extraGeometry:0},shoreTextureReady:state.ready,waterLevel:meta.waterHeight,planarLevel:mirror.mirrorPlane.d,normalScale:'world-metres, eight wind components (two incommensurable per band), pixel-footprint filtered',reflectionFiltering:'trilinear mipmaps with projected pixel footprint',subpixelWaves:'slope variance retained as roughness',lighting:'PBR with moon/sun specular; vehicle headlights excluded',mode:state.mode,night:!!state.night})};
 }
