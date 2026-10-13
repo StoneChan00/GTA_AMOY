@@ -31,20 +31,23 @@ WORK COMPLETED
 - 我完成了步行岛地图目的地修复（2026-10-12）：鼓浪屿 166 个 POI 此前被 600m 道路筛只剩 81 个且 arrival 全吸到海峡对岸（日光岩/菽庄花园等核心景点反被丢弃，酒店幸存）——新增 carFreeLandTest（无路 land 多边形判定，city-map-geometry.ts），岛上 POI 绕过道路过滤、arrival 用自身坐标（快速移动直接上岛，与 collision.nearest 岛上返 null 的语义自洽）、节流 place 类（酒店/商铺 93 个全清，景点 73 个保留）；步行岛 arrival 一律不生成驾驶路线（city-map.ts/main.ts 守卫，避免 26km"跨海路线"把自动驾驶开进海里；鼓浪屿地标的 arrival 在演武大桥上属可驾驶，保留路线）；选中标签与玩家同点时全偏移碰撞 → chosen 标签新增 [0,-46] 第五偏移
 - 我恢复了 life-hub.glb（career 生活驿站 3D 模型，全端 404 导致该特性静默降级）：从 GTA_SZ 上游经 media.githubusercontent.com 直拉 1.9MB（sha256 b42f1ffb…，glTF magic 校验），本地验证 stats.lifeHubs=3、0 console 错误
 - 我清了 scipy 管线债：.venv 安装 scipy 1.18.1 后 make_facade_relief_atlas.py 端到端跑通，再生成的 facade-relief.png/roof-detail.png 与已提交版本逐字节一致（sha 相同，git status 干净）——立面 relief 管线完全可复现，不再依赖 LFS 预生成
+- 我完成了海面观感调参（2026-10-13，HANDOFF 待办销账）：三症状三治——夜间开阔海面黑洞（海面被排除在所有路灯/车灯外+平面镜像只有 2-4% 星空 → setMode 分模式响应：夜 env 0.78→3、mirror.level .92→1.4、roughness .13→.16，shader 用已插桩未用的 cityBayClock.y 夜旗做月光蓝水体 tint（.052,.09,.13），夜雾色 (.055,.05,.095)→(.085,.085,.15)；实测海面带亮度 6.8→20.9（3×，B>G>R 月光蓝调））；暮色闷红平板（雾色主导 → 雾色 (.44,.27,.31)→(.58,.37,.38)+水面 env 1→1.35，29.9→45.4 且暖调保持，海天亮带衔接柔化）；白昼波浪细节衰减（bayResolvedStrength 距离下限 .08→.30、衰减区间 80-1100→120-2600m，风坡四波前振幅 ×1.35，镜像扰动 falloff .30@900→.45@1500m → 白昼太阳 glitter 光路带交叉波纹碎片+全水面涟漪可见，夜间月光光路同步增强）；附带浅滩带 2-62→3-85m/混合 .78→.9、泡沫 .11→.15（受 shore-distance 纹理 ~10m/px 分辨率限制，视觉提升有限，见 PENDING）；修复 setMode 从未在启动时调用（新材质停留在创建值直到首次 L 键）；292/292、tsc 干净、三模式多机位量化 A/B（output/amoy/sea-tuning/，含 pngstat 像素统计法）
 
 CURRENT STATE
 -------------
-- 28 个 commit（6def972 M1 → 本次步行岛/life-hub 修复），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 30 个 commit（6def972 M1 → 本次海面调参+HANDOFF），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 2026-10-13 海面观感调参提交：src/city-bay-water.ts（setMode 分模式响应+启动即应用+GLSL 波浪/浅滩/夜间水体 tint）+ src/city-cinematic.ts（暮/夜雾色跟随海面）；量化验收夜间 3×/暮色 1.5× 亮度提升、白昼 sun glitter 波纹可见
 - 2026-10-12 第二批提交（继 1e47291/7b8a1de/4a05097/1f28ed8/2c32315 之后）：步行岛地图目的地修复（POI 节流+arrival 上岛+路线抑制+标签避让，292/292 含 2 个新测试）；life-hub.glb 上游取回（career 生活驿站修复）；scipy 入 venv（relief 管线可复现）
 - npm test：292/292 全通过；tsc 干净；vite build 正常（dist 含 life-hub.glb）
-- 浏览器验证：日光岩可搜可选、快速移动落岛（实测玩家 -3510,-2696 在岛 bbox 内）、岛上无酒店标签、选中标签在玩家同点仍渲染（output/amoy/island-poi-fix/ 4 张截图证据）
+- 浏览器验证：日光岩可搜可选、快速移动落岛（实测玩家 -3510,-2696 在岛 bbox 内）、岛上无酒店标签、选中标签在玩家同点仍渲染（output/amoy/island-poi-fix/ 4 张截图证据）；海面三模式多机位 A/B（output/amoy/sea-tuning/，基线 vs final 各模式 + pngstat 海面带像素统计）
 - dev server 已重启（PID 会变；**运行中新增 public/ 下的 .glb/.bin/.hdr 必须重启 dev server**——vite 启动时一次性索引 public/，新文件会以 index.html 兜底返回 "Unexpected magic: 1868833084"，vite.config.ts 注释有记录）
-- 环境：Windows + Blender 5.2.2（winget，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium(shapely/pyproj/rasterio/numpy/PIL 已装，scipy 未装）+ npm ci 完成
+- 环境：Windows + Blender 5.2.2（winget，路径 C:\Program Files\Blender Foundation\Blender 5.2\blender.exe）+ .venv（Python 3.12，osmium/shapely/pyproj/rasterio/numpy/PIL/scipy 1.18.1 已装）+ npm ci 完成
 
 RELEASE & DEPLOYMENT
 --------------------
 - 三入口（均验证可用）：源码 https://github.com/StoneChan00/GTA_AMOY · Pages https://stonechan00.github.io/GTA_AMOY/ · 国内镜像 http://39.96.117.179/GTA_AMOY/（根路径 302 跳转）
 - 2026-10-12 双批次均已部署双端并验证：M3 双提交（鼓浪屿+双子塔）与 1f28ed8 地图修复（index.html/JS bundle 哈希与本地 dist 逐字节一致）
+- 2026-10-13 a48da65 海面调参已部署双端并验证：JS bundle index-DwwCZWqB.js SHA256 与本地 dist 逐字节一致（Pages 推送后 CDN 传播约 1-2 分钟，404 属正常瞬态，等 75s 后哈希即匹配）
 - **部署哈希校验坑（Windows）**：nginx 不回 charset，PowerShell Invoke-WebRequest 会把 HTML 按 Latin-1 解码再转 UTF-8 导致哈希假性不一致——校验一律用 -OutFile 原始字节再 Get-FileHash，或直接比对 JS bundle（二进制不受影响）
 - GitHub 推送曾间歇性 TLS 阻断（代理 127.0.0.1:7897 出口不稳）——2026-10-12 窗口期已全部推完（master+gh-pages 同步）；再遇到就等窗口重试，ECS 通道（SSH IP 直连）不受影响
 - 一键部署：npm run deploy:pages（推 gh-pages 分支，普通 blob 非 LFS 指针）；npm run deploy:ecs（scp+解压到 /var/www/<repo>/）。两条命令共享 scripts/rewrite-dist-paths.mjs：源码 57+ 处 JS 与 4 处 JSON manifest 的根绝对路径（'/city/...'、'/characters' 等）Vite 不会重写，必须后处理加 /GTA_AMOY/ 前缀，**残留即构建失败**（新增硬编码路径需先加进重写清单）
@@ -54,14 +57,15 @@ RELEASE & DEPLOYMENT
 PENDING TASKS
 ------------
 - 地标精修内容生产（M3 主线，管线+样板已就绪）：9/10 地标 planned 待证据整理（priority-places.json 已建）；契约入口 docs/landmarks/agent-workflow.md + skills/landmark-reconstruction/SKILL.md（厦门化）；样板 scripts/landmarks/shimao.py；鼓浪屿建筑高度 heritage 上限（全市估算中位 23.4m vs 真实 2-4 层）
+- 海面残余（可选，非纯调参）：近岸浅滩色变带与泡沫线受 shore-distance.png 分辨率限制（2048px 覆盖 20km ≈ 10m/px，2-9m 泡沫带亚像素）——要真正可见需重生成更高分辨率/更大 maxDistance 的岸距纹理（管线层）；海峡城市灯光倒影为弥散亮带而非结构化灯柱（512px mirror RTT + roughness 物理上限）；海面波浪四波前在 glitter 内呈规则交叉纹（加更多非公度波前可破，上游设计取舍）
 - 管线债：M1 错位 radius-42 在厦港老城误除的普通楼，下次 prepare_driving_city 全量重跑时回归；shimao 冠部斜撑一塔仍略外张、帆面弧线远距微妙（记录于 validation.json）
-- 海面观感调参（1-2 天）：暮色/夜间黑色空洞、白昼波浪细节衰减（机制已在，纯调参）
 - 岛外扩展三档（可选）：远景剪影已完成；半实景天际线 1-2 天；可驾驶大陆 2-4 周
 - EXPLICIT CONSTRAINTS 引用的 AGENTS.md 属上游 GTA_SZ（本仓库无）
 
 KEY FILES
 ---------
 - src/city-map-geometry.ts - 厦门坐标系 wgs84ToMap、MapRoadIndex、mapPointDestination（步行岛 arrival 不跨海峡吸附）、carFreeLandTest（无路 land 多边形=步行岛判定，POI 节流与路线抑制共用）
+- src/city-bay-water.ts - 海面材质与 BaySurface shader 插件：setMode 分模式响应（夜 env3/mirror1.4/roughness .16，暮 env1.35，日基线；启动即应用）、GLSL 波浪四波前+距离衰减（下限 .30@2.6km）+浅滩/泡沫（受岸距纹理 10m/px 限制）+夜间月光蓝水体（cityBayClock.y 夜旗）；测试契约：aerial perspective 仅 day、shader 注入点与顶点不变
 - scripts/prepare_driving_city.py - city.json 生成器（岛屿选择含鼓浪屿显式并入+车行道限主岛 main_land；10 地标/spawn 自动定向/主干道最小宽度 10.5m）
 - scripts/landmark_tasks.py + data/landmarks/priority-places.json - 地标精修任务包生成器与清单（厦门坐标策略）
 - scripts/build_landmark_details.py + scripts/landmarks/shimao.py + data/landmarks/shimao.json - 地标总构建器与双子塔样板（evidence→model→verified 全链路）
@@ -70,7 +74,7 @@ KEY FILES
 - scripts/traffic.ts 旁边的 src/traffic.ts - NPC 避让（ahead(px,pz,true) 玩家检查）
 - src/landmark-details.ts - landmark manifest schema 与加载契约（运行时合并地标/过滤旧楼/处置旧网格/碰撞足印）
 - scripts/build_placeholder_landmark_glbs.py - Blender 占位 GLB 生成器（勿用 gltf-transform 替代）
-- output/amoy/ - Playwright 截图证据（gulangyu-fix/、shimao-detail/、sea-check/）
+- output/amoy/ - Playwright 截图证据（gulangyu-fix/、shimao-detail/、sea-check/、sea-tuning/ 海面调参前后 A/B 与量化）
 - config/regions.json - xiamen_study [117.95,24.35,118.30,24.65] / xiamen_island bbox
 - scripts/deploy-pages.mjs + scripts/deploy-ecs.mjs + scripts/rewrite-dist-paths.mjs - 双入口一键部署与子路径重写（见 RELEASE & DEPLOYMENT）
 - src/sha256.ts - SHA-256 纯 JS 回退（安全上下文优先 crypto.subtle，HTTP 部署依赖它）
