@@ -1,0 +1,38 @@
+{
+  "version": "0.2",
+  "source": "OpenStreetMap contributors / Geofabrik Fujian extract (OSM-FR mirror) 2026-10-08",
+  "license": "ODbL-1.0",
+  "bboxWGS84": [
+    118.03,
+    24.4,
+    118.21,
+    24.57
+  ],
+  "originWGS84": [
+    118.12,
+    24.485
+  ],
+  "horizontalScale": 0.6,
+  "verticalScale": 0.6,
+  "coordinateSystem": "local east/north; equirectangular at Xiamen latitude (111320*cos(24.485°)≈101310), metres scaled 0.60",
+  "roadTreatment": "prototype roads flattened; one-way tags kept but arcade driving unrestricted",
+  "heightStatus": {
+    "typology_estimate": 3786,
+    "heritage_estimate": 1263,
+    "osm_levels_estimated": 86,
+    "osm_height": 15
+  },
+  "counts": {
+    "roads": 5023,
+    "buildings": 5171,
+    "green": 482,
+    "water": 78,
+    "landmarks": 10
+  },
+  "extent": [
+    -4076.21,
+    -4076.85,
+    4724.37,
+    5014.1
+  ]
+}

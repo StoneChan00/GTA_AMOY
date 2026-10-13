@@ -1,0 +1,542 @@
+{
+  "version": "0.2.0",
+  "assets": [
+    {
+      "file": "buildings.glb",
+      "triangles": 748627,
+      "meshes": 734,
+      "primitives": 734,
+      "facadeMetadataPrimitives": 233,
+      "bytes": 11379840,
+      "sha256": "4de84bbcd0505ef9ab68bed16b120b4b429043ade579766899fdce7aa4e37920"
+    },
+    {
+      "file": "car.glb",
+      "triangles": 99197,
+      "meshes": 26,
+      "primitives": 26,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 2521572,
+      "sha256": "22bfc91739aeb6dd9854dd9868e46cb03aa91b03b5f58427bde9702edc7ff64e"
+    },
+    {
+      "file": "coastal-bridges.glb",
+      "triangles": 18788,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 1223892,
+      "sha256": "763fba142efe8390fb48ff8862680452a8a03a01a6612a78611e269f2f05f923"
+    },
+    {
+      "file": "coastal-shoreline.glb",
+      "triangles": 9342,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 614908,
+      "sha256": "91239329a11758b6111327184ec350947537c0beca618b7c6b99ce7e1dde5b10"
+    },
+    {
+      "file": "facades.glb",
+      "triangles": 1277154,
+      "meshes": 383,
+      "primitives": 383,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 11013980,
+      "sha256": "aa411a7d0281f5e78917911011e5620b241d711cc78643d50fc9f68f6cbe1ffa"
+    },
+    {
+      "file": "landmark-candidates.glb",
+      "triangles": 1,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 852,
+      "sha256": "41b7bafc3b7d7ee4f2bd04f7270dfca44ca706f1913806d9bf91873661fbbe2f"
+    },
+    {
+      "file": "landmark-detail.glb",
+      "triangles": 17316,
+      "meshes": 67,
+      "primitives": 67,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 476172,
+      "sha256": "c6a98a8bf3567e70db0219b3b3ce23462857ef8e2c61557c878f8aa2a94cf4b3"
+    },
+    {
+      "file": "landmarks.glb",
+      "triangles": 200964,
+      "meshes": 6,
+      "primitives": 6,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 2048292,
+      "sha256": "b9080fcb3940819048e2fde022cb0fd8bbdd701701ee7dbdd49ebe3ae8931e75"
+    },
+    {
+      "file": "life-hub.glb",
+      "triangles": 23222,
+      "meshes": 27,
+      "primitives": 27,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 1947576,
+      "sha256": "b42f1ffbe8a1370f4045376ba834d1f67bf4ba7861ee3035f4cc1a2582da04e8"
+    },
+    {
+      "file": "opposite-shore.glb",
+      "triangles": 54582,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 1024112,
+      "sha256": "5d01d94f49df0a157f2fec41074b262524ac9ef26d04fd1a55025f7b9bff0b39"
+    },
+    {
+      "file": "palm.glb",
+      "triangles": 2356,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 69484,
+      "sha256": "a53ef3a1120d691cf2deb1a131fc907153572813605bc8bbf2d22374b5dadfb6"
+    },
+    {
+      "file": "park-floodlight.glb",
+      "triangles": 188,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 15300,
+      "sha256": "d689f533b3eeddb29f1886a6674ab6722091d5a4835151a5c778f9a01145937c"
+    },
+    {
+      "file": "pedestrian.glb",
+      "triangles": 1180,
+      "meshes": 12,
+      "primitives": 12,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 47820,
+      "sha256": "f5d9fe3fff1a0f22cf5ab24c2b3143b2f383d5fa5ddac72612dee856c82029b3"
+    },
+    {
+      "file": "roads.glb",
+      "triangles": 1415569,
+      "meshes": 734,
+      "primitives": 734,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 11754248,
+      "sha256": "1dcd9cfdc763adb2fd7007aa7420fbe03ad4d2ab29b44813b0a4bb69ce542eb7"
+    },
+    {
+      "file": "terrain.glb",
+      "triangles": 59418,
+      "meshes": 5,
+      "primitives": 5,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 589472,
+      "sha256": "92c17b33f4f4a7e2b9226bc0ed162583bf14dde15ddfa76e363096632f81d611"
+    },
+    {
+      "file": "traffic-car.glb",
+      "triangles": 3836,
+      "meshes": 7,
+      "primitives": 7,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 106060,
+      "sha256": "fa203b7ae630aa1f012c3eb79d3f72241f896b204e41b9f8a6dddad1dfeaae40"
+    },
+    {
+      "file": "tree.glb",
+      "triangles": 5156,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 269320,
+      "sha256": "fdeb992e8b7ae7d476abb34ed61f8505905203cb3e246c8d09d396c41752567a"
+    }
+  ],
+  "nestedAssets": [
+    {
+      "file": "bamboo-cafe/characters/jk.glb",
+      "triangles": 110000,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 3359564,
+      "sha256": "e46b7f13f91529b153dd90eeffb84ae49fd35bdd81b66a3bc1c7f3564d77a959"
+    },
+    {
+      "file": "bamboo-cafe/characters/maid.glb",
+      "triangles": 110000,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 3597240,
+      "sha256": "92bf7483ee3f61e6b6ae0fef79b0aadff33547dd871d0f0faad8d8b3c9a5fead"
+    },
+    {
+      "file": "bamboo-cafe/exterior.glb",
+      "triangles": 32014,
+      "meshes": 15,
+      "primitives": 15,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 638908,
+      "sha256": "66264a1f129e6f966c2a76b8ca33538b5568b4d8882d5640d9e61b8bb8096e47"
+    },
+    {
+      "file": "bamboo-cafe/interior.glb",
+      "triangles": 293068,
+      "meshes": 48,
+      "primitives": 48,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 3115156,
+      "sha256": "c580da9ed2ed82cc7d830e3e1b32861f7256f55dc65c8fb0bec899f3b54910ac"
+    },
+    {
+      "file": "ebikes/ebikes.glb",
+      "triangles": 3896,
+      "meshes": 25,
+      "primitives": 25,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 118428,
+      "sha256": "14e94c68351d193d74de137c24d6e9a5626ef4537edfacb02636d38d0b7edbad"
+    },
+    {
+      "file": "landscape/banyan-lod.glb",
+      "triangles": 408,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 130668,
+      "sha256": "bd7720cb042909069b36ab3b6c17a86ae9c138795ea63802a208a1c8a3ea262f"
+    },
+    {
+      "file": "landscape/banyan.glb",
+      "triangles": 2644,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 235540,
+      "sha256": "cfd7a7f78e872be015b97463ec53e3d91abafe642a5c498389de0875d2c310cf"
+    },
+    {
+      "file": "landscape/canopy/camphor-far.glb",
+      "triangles": 80,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4612,
+      "sha256": "a5317150c4454696b5f9762c3970f2b950b8c77ffc691adf2efa6e9afc2e8c0c"
+    },
+    {
+      "file": "landscape/canopy/camphor-mid.glb",
+      "triangles": 628,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 21456,
+      "sha256": "39144b5cfd0a59d05b05d6e5fbb1e15cf7bddf434b18992b33e287f5650f03a6"
+    },
+    {
+      "file": "landscape/canopy/camphor.glb",
+      "triangles": 2580,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 70272,
+      "sha256": "a51db1367a54df429dee17c8b02fee2f34fe0f7c097ce2ea247458a70a1d843f"
+    },
+    {
+      "file": "landscape/canopy/flame-tree-far.glb",
+      "triangles": 80,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4636,
+      "sha256": "c878d606e1f3bbefaeffde412192f1f8ed16ca2d04b7325b88cd66b3446293b6"
+    },
+    {
+      "file": "landscape/canopy/flame-tree-mid.glb",
+      "triangles": 714,
+      "meshes": 4,
+      "primitives": 4,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 25408,
+      "sha256": "6388241f07474639a6ab3dab8622d6fe9461be749ce922c9e9def8fb67492aee"
+    },
+    {
+      "file": "landscape/canopy/flame-tree.glb",
+      "triangles": 3128,
+      "meshes": 4,
+      "primitives": 4,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 86152,
+      "sha256": "8cef81dc0cd5323c1f9c0c802dbf4a4d3efe35e2fa0218ee491a203bc387b2e4"
+    },
+    {
+      "file": "landscape/canopy/giant-banyan-far.glb",
+      "triangles": 88,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4868,
+      "sha256": "06711fc848b086bfe8e4592c985e423f884239ef48cec4800497c347d4301b5d"
+    },
+    {
+      "file": "landscape/canopy/giant-banyan-mid.glb",
+      "triangles": 862,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 26692,
+      "sha256": "08dd30684e28f103ac6f390c5c88314296c21d7e311d37662abaf6ec4c9ca366"
+    },
+    {
+      "file": "landscape/canopy/giant-banyan.glb",
+      "triangles": 3560,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 95584,
+      "sha256": "3de49556a3b38528657a902f4b64d4074163b44160f2cd6b81fa64cb26346cf9"
+    },
+    {
+      "file": "landscape/canopy/kapok-far.glb",
+      "triangles": 80,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4616,
+      "sha256": "ba77f304b0a3626b75fadd109af88b71fafc6d572285610f90415c34e7c4c56a"
+    },
+    {
+      "file": "landscape/canopy/kapok-mid.glb",
+      "triangles": 1344,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 42420,
+      "sha256": "5e5d3f4af1778fbd180204904a29b8c66f683ddcffbfc7df84cde5510a70f43f"
+    },
+    {
+      "file": "landscape/canopy/kapok.glb",
+      "triangles": 4004,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 106888,
+      "sha256": "c42cf30408dd23b5df4ab3e1e60ca00608b72dad8e1ee2c1dac92768875405db"
+    },
+    {
+      "file": "landscape/canopy/mango-far.glb",
+      "triangles": 80,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4620,
+      "sha256": "e66f329eec51f1676ec885568265f11c777813c2ef6facfd0725b781266ca40f"
+    },
+    {
+      "file": "landscape/canopy/mango-mid.glb",
+      "triangles": 528,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 18568,
+      "sha256": "c7a85af7851225268416ddfc20158fa37245f0f40a003604eeba79477d818032"
+    },
+    {
+      "file": "landscape/canopy/mango.glb",
+      "triangles": 1940,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 54244,
+      "sha256": "f0d1819532cf3184a529e9b6611ba12d18d72170d9c60cbaa4af726c1bf80a36"
+    },
+    {
+      "file": "landscape/canopy/terminalia-far.glb",
+      "triangles": 80,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4664,
+      "sha256": "a02a4835c075e36e78eed9bec31e2f308f91fd14961e525edb5ee723714c234f"
+    },
+    {
+      "file": "landscape/canopy/terminalia-mid.glb",
+      "triangles": 1650,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 51448,
+      "sha256": "2d54d8851e6ff938dfb5b5524c7855323a8ec9480e781080525ac5db1401e85a"
+    },
+    {
+      "file": "landscape/canopy/terminalia.glb",
+      "triangles": 3628,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 102416,
+      "sha256": "21736c416d383d49ef216000ef72283c223e2f9cff18adf0b45ed5e9071aaf93"
+    },
+    {
+      "file": "landscape/drain-grate.glb",
+      "triangles": 26,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4128,
+      "sha256": "fad7fb4c5d463835ed3d055b3e52e71f023f20a6d9273b5db22dc4e7397ad3fd"
+    },
+    {
+      "file": "landscape/flower-shrub.glb",
+      "triangles": 144,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 120448,
+      "sha256": "ee00e2e1773122463d644557d9cb524c49fa80a214f2ace70e5b9d9e43c74538"
+    },
+    {
+      "file": "landscape/fountain-grass.glb",
+      "triangles": 118,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 7504,
+      "sha256": "83f926103ce80635b898e0dd12871b77f51c013b227c83680b38da2f46db78c7"
+    },
+    {
+      "file": "landscape/lawn-tuft.glb",
+      "triangles": 28,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 4112,
+      "sha256": "f2dd92ec037e468848be5f2a29b678c35dcdce78d724ac7c61b5a80ec6b360e4"
+    },
+    {
+      "file": "landscape/manhole.glb",
+      "triangles": 126,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 9852,
+      "sha256": "996630a0a79bfa5d2b9653b2abf07dd7ad9d23ab28b73d3d57892160b932c634"
+    },
+    {
+      "file": "landscape/orchid-tree-lod.glb",
+      "triangles": 408,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 130692,
+      "sha256": "03452e6bda47965e45606a761a42d59b3f7530f33703f378de406dd4deb14e76"
+    },
+    {
+      "file": "landscape/orchid-tree.glb",
+      "triangles": 2644,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 235556,
+      "sha256": "e36477fb8a82f09c5ea0a1832688f7bf75d94eacdd07c6eeb8625a74ce5e7aef"
+    },
+    {
+      "file": "landscape/palm-lod.glb",
+      "triangles": 1052,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 44920,
+      "sha256": "3ed1064cc56694eb44bb0562a654892a61280e68fd36beca2a054b2d1a9972a1"
+    },
+    {
+      "file": "landscape/palm.glb",
+      "triangles": 4124,
+      "meshes": 2,
+      "primitives": 2,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 178880,
+      "sha256": "f30c4d3284c701992f53a18d07277e7deb7a546fd9829f46232da9f6a771fd61"
+    },
+    {
+      "file": "open-vegetation/island-tree-lod.glb",
+      "triangles": 1829,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 5556676,
+      "sha256": "aae2a2d241f246d75391793ec7d78c973c9de835a4ed0557e0f5432bbf815e0b"
+    },
+    {
+      "file": "open-vegetation/island-tree.glb",
+      "triangles": 10590,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 6090040,
+      "sha256": "165dcd8af89ff354c73239e5c0cd757c934cb615653bc0e6533d8ea2698a54ac"
+    },
+    {
+      "file": "open-vegetation/palm-lod.glb",
+      "triangles": 1032,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 2347612,
+      "sha256": "4287a36cfc2ac3b99f9075a660ef579b21308204c4f1d43b27db2ea50d52ee4d"
+    },
+    {
+      "file": "open-vegetation/palm.glb",
+      "triangles": 1032,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 2360488,
+      "sha256": "5c0e310e9957d4cb502a5365afda0356da187903daf3870b6deb8f772c2cd274"
+    },
+    {
+      "file": "rider/rider.glb",
+      "triangles": 60000,
+      "meshes": 1,
+      "primitives": 1,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 2967904,
+      "sha256": "7e1f3d5b4f23e3b2f235e3a7807a383ba1105d5bed7c9ce4703320ba7208c72c"
+    },
+    {
+      "file": "rooftops/props.glb",
+      "triangles": 3634,
+      "meshes": 39,
+      "primitives": 39,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 266416,
+      "sha256": "729423c764193b3520938bc1cbcbb4db26bde1386c5b4cfe14f9eecbe7a23e36"
+    },
+    {
+      "file": "signals/traffic-signal.glb",
+      "triangles": 750,
+      "meshes": 9,
+      "primitives": 9,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 32780,
+      "sha256": "50a917e95fa5b7038dbd88dd79b3e3165a5ca80a29c1949a7712157e1ce4840a"
+    },
+    {
+      "file": "street/urban-bench.glb",
+      "triangles": 6150,
+      "meshes": 3,
+      "primitives": 3,
+      "facadeMetadataPrimitives": 0,
+      "bytes": 5643192,
+      "sha256": "fa28646b4a58f59fccd52c27bc4fac7468028e84168e18c66c23b74420674e6a"
+    }
+  ],
+  "treeInstances": 3049,
+  "chunkSize": 640,
+  "totalBytes": 45102900,
+  "geometrySource": "Actual GLB JSON accessors; not stale authoring reports"
+}

@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "file": "heights.bin",
+  "grid": {
+    "x0": -3276.0,
+    "z0": -4104.0,
+    "step": 36.0,
+    "columns": 224,
+    "rows": 415
+  },
+  "tiles": [
+    {
+      "id": "0-240",
+      "column": 0,
+      "row": 240,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 2658
+    },
+    {
+      "id": "48-240",
+      "column": 48,
+      "row": 240,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 2840
+    },
+    {
+      "id": "96-240",
+      "column": 96,
+      "row": 240,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 2834
+    },
+    {
+      "id": "144-240",
+      "column": 144,
+      "row": 240,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 2854
+    },
+    {
+      "id": "192-240",
+      "column": 192,
+      "row": 240,
+      "columns": 32,
+      "rows": 49,
+      "triangles": 1648
+    },
+    {
+      "id": "0-288",
+      "column": 0,
+      "row": 288,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 3854
+    },
+    {
+      "id": "48-288",
+      "column": 48,
+      "row": 288,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4138
+    },
+    {
+      "id": "96-288",
+      "column": 96,
+      "row": 288,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4146
+    },
+    {
+      "id": "144-288",
+      "column": 144,
+      "row": 288,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4154
+    },
+    {
+      "id": "192-288",
+      "column": 192,
+      "row": 288,
+      "columns": 32,
+      "rows": 49,
+      "triangles": 2488
+    },
+    {
+      "id": "0-336",
+      "column": 0,
+      "row": 336,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 3916
+    },
+    {
+      "id": "48-336",
+      "column": 48,
+      "row": 336,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4520
+    },
+    {
+      "id": "96-336",
+      "column": 96,
+      "row": 336,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4158
+    },
+    {
+      "id": "144-336",
+      "column": 144,
+      "row": 336,
+      "columns": 49,
+      "rows": 49,
+      "triangles": 4154
+    },
+    {
+      "id": "192-336",
+      "column": 192,
+      "row": 336,
+      "columns": 32,
+      "rows": 49,
+      "triangles": 2404
+    },
+    {
+      "id": "0-384",
+      "column": 0,
+      "row": 384,
+      "columns": 49,
+      "rows": 31,
+      "triangles": 2488
+    },
+    {
+      "id": "48-384",
+      "column": 48,
+      "row": 384,
+      "columns": 49,
+      "rows": 31,
+      "triangles": 2688
+    },
+    {
+      "id": "96-384",
+      "column": 96,
+      "row": 384,
+      "columns": 49,
+      "rows": 31,
+      "triangles": 2500
+    },
+    {
+      "id": "144-384",
+      "column": 144,
+      "row": 384,
+      "columns": 49,
+      "rows": 31,
+      "triangles": 2396
+    },
+    {
+      "id": "192-384",
+      "column": 192,
+      "row": 384,
+      "columns": 32,
+      "rows": 31,
+      "triangles": 1478
+    }
+  ],
+  "surfaceOffset": 0.04,
+  "preservedTerrainBounds": [
+    -2259.0,
+    549.0,
+    -117.0,
+    1476.0
+  ],
+  "sources": [
+    {
+      "sha256": "38591be3c83676267ccc948e0cac16fcce9e46def26329400f824b673c446775",
+      "file": "data\\raw\\Copernicus_DSM_COG_10_N24_00_E117_00_DEM.tif",
+      "note": "pinned Copernicus DSM tile downloaded ahead of the pipeline; manifest recorded inline"
+    },
+    {
+      "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N24_00_E118_00_DEM/Copernicus_DSM_COG_10_N24_00_E118_00_DEM.tif",
+      "sha256": "9b4f96fbe1f09a4ed64f8a8e8e49dad2e0b2eef17d3842692be252ee92e0c8a6",
+      "bytes": 19627671,
+      "accessedAt": "2026-10-10T03:56:41.821131+00:00",
+      "release": "AWS Copernicus DEM 2021",
+      "horizontalCRS": "EPSG:4326",
+      "verticalDatum": "EGM2008",
+      "type": "DSM",
+      "nativeGridArcSeconds": 1,
+      "nominalResolutionMeters": 30,
+      "provider": "Copernicus / ESA / EU, hosted by Sinergise on AWS",
+      "licenceURL": "https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM",
+      "derivativeNotice": "produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved"
+    }
+  ],
+  "inputs": {
+    "public/city/city.json": "5ea5aea46c703943b90a193c59d86bc874ab640f50e67be6df0410b3d52ac84c",
+    "public/city/landmark-detail.json": "c6a01113d6a13cc75d0fa34cf5f5a20895eb229e29e9616fb4c8b0026b77f43f",
+    "public/city/terrain-detail.json": "f77ba6b8a02272dcdda086cee281a45666d0b3650610c5518b636a57c68fd65f"
+  },
+  "places": [],
+  "ridgeSamples": [
+    {
+      "name": "北侧西部山脊",
+      "x": -1404.0,
+      "z": 10296.0,
+      "peakGameHeight": 204.1
+    },
+    {
+      "name": "北侧中部山脊",
+      "x": 36.0,
+      "z": 10116.0,
+      "peakGameHeight": 112.7
+    },
+    {
+      "name": "北侧东部山脊",
+      "x": 3852.0,
+      "z": 9684.0,
+      "peakGameHeight": 6.04
+    }
+  ],
+  "budgets": {
+    "triangles": 62316,
+    "tiles": 20,
+    "bytes": 371840,
+    "maxHeight": 204.103
+  },
+  "method": {
+    "nativeResolutionMetres": 30,
+    "meshSpacingRealMetres": 60.0,
+    "verticalScale": 0.6,
+    "datumRemovalMetres": 20,
+    "surfaceSpikeOpeningNodes": 3,
+    "gaussianSigmaNodes": 0.8,
+    "roadBuildingReserveGameMetres": 54.0,
+    "edgeBlendGameMetres": 180,
+    "lawnHeight": "authored broad slopes, not measured",
+    "north": "distant terrain only; original driving extent unchanged"
+  },
+  "limitations": [
+    "DSM surface heights and smoothing are not surveyed bare-earth ground.",
+    "Motor roads and building bases retain original flattened elevation; park paths follow slopes.",
+    "Existing Xianyueshan terrain is preserved.",
+    "Northern backdrop has terrain only; buildings and roads beyond the playable study area are not reconstructed."
+  ]
+}

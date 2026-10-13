@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "asset": "/GTA_AMOY/city/landmark-candidates.glb",
+  "replacedMeshPrefixes": [],
+  "landmarks": [{"id": "yundang", "candidateKind": "park", "height": 0}],
+  "baseBuildingIds": [],
+  "collisionFootprints": []
+}
