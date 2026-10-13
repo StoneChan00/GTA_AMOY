@@ -32,11 +32,16 @@ WORK COMPLETED
 - 我恢复了 life-hub.glb（career 生活驿站 3D 模型，全端 404 导致该特性静默降级）：从 GTA_SZ 上游经 media.githubusercontent.com 直拉 1.9MB（sha256 b42f1ffb…，glTF magic 校验），本地验证 stats.lifeHubs=3、0 console 错误
 - 我清了 scipy 管线债：.venv 安装 scipy 1.18.1 后 make_facade_relief_atlas.py 端到端跑通，再生成的 facade-relief.png/roof-detail.png 与已提交版本逐字节一致（sha 相同，git status 干净）——立面 relief 管线完全可复现，不再依赖 LFS 预生成
 - 我完成了海面观感调参（2026-10-13，HANDOFF 待办销账）：三症状三治——夜间开阔海面黑洞（海面被排除在所有路灯/车灯外+平面镜像只有 2-4% 星空 → setMode 分模式响应：夜 env 0.78→3、mirror.level .92→1.4、roughness .13→.16，shader 用已插桩未用的 cityBayClock.y 夜旗做月光蓝水体 tint（.052,.09,.13），夜雾色 (.055,.05,.095)→(.085,.085,.15)；实测海面带亮度 6.8→20.9（3×，B>G>R 月光蓝调））；暮色闷红平板（雾色主导 → 雾色 (.44,.27,.31)→(.58,.37,.38)+水面 env 1→1.35，29.9→45.4 且暖调保持，海天亮带衔接柔化）；白昼波浪细节衰减（bayResolvedStrength 距离下限 .08→.30、衰减区间 80-1100→120-2600m，风坡四波前振幅 ×1.35，镜像扰动 falloff .30@900→.45@1500m → 白昼太阳 glitter 光路带交叉波纹碎片+全水面涟漪可见，夜间月光光路同步增强）；附带浅滩带 2-62→3-85m/混合 .78→.9、泡沫 .11→.15（受 shore-distance 纹理 ~10m/px 分辨率限制，视觉提升有限，见 PENDING）；修复 setMode 从未在启动时调用（新材质停留在创建值直到首次 L 键）；292/292、tsc 干净、三模式多机位量化 A/B（output/amoy/sea-tuning/，含 pngstat 像素统计法）
+- 我完成了地标精修第一轮 7/10 对象交付（2026-10-13）：证据→spec（data/landmarks/{riguangyan,bagua,xmu,gaoqi,xiamenzhan,huizhan}.json，全部证据标注 basis=reported/measured/estimated + 分歧记录）→模块（scripts/landmarks/ 同名 .py + _helpers.py 嘉庚屋顶件）→Blender 集成（build_landmark_details.py 全量重写：project_ring 闭合、point_blocked 完整镜像 CityCollision.blocked 语义——建筑环+1.15m 边距+陆地/水域+道路豁免——arrival 不再落进自己模型；extend_landmark_exclusions.py 足印交叠自动扩排 baseBuildingIds（21 个，Blender 外跑 shapely）；city_mesh 新材质 granite/greentile/orangetile/whiteroof + loft 支持逐环 power）。交付对象：日光岩（92.7m 花岗岩山体+双巨石+寺+寨门，模型自带地形）、八卦楼（25.7m/10m 穹顶、仿岩石圆顶八棱红穹）、厦大三楼群（群贤五楼官方面宽/进深+嘉庚颂恩 21 层+建南门楼）、高崎 T3/T4（T4 39m 马鞍屋盖+起翘、跑道 05/23 实测端点）、厦门站（31m 拱顶/206×145m、OSM 节点实测 vs M1 偏 700m）、会展中心（432m/42.6m 主楼证据升级、双排拱壳+前桅、拱壳跨度按 140m 实测收敛）；M1 错位标记全部迁移（会展偏 2.5km/厦大偏 250m/厦门站偏 700m/高崎→T4）；日光岩/八卦楼为鼓浪屿步行岛新记录（arrival 环外逃逸+walk_only）。全链重建：facades→optimize→split(131 tiles)→colorize→diversity→装回；292/292；网格审计 0 旧楼残留；视觉验收：日光岩（像素级灰花岗岩实证）、颂恩楼（蓝塔+绿阶顶+红旗杆可读）、T4/会展屋面形态可读——八卦楼/厦门站/T3/会展全貌具名验收待 heritage 高度上限（见 PENDING，本轮 GPU 疲劳黑屏多次，截图在 output/amoy/landmarks-v1/ 13 张）
+- 我完成了岸距纹理分辨率升级（海面残余销项）：prepare_coastal_infrastructure.py 2048×1536→4096×3072（BFS 腐蚀圈 13.7→6.8m/圈，泡沫带从亚像素升到 1-2 texel），PNG 34KB→112KB，其余产物逐字节不变（crossings/parkLights/far-shore 确定性重建验证）
 
 CURRENT STATE
 -------------
-- 30 个 commit（6def972 M1 → 本次海面调参+HANDOFF），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
-- 2026-10-13 海面观感调参提交：src/city-bay-water.ts（setMode 分模式响应+启动即应用+GLSL 波浪/浅滩/夜间水体 tint）+ src/city-cinematic.ts（暮/夜雾色跟随海面）；量化验收夜间 3×/暮色 1.5× 亮度提升、白昼 sun glitter 波纹可见
+- 33 个 commit（6def972 M1 → 本轮地标精修+海面+岸距），工作树干净；origin=StoneChan00/GTA_AMOY（master + gh-pages 分支）
+- 2026-10-13 第三批提交：地标精修第一轮 7/10（riguangyan/bagua/xmu/gaoqi/xiamenzhan/huizhan + 集成器全量重写 + 自动排除 + 嘉庚屋顶件）+ 岸距纹理 4096；全链 facades 重建、292/292、0 旧楼残留
+- 2026-10-13 早前提交：海面观感三模式调参（a48da65，量化验收夜间 3×/暮色 1.5×/白昼 glitter 可见）
+- npm test：292/292 全通过；tsc 干净；vite build 正常
+- 浏览器验证：日光岩像素级灰花岗岩实证、颂恩塔楼可读、T4/会展屋面形态可读（output/amoy/landmarks-v1/ 13 张 + sea-tuning/ 量化 A/B）；dev server 重启过多次——**长会话 GPU 会疲劳（WebGL CONTEXT_LOST/黑屏/2fps），视觉验证用 headless Edge 全新进程（scripts/check-landmarks-batch.mjs / check-landmarks-closeups.mjs 是范本），每轮新开进程**
 - 2026-10-12 第二批提交（继 1e47291/7b8a1de/4a05097/1f28ed8/2c32315 之后）：步行岛地图目的地修复（POI 节流+arrival 上岛+路线抑制+标签避让，292/292 含 2 个新测试）；life-hub.glb 上游取回（career 生活驿站修复）；scipy 入 venv（relief 管线可复现）
 - npm test：292/292 全通过；tsc 干净；vite build 正常（dist 含 life-hub.glb）
 - 浏览器验证：日光岩可搜可选、快速移动落岛（实测玩家 -3510,-2696 在岛 bbox 内）、岛上无酒店标签、选中标签在玩家同点仍渲染（output/amoy/island-poi-fix/ 4 张截图证据）；海面三模式多机位 A/B（output/amoy/sea-tuning/，基线 vs final 各模式 + pngstat 海面带像素统计）
@@ -56,11 +61,11 @@ RELEASE & DEPLOYMENT
 
 PENDING TASKS
 ------------
-- 地标精修内容生产（M3 主线，管线+样板已就绪）：9/10 地标 planned 待证据整理（priority-places.json 已建）；契约入口 docs/landmarks/agent-workflow.md + skills/landmark-reconstruction/SKILL.md（厦门化）；样板 scripts/landmarks/shimao.py；鼓浪屿建筑高度 heritage 上限（全市估算中位 23.4m vs 真实 2-4 层）
-- 海面残余（可选，非纯调参）：近岸浅滩色变带与泡沫线受 shore-distance.png 分辨率限制（2048px 覆盖 20km ≈ 10m/px，2-9m 泡沫带亚像素）——要真正可见需重生成更高分辨率/更大 maxDistance 的岸距纹理（管线层）；海峡城市灯光倒影为弥散亮带而非结构化灯柱（512px mirror RTT + roughness 物理上限）；海面波浪四波前在 glitter 内呈规则交叉纹（加更多非公度波前可破，上游设计取舍）
-- 管线债：M1 错位 radius-42 在厦港老城误除的普通楼，下次 prepare_driving_city 全量重跑时回归；shimao 冠部斜撑一塔仍略外张、帆面弧线远距微妙（记录于 validation.json）
+- **历史街区/校园建筑高度上限（本轮实证的头号 follow-up）**：M1 全市高度估算（中位 23.4m）把鼓浪屿与厦大校园的普通楼撑到 14-30+ 游戏米——八卦楼（15m 实测模型）与群贤/嘉庚低层群被通用高楼埋没、日光岩脚树线穿模，可读性受损。需 prepare_driving_city 对 heritage 区（鼓浪屿全域+厦大校园 bbox）加高度上限（真实 2-4 层 ≈ 6-15m）+ radius-42 回归一起做全量重跑（见管线债）
+- 地标精修第二轮（本轮已交付 7/10 对象，见 WORK COMPLETED）：剩 白鹭洲/筼筜湖/五缘湾（园区类，需先拆对象：白鹭女神雕塑/筼筜湖喷泉/五缘湾游艇港）与 沙坡尾渔船道具；八卦楼/厦门站/gaoqi-T3/huizhan 的具名视觉验收待历史高度上限落地后补（本轮 GPU 疲劳+背景楼遮挡，几何/材质/碰撞已审计通过）
+- 海面残余（可选）：海峡城市灯光倒影为弥散亮带而非结构化灯柱（512px mirror RTT + roughness 物理上限）；海面波浪四波前在 glitter 内呈规则交叉纹（加更多非公度波前可破，上游设计取舍）——岸距纹理已升 4096×3072（≈6.8m/圈）并销项
+- 管线债：M1 错位 radius-42 在厦港老城误除的普通楼 + heritage 高度上限（上条）一起在下一次 prepare_driving_city 全量重跑时回归；shimao 冠部斜撑一塔仍略外张、帆面弧线远距微妙（记录于 validation.json）
 - 岛外扩展三档（可选）：远景剪影已完成；半实景天际线 1-2 天；可驾驶大陆 2-4 周
-- EXPLICIT CONSTRAINTS 引用的 AGENTS.md 属上游 GTA_SZ（本仓库无）
 
 KEY FILES
 ---------

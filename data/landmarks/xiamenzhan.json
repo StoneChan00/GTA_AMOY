@@ -1,0 +1,49 @@
+{
+ "schemaVersion": 1,
+ "id": "xiamenzhan",
+ "name": "厦门站",
+ "status": "source-grounded exterior: OSM railway-station node position; official reported dimensions; photo-estimated form",
+ "sources": [
+  "osm-fujian-snapshot",
+  "baidu-baike-xiamenzhan",
+  "railway-net-2014",
+  "xmu-news-placeholder"
+ ],
+ "site": {
+  "centerWGS84": [
+   118.109343,
+   24.472126
+  ],
+  "basis": "osm-node/8829523163 railway=station（湖滨东路/梧村街道）",
+  "note": "M1 游戏标记 (118.1075,24.4777) 偏北约 700m，本 spec 移至实测站点；地址 思明区厦禾路900号"
+ },
+ "dims": {
+  "lengthNorthSouthMeters": {
+   "value": 206,
+   "basis": "reported (南昌铁路/百科)"
+  },
+  "widthEastWestMeters": {
+   "value": 145,
+   "basis": "reported (百科)"
+  },
+  "archTopMeters": {
+   "value": 31,
+   "basis": "reported (铁路网 2014 施工报道)"
+  },
+  "roofTrussSpanMeters": {
+   "value": 67,
+   "basis": "reported"
+  },
+  "floorArea": "2.76万m² (2016 通报/维基) vs 2.16万m² (中国铁路 2024)——分歧记录，不作几何依据"
+ },
+ "form": {
+  "kind": "白鹭展翅：白色钢结构大跨屋盖，拱顶最高31m，V型巨柱，象牙白+海天蓝，玻璃幕墙",
+  "basis": "reported (海峡网/闽南网 2016)",
+  "layout": "南北站房夹高铁站台（5台9线），高架候车厅上跨线路；北站房面厦禾路，南站房面站南路"
+ },
+ "rebuilt": "2012-12 开工，2015-02 南站房投用，2016-01 北站房投用",
+ "limitations": [
+  "OSM 无站房建筑足印，平面按报道的 206×145m 与站台关系简化为南北两翼+上跨拱顶",
+  "屋盖按拱顶 31m 单拱示意，未复原多跨曲线细部"
+ ]
+}

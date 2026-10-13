@@ -1,0 +1,159 @@
+{
+ "schemaVersion": 1,
+ "id": "xmu",
+ "name": "厦门大学 · 嘉庚建筑群",
+ "status": "source-grounded exterior: OSM-mapped group anchors; official per-building dimensions; photo-estimated roofs",
+ "sources": [
+  "osm-fujian-snapshot",
+  "xmu-zichu-2011",
+  "xmu-jjc-2011",
+  "xmu-news-2024",
+  "xmu-arch-2020"
+ ],
+ "site": {
+  "centerWGS84": [
+   118.0907,
+   24.4392
+  ],
+  "basis": "群贤-嘉庚楼群带中心（OSM 组环质心平均）",
+  "note": "M1 标记 (118.0897,24.4366) 在校园西南角，本 spec 移至楼群实测锚点"
+ },
+ "groups": {
+  "qunxian": {
+   "axisFrom": "囊萤楼西端 → 映雪楼东端（OSM 中心连线，方位约 116°）",
+   "buildingsWestToEast": [
+    {
+     "name": "囊萤楼",
+     "osmId": "way/156122793",
+     "widthMeters": 49.83,
+     "depthMeters": 17.16,
+     "floors": 3,
+     "roof": "西式双坡橙瓦，山墙尖拱窗，三楼前廊8根西式圆柱"
+    },
+    {
+     "name": "同安楼",
+     "osmId": null,
+     "widthMeters": 50.01,
+     "depthMeters": 10.2,
+     "floors": 2,
+     "roof": "双翘脊悬山顶燕尾式，绿琉璃瓦（官网校史称中式绿瓦宫殿式屋面）"
+    },
+    {
+     "name": "群贤楼",
+     "osmId": "way/156122784",
+     "widthMeters": 73.75,
+     "depthMeters": 30.17,
+     "floors": "中部3层两翼2层",
+     "roof": "T形平面；中部双翘脊重檐歇山顶绿琉璃瓦，两翼悬山燕尾"
+    },
+    {
+     "name": "集美楼",
+     "osmId": "way/156122801",
+     "widthMeters": 50.84,
+     "depthMeters": 10.77,
+     "floors": 2,
+     "roof": "双翘脊悬山顶燕尾式，绿琉璃瓦；内设鲁迅纪念馆"
+    },
+    {
+     "name": "映雪楼",
+     "osmId": "way/156122775",
+     "widthMeters": 49.83,
+     "depthMeters": 17.16,
+     "floors": 3,
+     "roof": "西式双坡橙瓦，与囊萤对称"
+    }
+   ],
+   "gapMeters": 6,
+   "dimBasis": "reported (厦门大学资产与后勤事务管理处：群贤楼群各楼面宽/进深)",
+   "positionBasis": "row anchored on OSM way/156122784 群贤楼群 centroid；行向按囊萤(way/156122793)→映雪(way/156122775)中心连线"
+  },
+  "jiageng": {
+   "buildingsNorthToSouth": [
+    {
+     "name": "保欣丽英楼（嘉庚1）",
+     "floors": 6
+    },
+    {
+     "name": "成枫楼（嘉庚2）",
+     "floors": 6
+    },
+    {
+     "name": "颂恩楼（嘉庚3 · 主楼）",
+     "floors": 21,
+     "floorAreaMeters": 21000,
+     "note": "1998-06 开工 2001-04 竣工"
+    },
+    {
+     "name": "祖营楼（嘉庚4）",
+     "floors": 6
+    },
+    {
+     "name": "钟铭选楼（嘉庚5）",
+     "osmId": "way/156122773",
+     "floors": 6
+    }
+   ],
+   "fromBuildingFootprintMeters": {
+    "value": [
+     44,
+     19
+    ],
+    "basis": "estimated",
+    "method": "photo estimate; official gives only group total 49000 m²"
+   },
+   "songenRoof": "绿色琉璃攒尖/台阶式塔顶（照片），21层约 69m 檐口+塔顶约 12m（estimated from 21层 reported）",
+   "fromRoof": "红瓦硬山双坡（官网：红瓦、坡顶、硬山延续芙蓉/建南从楼意象）",
+   "layout": "一字排开，主楼与南北从楼以廊道相连，东侧嘉庚广场+120m 花岗石大台阶",
+   "positionBasis": "row anchored on OSM way/156122776 嘉庚楼群 centroid，行向按钟铭选楼(南端, way/156122773)→群中心连线（约 23° NNE）",
+   "dimBasis": "floors/建筑面积 reported (厦门大学基建处/新闻网)；从楼 footprint 为照片估计"
+  },
+  "jiannan": {
+   "osmId": "way/560033573",
+   "widthMeters": 47.12,
+   "depthMeters": 69.035,
+   "floorAreaMeters": 5578,
+   "gateTowerFloors": 4,
+   "gateRoof": "双翘脊重檐歇山顶燕尾式，绿琉璃瓦",
+   "hall": "单层西式双坡顶红瓦，前部门楼4层",
+   "group": "建南楼群（成义/南安/建南/南光/成智，1951-1954）沿山势半月形围合上弦场，外轮入厦门海域即见",
+   "dimBasis": "reported (厦门大学资产与后勤事务管理处)",
+   "orientation": "面南偏东朝上弦场与海（estimated from 上弦场位置）"
+  }
+ },
+ "anchorsWGS84": {
+  "nangyingCenter": [
+   118.089011,
+   24.43988
+  ],
+  "yingxueCenter": [
+   118.091658,
+   24.438699
+  ],
+  "qunxianGroupCenter": [
+   118.090445,
+   24.439328
+  ],
+  "jiagengGroupCenter": [
+   118.092488,
+   24.440225
+  ],
+  "zhongmingxuanCenter": [
+   118.091906,
+   24.438976
+  ],
+  "jiannanCenter": [
+   118.092867,
+   24.437076
+  ],
+  "jiannanFacadeBearingDeg": {
+   "value": 140,
+   "basis": "estimated",
+   "method": "建南面朝上弦场与海（上弦场在其东南），按 140° 示意"
+  }
+ },
+ "limitations": [
+  "群贤/同安/集美屋面瓦色存在 2011 资产处(红机平瓦) 与 2024 校史网(绿琉璃) 记载分歧，模型取绿琉璃（与照片一致）",
+  "从楼开间/塔顶细部为照片估计；嘉庚广场台阶与连廊简化",
+  "建南大会堂依平地建模，山岗高差以石砌台基示意"
+ ]
+}

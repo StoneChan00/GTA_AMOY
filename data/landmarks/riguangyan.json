@@ -1,0 +1,51 @@
+{
+ "schemaVersion": 1,
+ "id": "riguangyan",
+ "name": "日光岩 · 龙头山",
+ "status": "source-grounded exterior: OSM node peak position; reported elevation; photo-estimated rock form",
+ "sources": [
+  "osm-fujian-snapshot",
+  "wikipedia-gulangyu",
+  "bendibao-riguangyan",
+  "chinaholiday-riguangyan"
+ ],
+ "site": {
+  "centerWGS84": [
+   118.062257,
+   24.444632
+  ],
+  "basis": "osm-node/1762860367 (日光岩) co-located with node/8411299103 (龙头山 natural=peak)",
+  "note": "鼓浪屿中部偏南；游戏地形为平地，岩体模型自带山体"
+ },
+ "peak": {
+  "elevationMeters": {
+   "value": 92.7,
+   "basis": "reported"
+  },
+  "variants": "92.68 (chinaholiday) / 92.6 (bendibao 日光岩寺页) recorded"
+ },
+ "form": {
+  "kind": "两块巨石一竖一横相倚而立，峰顶巨石直径40余米",
+  "basis": "reported (bendibao/福建省旅游协会)",
+  "hillMassMeters": {
+   "value": 120,
+   "basis": "estimated",
+   "method": "photo/satellite estimate of the granite hill base span; uncertainty ±25m"
+  }
+ },
+ "temple": {
+  "name": "日光岩寺（莲花庵 · 一片瓦）",
+  "kind": "天然石洞覆巨石为顶，绿瓦红柱，弥陀殿与大雄殿对合而设",
+  "position": "岩体东南麓",
+  "basis": "reported (导游词/bendibao)"
+ },
+ "zheng": {
+  "kind": "龙头山寨寨门（高1.7m宽0.74m）与水操台遗址（闽海雄风石刻）",
+  "basis": "reported"
+ },
+ "limitations": [
+  "岩体轮廓为照片/卫星估计，非测绘；巨石组合简化为山体+主峰立石+横石三段",
+  "日光岩寺简化为绿瓦建筑组，不复原对合殿格局",
+  "寨门/水操台以小型石构点缀示意"
+ ]
+}

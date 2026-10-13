@@ -25,6 +25,8 @@ material('land',(.8,.8,.8),.96,tex='grass');material('park',(1,1,1),.95,tex='gra
 material('asphalt',(1,1,1),.29,.18,tex='road');material('pavement',(1,1,1),.86,tex='paving');material('roadline',(.78,.79,.70),.54);material('yellowline',(.70,.48,.11),.7)
 material('concrete',(.57,.61,.59),.7);material('roof',(.22,.27,.28),.68);material('steel',(.28,.35,.38),.27,.8);material('silver',(.63,.69,.70),.22,.78)
 material('landmarkglass',(.14,.28,.35),.17,.68);material('darkglass',(.035,.075,.105),.12,.46)
+material('greentile',(.085,.21,.11),.32,.14);material('orangetile',(.56,.21,.085),.5,.04);material('whiteroof',(.88,.88,.86),.42,.06)
+material('granite',(.37,.35,.315),.88,.02)
 material('gold',(.48,.30,.13),.3,.60);material('civicred',(.41,.055,.028),.58);material('lamp',(1,.67,.30),.25,0,4);material('led',(0.7,.86,1),.16,0,5)
 material('redled',(1,.015,.006),.2,0,4);material('carpaint',(.025,.18,.22),.19,.72);material('rubber',(.018,.024,.026),.88);material('leather',(.11,.12,.115),.83)
 material('bark',(.20,.17,.11),.98);material('leaf',(.07,.18,.083),.89);material('leaflight',(.14,.27,.105),.86)
@@ -47,8 +49,9 @@ class B:
   self.face(m,list(reversed(rings[0])));self.face(m,rings[1])
  def loft(self,m,rings,n=32,power=1):
   pts=[]
-  for x,y,z,rx,ry in rings:
-   pts.append([(x+math.copysign(abs(math.cos(i*math.tau/n))**power,math.cos(i*math.tau/n))*rx,y+math.copysign(abs(math.sin(i*math.tau/n))**power,math.sin(i*math.tau/n))*ry,z) for i in range(n)])
+  for ring in rings:
+   x,y,z,rx,ry=ring[:5];pw=ring[5] if len(ring)>5 else power
+   pts.append([(x+math.copysign(abs(math.cos(i*math.tau/n))**pw,math.cos(i*math.tau/n))*rx,y+math.copysign(abs(math.sin(i*math.tau/n))**pw,math.sin(i*math.tau/n))*ry,z) for i in range(n)])
   for j in range(len(pts)-1):
    for i in range(n):self.face(m,[pts[j][i],pts[j][(i+1)%n],pts[j+1][(i+1)%n],pts[j+1][i]],[(i/n*4,j/2),((i+1)/n*4,j/2),((i+1)/n*4,(j+1)/2),(i/n*4,(j+1)/2)])
   self.face(m,list(reversed(pts[0])));self.face(m,pts[-1]);return pts

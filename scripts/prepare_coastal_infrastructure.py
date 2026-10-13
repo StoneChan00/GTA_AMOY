@@ -47,7 +47,12 @@ for i,g in enumerate(c['green']):
 manifest={'schemaVersion':1,'citySha256':hashlib.sha256((ROOT/'public/city/city.json').read_bytes()).hexdigest(),'waterHeight':-.25,'crossings':crossings,'parkLights':lights,'artDirection':'Bridge clearance/ramp and park fixtures are gameplay reconstruction, not surveyed bridge elevations or existing lamp locations.'}
 (OUT/'infrastructure.json').write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':')))
 # World-space near-shore distance. R=distance from any mapped shore, G=water.
-extent=[-10000,-13000,10000,8000];w,h=2048,1536;mask=Image.new('L',(w,h),255);draw=ImageDraw.Draw(mask)
+# The BFS erosion quantises distance to one ring per pass, so the texture
+# resolution is also the shore-band resolution: 2048x1536 over this extent
+# meant ~13.7 m rings, which left the 2-9 m foam band and the first steps of
+# the shallow gradient sub-texel. 4096x3072 halves the ring step (~6.8 m) and
+# doubles the shallow-band texel count; the PNG stays two flat channels.
+extent=[-10000,-13000,10000,8000];w,h=4096,3072;mask=Image.new('L',(w,h),255);draw=ImageDraw.Draw(mask)
 def pixel(r):return [((x-extent[0])/(extent[2]-extent[0])*(w-1),(z-extent[1])/(extent[3]-extent[1])*(h-1)) for x,z in r]
 for p in parts(land):
  if p.geom_type!='Polygon':continue
